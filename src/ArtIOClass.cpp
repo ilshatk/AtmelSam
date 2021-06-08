@@ -149,7 +149,7 @@ void ArtIOClass::doIOLogic()
     {
         if (m_ptrEasyCat->MainTask() == ESM_OP)
         {
-            m_ptrEasyCat->BufferIn.Cust.Input1 = 245;
+            m_ptrEasyCat->BufferIn.Cust.Input1 = -10;
             m_ptrEasyCat->BufferIn.Cust.Input2 = ArtIOClass::getCommonOutputState();
         }
     }

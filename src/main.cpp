@@ -52,9 +52,9 @@ void setup()
   ArtSensor Sens2(2, ("Sensor2"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0); // Пусть этот будет выходным датчиком
   ArtSensor Sens3(3, ("Sensor3"), 2, ArtSensor::SENSOR_TYPE_BASIC, 0, 0); // Пусть этот будет входным датчиком2;
   ArtSensor Sens4(4, ("Sensor4"), 3, ArtSensor::SENSOR_TYPE_BASIC, 0, 0); // Пусть этот будет выходным датчиком3;
-  ArtDriver Act1(0, ("Actuator1"), ArtDriver::DRIVER_TYPE_1, 8, true, 0, 2, 0, 2, 0, 0, 0);
-  ArtDriver Act2(1, ("Actuator2"), ArtDriver::DRIVER_TYPE_1, 9, true, 0, 2, 0, 2, 0, 0, 0);
-  ArtDriver Act3(2, ("Actuator3"), ArtDriver::DRIVER_TYPE_1, 10, true, 0, 2, 0, 2, 0, 0, 0);
+  ArtDriver Act1(1, ("Actuator1"), ArtDriver::DRIVER_TYPE_1, 8, true, 0, 2, 0, 2, 0, 0, 0);
+  ArtDriver Act2(2, ("Actuator2"), ArtDriver::DRIVER_TYPE_1, 9, true, 0, 2, 0, 2, 0, 0, 0);
+  ArtDriver Act3(3, ("Actuator3"), ArtDriver::DRIVER_TYPE_1, 10, true, 0, 2, 0, 2, 0, 0, 0);
   ArtConveyor2Type Conv3(8, ("Conveyor3"), ArtConveyor2Type::CONVEYOR_TYPE_2, &Act3, &Sens3, &Sens4, 4000, 4, 9000);
   ArtConveyor1Type Conv2(9, ("Conveyor2"), ArtConveyor1Type::CONVEYOR_TYPE_1, &Act2, &Sens2, &Sens3, &Conv3, 6000, 0);
   ArtConveyor1EType Conv1(10, ("Conveyor1"), ArtConveyor1Type::CONVEYOR_TYPE_1E, &Act1, &Sens1, &Sens2, &Conv2, 6000, 0);
@@ -62,7 +62,7 @@ void setup()
   while (1)
   {
     if (EASYCAT.MainTask() == ESM_OP) // execute the EasyCAT task
-    {
+    {int time = millis();
       int16_t AdcResult;
       Helper.doLogic();
       AdcResult = ReadAdc(AnaInChannel);
@@ -74,7 +74,7 @@ void setup()
           break;
 
         case 1:
-          EASYCAT.BufferIn.Cust.AnaIn_2 = AdcResult;
+          
           break;
 
         case 2:
@@ -91,6 +91,7 @@ void setup()
 
       PORT->Group[0].OUTSET.reg = WDOG;
       PORT->Group[1].OUTSET.reg = LED;
+      EASYCAT.BufferIn.Cust.AnaIn_2 = millis()-time;
     }
     else
     {

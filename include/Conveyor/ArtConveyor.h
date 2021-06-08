@@ -96,7 +96,7 @@ public:
 	ArtDriver *ActPoint;	//указатель на драйвер
 	ArtDriver *ActPoint2; //указатель на драйвер
 	ArtDriver *ActPoint3; //указатель на драйвер
-	int ARTTimerGetTime();
+	int static ARTTimerGetTime();
 	int ConveyorGetReadyReceive();
 	void ConveyorSetProdEntering();
 	bool ARTTimerIsTimePassed(int timer, int timeSpan, int timeOut);
