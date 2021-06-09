@@ -47,7 +47,6 @@ public:
     static bool isTimerPassed(int &nTimerId, int nTimeoutMs); //
 
     static void doIOLogic();
-
     static uint16_t getCommonOutputState();
 protected:
     ArtIOClass();

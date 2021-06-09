@@ -265,17 +265,7 @@ int ArtBasicConveyor::ConveyorGetReadyReceive()
 	return 0;
 }
 
-int ArtBasicConveyor::ARTTimerGetTime()
-{
-	int curTime;
-	curTime = millis();
-	if (curTime == 0)
-	{
-		return (1);
-	}
 
-	return (curTime);
-}
 
 int ArtBasicConveyor::ActuatorsSet(int parameter, ArtDriver *pointer) // TODO MOTOR CONTROL AS ACTUATOR
 {
