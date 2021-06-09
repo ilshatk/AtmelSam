@@ -8,8 +8,11 @@ class ArtCylinder : public IHasCycleLogic
 protected:
     int m_id,
         cylCloseTimer,
-        CylOpenTimer,
-        cylState;
+        cylOpenTimer,
+        cylState,
+        cylOpenDelay,
+        cylCloseDelay;
+        
 
     bool bCylTimeoutControl,
          isCylinderSet,
@@ -27,8 +30,8 @@ public:
         ARTCYL_ST_UNKNOWN
     };
 
-    //ArtCylinder(int id, const char name[]);
-    //ArtCylinder(int id, const char name[], DriverType Driver_Type, int ReadySignalIN, bool Direction, int CurrentSpeed, int FWDSpeed, int value, int inout1, int inout2, int inout3, int inout4);
+    ArtCylinder(int id, const char name[]);
+    ArtCylinder(int id, const char name[], int CloseTime , int OpenTime,bool TimeoutControl,bool CylinderSet);
     void doLogic();
     bool bcheckFWDSpeedOutEnable();
     bool bcheckREVSpeedOutEnable();
@@ -48,5 +51,7 @@ public:
     int getName();
     int getID();
     void update();
+    bool CHK_ACTIVE_NTIME(bool sens_in, int timer_in, int delta_time);
+    int ACGetInitialState();
 };
 #endif
