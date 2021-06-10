@@ -3,6 +3,7 @@
 #include "interface\IHasCycleLogic.h"
 #include "ArtIOClass.h"
 #include "Conveyor\ArtConveyor.h"
+//ArtBasicConveyor BasicConveyor;
 class ArtCylinder : public IHasCycleLogic
 {
 protected:
@@ -11,7 +12,10 @@ protected:
         cylOpenTimer,
         cylState,
         cylOpenDelay,
-        cylCloseDelay;
+        cylCloseDelay,
+        cylOpenOut,
+        cylCloseOut,
+        distrType;
         
 
     bool bCylTimeoutControl,
@@ -30,8 +34,15 @@ public:
         ARTCYL_ST_UNKNOWN
     };
 
+      enum distType
+    {
+        MONO_STABLE,
+        BI_STABLE
+    };
+
     ArtCylinder(int id, const char name[]);
-    ArtCylinder(int id, const char name[], int CloseTime , int OpenTime,bool TimeoutControl,bool CylinderSet);
+    ArtCylinder(int id, const char name[], int CloseTime, int OpenTime, bool TimeoutControl, bool CylinderSet, distType type, int cylOpenOut, int cylCloseOut);
+   // ArtCylinder(int id, const char name[], int CloseTime , int OpenTime,bool TimeoutControl,bool CylinderSet,distType distrType,int OpenOut,int CloseOut);
     void doLogic();
     bool bcheckFWDSpeedOutEnable();
     bool bcheckREVSpeedOutEnable();
@@ -51,7 +62,10 @@ public:
     int getName();
     int getID();
     void update();
-    bool CHK_ACTIVE_NTIME(bool sens_in, int timer_in, int delta_time);
+    bool static CHK_ACTIVE_NTIME(bool sens_in, int timer_in, int delta_time);
     int ACGetInitialState();
+    void ARTCylinderOpen();
+    void ARTCylinderClose();
+    int getCylState();
 };
 #endif

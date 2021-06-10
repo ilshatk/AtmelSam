@@ -40,6 +40,17 @@ void ArtConveyor::update()
 void ArtConveyor::doLogic()
 {
 }
+int ArtBasicConveyor::ARTTimerGetTime()
+{
+	int curTime;
+	curTime = millis();
+	if (curTime == 0)
+	{
+		return (1);
+	}
+
+	return (curTime);
+}
 
 void ArtConveyor1Type::doLogic()
 {
