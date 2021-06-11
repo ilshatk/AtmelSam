@@ -2,14 +2,13 @@
 
 int ArtCylinder::getName()
 {
-	return (0);
+   return (0);
 }
 
 int ArtCylinder::getID()
 {
-	return (m_id);
+   return (m_id);
 }
-
 
 ArtCylinder::ArtCylinder(int id, const char name[])
 {
@@ -17,7 +16,7 @@ ArtCylinder::ArtCylinder(int id, const char name[])
    m_id = id;
 }
 
-ArtCylinder::ArtCylinder(int id, const char name[], int CloseTime, int OpenTime , bool TimeoutControl , bool CylinderSet, distType type, int cylOpenOut, int cylCloseOut): ArtCylinder(id, name)
+ArtCylinder::ArtCylinder(int id, const char name[], int CloseTime, int OpenTime, bool TimeoutControl, bool CylinderSet, distType type, int cylOpenOut, int cylCloseOut, ArtSensor *cylOpenIn, ArtSensor *cylCloseIn) : ArtCylinder(id, name)
 {
    cylCloseTimer = CloseTime;
    cylOpenTimer = OpenTime;
@@ -36,8 +35,8 @@ void ArtCylinder::doLogic()
    bool isCylinderClosed;
 
    isCylinderActed = ArtIOClass::getOutputState(/*нужный выход*/ 1);
-   isCylinderOpened = ArtIOClass::getInputState(/*нужный вход*/ 1);
-   isCylinderClosed = ArtIOClass::getInputState(/*нужный вход*/ 1);
+   isCylinderOpened = cylOpenIn->SensorState();
+   isCylinderClosed = cylCloseIn->SensorState();
 
    if (isCylinderOpened && isCylinderClosed)
    {
@@ -185,8 +184,8 @@ int ArtCylinder::ACGetInitialState()
    bool isCylinderClosed;
 
    isCylinderActed = ArtIOClass::getOutputState(/*нужный выход*/ 1);
-   isCylinderOpened = ArtIOClass::getInputState(/*нужный вход*/ 1);
-   isCylinderClosed = ArtIOClass::getInputState(/*нужный вход*/ 1);
+   isCylinderOpened = ArtIOClass::getInputState(/*нужный вход*/ cylOpenOut);
+   isCylinderClosed = ArtIOClass::getInputState(/*нужный вход*/ cylCloseOut);
 
    if (isCylinderOpened && isCylinderClosed)
    {

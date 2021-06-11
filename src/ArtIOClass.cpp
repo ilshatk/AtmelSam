@@ -180,4 +180,3 @@ void ArtIOClass::setOutputState(uint16_t nOutputCommonState)
     m_nCurrentOutputState = nOutputCommonState;
     DigitalOut(m_nCurrentOutputState);
 }
-

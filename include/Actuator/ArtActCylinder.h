@@ -3,7 +3,8 @@
 #include "interface\IHasCycleLogic.h"
 #include "ArtIOClass.h"
 #include "Conveyor\ArtConveyor.h"
-//ArtBasicConveyor BasicConveyor;
+#include "Sensor\ArtSensor.h"
+
 class ArtCylinder : public IHasCycleLogic
 {
 protected:
@@ -16,13 +17,15 @@ protected:
         cylOpenOut,
         cylCloseOut,
         distrType;
-        
 
     bool bCylTimeoutControl,
-         isCylinderSet,
-         cylCloseValue;
+        isCylinderSet,
+        cylCloseValue;
 
     char name[256], m_name[256];
+
+    ArtSensor *cylOpenIn;
+    ArtSensor *cylCloseIn;
 
 public:
     enum cylinderState
@@ -34,23 +37,25 @@ public:
         ARTCYL_ST_UNKNOWN
     };
 
-      enum distType
+    enum distType
     {
         MONO_STABLE,
         BI_STABLE
     };
 
     ArtCylinder(int id, const char name[]);
-    ArtCylinder(int id, const char name[], int CloseTime, int OpenTime, bool TimeoutControl, bool CylinderSet, distType type, int cylOpenOut, int cylCloseOut);
-   // ArtCylinder(int id, const char name[], int CloseTime , int OpenTime,bool TimeoutControl,bool CylinderSet,distType distrType,int OpenOut,int CloseOut);
+    ArtCylinder(int id, const char name[], int CloseTime, int OpenTime, bool TimeoutControl,
+                bool CylinderSet, distType type, int cylOpenOut, int cylCloseOut,
+                ArtSensor *cylOpenIn, ArtSensor *cylCloseIn);
     void doLogic();
     void update();
     int getName();
-	int getID(); 
+    int getID();
     bool static CHK_ACTIVE_NTIME(bool sens_in, int timer_in, int delta_time);
     int ACGetInitialState();
     void ARTCylinderOpen();
     void ARTCylinderClose();
     int getCylState();
 };
+
 #endif
