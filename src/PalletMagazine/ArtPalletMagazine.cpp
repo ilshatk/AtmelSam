@@ -1,5 +1,19 @@
 #include "PalletMagazine\ArtPalletMagazine.h"
 
+int PalletMagazine::getName()
+{
+	return (0);
+}
+
+int PalletMagazine::getID()
+{
+	return (m_id);
+}
+
+void PalletMagazine::update()
+{
+}
+
 PalletMagazine::PalletMagazine(int id, const char name[])
 {
     IHasCycleLogicHelper::addDevice(this);
@@ -7,13 +21,21 @@ PalletMagazine::PalletMagazine(int id, const char name[])
 }
 
 PalletMagazine::PalletMagazine(int id, const char name[],ArtCylinder *Clamp1,ArtCylinder *Clamp2,ArtCylinder *TOPCylinder,
-                                ArtCylinder *BOTCylinder,int ResButtonInput)//(id,name,ptr to clamps cylinder1,cylinder2,ptr to top cylinder,ptr to bot cylinder,reset button in,)
+                                ArtCylinder *BOTCylinder, int ResButtonInput, ArtSensor *PallONConvey, ArtSensor *PalletsInStack, int isAutoMode, int isBotlleConvServiceMode):PalletMagazine(id, name)//(id,name,ptr to clamps cylinder1,cylinder2,ptr to top cylinder,ptr to bot cylinder,reset button in,)
 {
     PalletMagazine::Clamp1 = Clamp1;
     PalletMagazine::Clamp2 = Clamp2;
     PalletMagazine::TOPCylinder = TOPCylinder;
     PalletMagazine::BOTCylinder = BOTCylinder;
     PalletMagazine::ResButtonInput = ResButtonInput;
+    PalletMagazine::PallONConvey = PallONConvey;
+    PalletMagazine::PalletsInStack = PalletsInStack;
+    PalletMagazine::isAutoMode = isAutoMode;
+    PalletMagazine::isBotlleConvServiceMode = isBotlleConvServiceMode;
+    Clamp1->ACGetInitialState();
+    Clamp2->ACGetInitialState();
+    TOPCylinder->ACGetInitialState();
+    BOTCylinder->ACGetInitialState();
 }
 
 void PalletMagazine::doLogic()
@@ -25,7 +47,7 @@ void PalletMagazine::doLogic()
 
 void PalletMagazine::CLAMP_POS_STATE_SPS()
 {
-    if ((!isAutoMode) && (!isBotlleConvServiceMode))
+    if ((!ArtIOClass::getInputState(isAutoMode)) && (!ArtIOClass::getInputState(isBotlleConvServiceMode)))
     {
         if (Clamp1->getCylState() == ArtCylinder::ARTCYL_ST_CLOSED)
         {
@@ -87,17 +109,17 @@ void PalletMagazine::CLAMP_POS_STATE_SPS()
 
         if (DispCur == TOP)
         {
-            if (isPalletsInStack)
+            if (PalletsInStack->SensorState())
             {
                 DispPallState = HAS_PALL;
             }
 
-            if (isPalletOnConvey && !isPalletsInStack)
+            if (ArtIOClass::getInputState(PallONConveyIn) && !PalletsInStack->SensorState())
             {
                 DispPallState = LOW_PALL;
             }
 
-            if (!isPalletsInStack && !isPalletOnConvey)
+            if (!PalletsInStack->SensorState() && !ArtIOClass::getInputState(PallONConveyIn))
             {
                 DispPallState = NO_PALL;
             }
@@ -208,8 +230,8 @@ void PalletMagazine::DISP_MAIN_CYCLE_SPS()
         }
     }
 
-    if ((!isPallONConvey) && (1 /*doRunConv4*/))
-    {
+    /*if ((!PallONConvey->SensorState()) && (1 /*doRunConv4*//*))
+    /*{
         isPallONConvey_flag = true;
     }
     else
@@ -217,7 +239,7 @@ void PalletMagazine::DISP_MAIN_CYCLE_SPS()
         isPallONConvey_flag = false;
     }
 
-    if (isPallONConvey)
+    if (PallONConvey)
     {
         PallONConvey = true;
     }
@@ -225,9 +247,9 @@ void PalletMagazine::DISP_MAIN_CYCLE_SPS()
     if (ArtCylinder::CHK_ACTIVE_NTIME(isPallONConvey_flag, isPallONConvey_timer, isPallONConvey_TIME))
     {
         PallONConvey = false;
-    }
+    }*/
 
-    if ((!isAutoMode) && (!isBotlleConvServiceMode))
+    if ((!ArtIOClass::getInputState(isAutoMode)) && (!ArtIOClass::getInputState(isBotlleConvServiceMode)))
     {
         if (DISP_STATE == ready)
         {
@@ -238,17 +260,17 @@ void PalletMagazine::DISP_MAIN_CYCLE_SPS()
             {
                 if (ArtCylinder::CHK_ACTIVE_NTIME(isBOT, isBOT_timer, DEF_TIME_POS_SENS))
                 {
-                    if (isPalletsInStack)
+                    if (PalletsInStack->SensorState())
                     {
                         DispPallState = HAS_PALL;
                     }
 
-                    if (isPalletOnConvey && !isPalletsInStack)
+                    if ((PallONConvey->SensorState()) && !PalletsInStack->SensorState())
                     {
                         DispPallState = LOW_PALL;
                     }
 
-                    if (!isPalletsInStack)
+                    if (!PalletsInStack->SensorState())
                     {
                         DispPallState = NO_PALL;
                     }
@@ -297,7 +319,7 @@ void PalletMagazine::DISP_MAIN_CYCLE_SPS()
                             }
                             else
                             {
-                                if (!isPallONConvey)
+                                if (!PallONConvey->SensorState())
                                 {
                                     DISPGOBOT();
                                 }
@@ -308,16 +330,16 @@ void PalletMagazine::DISP_MAIN_CYCLE_SPS()
             }
 
             case TOP:
-                if (PallONConvey || (/*PALL_conveyors[4].state == CONV_RUN*/ 1))
+                if (PallONConvey->SensorState() || (/*PALL_conveyors[4].state == CONV_RUN*/ 1))
                 {
                 }
                 else
                 {
-                    if (!isPallONConvey)
+                    if (!PallONConvey->SensorState())
                     {
                         if ((DispPallState == HAS_PALL) || (DispPallState == LOW_PALL))
                         {
-                            if (!isPallONConvey)
+                            if (!PallONConvey->SensorState())
                             {
                                 DISPGOBOT();
                             }
@@ -331,15 +353,15 @@ void PalletMagazine::DISP_MAIN_CYCLE_SPS()
 
 void PalletMagazine::ART_DISP_BTN_SPS()
 {
-    if( isButtonRESET && (DispPallState == NO_PALL)) 
+    if( ArtIOClass::getInputState(ResButtonInput) && (DispPallState == NO_PALL)) 
     {
         DispPallState = HAS_PALL;      
     }
    
-    if (isButtonRESET) 
+    if (ArtIOClass::getInputState(ResButtonInput)) 
     {
         DISP_STATE=READY;
-        PallONConvey = false;
+        //PallONConvey = false;
         isMID_timer = 0;
         isBOT_timer = 0;
     }

@@ -2,12 +2,12 @@
 #define Art_PalletMagazine_H
 #include "interface\IHasCycleLogic.h"
 #include "Actuator\ArtActCylinder.h"
+#include "Sensor\ArtSensor.h"
 
 class PalletMagazine : public IHasCycleLogic
 {
 protected:
     bool isTOPcylinderError,
-        PallONConvey,
         isPallONConvey_flag,
         disp_run_bool,
         doTOPCylinderUP_start,
@@ -24,10 +24,6 @@ protected:
         doBOTCylinderDOWN,
         doOpenClamps,
         isPalletsInStack,
-        isPalletOnConvey,
-        isAutoMode,
-        isBotlleConvServiceMode,
-        isPallONConvey,
         DISP_STATE,
         isButtonRESET;
     /*isClamp1Open,
@@ -47,12 +43,18 @@ protected:
         DispCur,
         isPallONConvey_timer,
         isPallONConvey_TIME,
-        ResButtonInput;
+        ResButtonInput,
+        isAutoMode,
+        isBotlleConvServiceMode,
+        PallONConveyIn;
 
     ArtCylinder *Clamp1;
     ArtCylinder *Clamp2;
     ArtCylinder *TOPCylinder;
     ArtCylinder *BOTCylinder;
+    ArtSensor *PallONConvey;
+    ArtSensor *PalletsInStack;
+
     int DEF_TIME_POS_SENS = 1000;
 
     enum DispPallSt
@@ -81,10 +83,15 @@ protected:
     };
 
 public:
-    PalletMagazine(int id, const char name[]);
-    PalletMagazine(int id, const char name[], ArtCylinder *clamp1, ArtCylinder *clamp2, ArtCylinder *TOPCylinder,
-                    ArtCylinder *BOTCylinder, int ResButtonInput);
     void doLogic();
+    void update();
+    int getName();
+	int getID();
+
+    PalletMagazine(int id, const char name[]);
+    PalletMagazine(int id, const char name[],ArtCylinder *Clamp1,ArtCylinder *Clamp2,ArtCylinder *TOPCylinder,
+                    ArtCylinder *BOTCylinder,int ResButtonInput,ArtSensor *PallONConvey,ArtSensor *PalletsInStack, int isAutoMode, int isBotlleConvServiceMode);
+      
     void DISP_POS_STATE_SPS();
     void CLAMP_POS_STATE_SPS();
     void DISP_MAIN_CYCLE_SPS();

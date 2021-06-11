@@ -44,19 +44,9 @@ public:
     ArtCylinder(int id, const char name[], int CloseTime, int OpenTime, bool TimeoutControl, bool CylinderSet, distType type, int cylOpenOut, int cylCloseOut);
    // ArtCylinder(int id, const char name[], int CloseTime , int OpenTime,bool TimeoutControl,bool CylinderSet,distType distrType,int OpenOut,int CloseOut);
     void doLogic();
-    bool bcheckFWDSpeedOutEnable();
-    bool bcheckREVSpeedOutEnable();
-    bool bcheckFWDSpeedOutDisable();
-    bool bcheckREVSpeedOutDisable();
-    void ConveySetSTOP();
-    int ConveySetDriverFWD(bool bParametr);
-    int ConveySetDriverREV(bool bParametr);
-    void ConveySetRun();
-
-    void LES();
-    int getName();
-    int getID();
     void update();
+    int getName();
+	int getID(); 
     bool static CHK_ACTIVE_NTIME(bool sens_in, int timer_in, int delta_time);
     int ACGetInitialState();
     void ARTCylinderOpen();

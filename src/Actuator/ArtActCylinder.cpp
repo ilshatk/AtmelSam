@@ -1,12 +1,23 @@
 #include "Actuator\ArtActCylinder.h"
 
+int ArtCylinder::getName()
+{
+	return (0);
+}
+
+int ArtCylinder::getID()
+{
+	return (m_id);
+}
+
+
 ArtCylinder::ArtCylinder(int id, const char name[])
 {
    IHasCycleLogicHelper::addDevice(this);
    m_id = id;
 }
 
-ArtCylinder::ArtCylinder(int id, const char name[], int CloseTime, int OpenTime , bool TimeoutControl , bool CylinderSet, distType type, int cylOpenOut, int cylCloseOut)
+ArtCylinder::ArtCylinder(int id, const char name[], int CloseTime, int OpenTime , bool TimeoutControl , bool CylinderSet, distType type, int cylOpenOut, int cylCloseOut): ArtCylinder(id, name)
 {
    cylCloseTimer = CloseTime;
    cylOpenTimer = OpenTime;
@@ -230,4 +241,8 @@ void ArtCylinder::ARTCylinderClose()
 int ArtCylinder::getCylState()
 {
    return (cylState);
+}
+
+void ArtCylinder::update()
+{
 }
