@@ -52,12 +52,7 @@ public:
     int ConveySetDriverFWD(bool bParametr);
     int ConveySetDriverREV(bool bParametr);
     void ConveySetRun();
-    int ARTDriverGetREADY();
-    int ARTDriverGetFWD();
-    int ARTDriverGetREV();
-    int ARTDriverGetSTOP();
-    int ARTConveySetRun();
-    int ARTDriverSetSTOP();
+
     void LES();
     int getName();
     int getID();

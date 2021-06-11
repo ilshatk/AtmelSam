@@ -26,11 +26,15 @@ protected:
         isPalletsInStack,
         isPalletOnConvey,
         isAutoMode,
-        isBotlleConvServiceMode;
+        isBotlleConvServiceMode,
+        isPallONConvey,
+        DISP_STATE,
+        isButtonRESET;
     /*isClamp1Open,
         isClamp2Open;*/
 
-    int DispPallState,
+    int m_id,
+        DispPallState,
         ClampState,
         m_disp_pos_error,
         isClamp1Close_timer,
@@ -38,7 +42,13 @@ protected:
         isTOPCylinderUP_timer,
         isTOPCylinderDOWN_timer,
         isTOPcylinderError_timer,
-        DispCur;
+        isBOT_timer,
+        isMID_timer,
+        DispCur,
+        isPallONConvey_timer,
+        isPallONConvey_TIME,
+        ResButtonInput;
+
     ArtCylinder *Clamp1;
     ArtCylinder *Clamp2;
     ArtCylinder *TOPCylinder;
@@ -65,12 +75,28 @@ protected:
         MID,
         BOT
     };
+    enum DisStates
+    {
+        ready
+    };
 
 public:
+    PalletMagazine(int id, const char name[]);
+    PalletMagazine(int id, const char name[], ArtCylinder *clamp1, ArtCylinder *clamp2, ArtCylinder *TOPCylinder,
+                    ArtCylinder *BOTCylinder, int ResButtonInput);
     void doLogic();
     void DISP_POS_STATE_SPS();
     void CLAMP_POS_STATE_SPS();
     void DISP_MAIN_CYCLE_SPS();
+    void DISPGOMID();
+    void DISPGOTOP();
+    void DISPGOBOT();
+    void DISPGOSTOP();
+    void DISPGORUN();
+    void doOPENCLAMPS();
+    void doCLOSECLAMPS();
+    void ART_DISP_BTN_SPS();
+
 };
 
 #endif //Art_PalletMagazine_H

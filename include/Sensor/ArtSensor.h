@@ -30,7 +30,7 @@ public:
 	ArtSensor(int id, const char name[], int input, SensorType type, int delayRe, int delayFe);
 	//~ArtSensor(){};
 	int update();
-	int SensorState();
+	bool SensorState();
 };
 
 #endif

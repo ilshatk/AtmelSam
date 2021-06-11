@@ -39,9 +39,9 @@ int ArtSensor::update()
 	return (SensorState());
 }
 
-int ArtSensor::SensorState()
+bool ArtSensor::SensorState()
 {
-	int state;
+	bool state;
 	state = (DigitalIn() & int(pow(2, input1))) == pow(2, input1); // на первый вход enter sensor
 	if ((sensorType & 0x1) != 0)								   //0x1 это инверсный тип датчика
 	{

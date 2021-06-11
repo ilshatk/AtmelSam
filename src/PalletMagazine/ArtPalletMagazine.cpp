@@ -1,9 +1,26 @@
 #include "PalletMagazine\ArtPalletMagazine.h"
 
+PalletMagazine::PalletMagazine(int id, const char name[])
+{
+    IHasCycleLogicHelper::addDevice(this);
+    m_id = id;
+}
+
+PalletMagazine::PalletMagazine(int id, const char name[],ArtCylinder *Clamp1,ArtCylinder *Clamp2,ArtCylinder *TOPCylinder,
+                                ArtCylinder *BOTCylinder,int ResButtonInput)//(id,name,ptr to clamps cylinder1,cylinder2,ptr to top cylinder,ptr to bot cylinder,reset button in,)
+{
+    PalletMagazine::Clamp1 = Clamp1;
+    PalletMagazine::Clamp2 = Clamp2;
+    PalletMagazine::TOPCylinder = TOPCylinder;
+    PalletMagazine::BOTCylinder = BOTCylinder;
+    PalletMagazine::ResButtonInput = ResButtonInput;
+}
+
 void PalletMagazine::doLogic()
 {
     CLAMP_POS_STATE_SPS();
     DISP_POS_STATE_SPS();
+    ART_DISP_BTN_SPS();
 }
 
 void PalletMagazine::CLAMP_POS_STATE_SPS()
@@ -165,9 +182,9 @@ void PalletMagazine::DISP_POS_STATE_SPS()
     }
 }
 
-void PalletMagazine:: DISP_MAIN_CYCLE_SPS()
+void PalletMagazine::DISP_MAIN_CYCLE_SPS()
 {
-    bool isBOT,isTOP,isMID;
+    bool isBOT, isTOP, isMID;
     if (DispCur == BOT)
     {
         isBOT = true;
@@ -179,127 +196,220 @@ void PalletMagazine:: DISP_MAIN_CYCLE_SPS()
         {
             isMID = true;
         }
-      ELSE
-         isMID = FALSE
-         IF DISP_CUR_POS==#TOP THEN
-            isTOP = TRUE
-         ELSE
-            isTOP = FALSE
-         ENDIF
-      ENDIF
-   }
-   ;   
-   ;
-   IF ((NOT isPallONConvey) AND (doRunConv4)) THEN
-      isPallONConvey_flag = TRUE
-   ELSE
-      isPallONConvey_flag = FALSE
-   ENDIF
-   ;
-   
-   ;
-   IF isPallONConvey THEN
-      PallONConvey = TRUE    
-   ENDIF      
-   ;
-   IF CHK_ACTIVE_NTIME(isPallONConvey_flag, isPallONConvey_timer,isPallONConvey_TIME) THEN ;WAIT SEC 2 ;CHK_ACTIVE_NTIME(SENSOR, Timer, CHECKING_TIME)
-      PallONConvey = FALSE 
-   ENDIF
-   ;
-   
-   IF (NOT isAutoMode) AND (NOT isBotlleConvServiceMode) THEN
-      
-      IF  DISP_STATE==#READY THEN
-         
-         SWITCH DISP_CUR_POS  
-            ;
-            CASE #BOT 
-               
-               IF CHK_ACTIVE_NTIME(isBOT, isBOT_timer,DEF_TIME_POS_SENS) THEN ;WAIT SEC 2 ;CHK_ACTIVE_NTIME(SENSOR, Timer, CHECKING_TIME)               
-                  
-                  ;IF isPalletOnConvey THEN
-                  ;
-                  IF isPalletsInStack THEN 
-                     DISP_PAL_STATE = #HAS_PALL 
-                  ENDIF
-                  IF isPalletOnConvey AND NOT isPalletsInStack THEN
-                     DISP_PAL_STATE = #LOW_PALL 
-                  ENDIF      
-                  ;
-                  IF  NOT  isPalletsInStack THEN  ;NOT isPalletOnConvey AND             
-                     DISP_PAL_STATE = #NO_PALL 
-                  ENDIF
-                  
-                  IF CLAMPS_STATE == #CL_OPEN THEN
-                     DISPGOMID()
-                  ELSE
-                     doOPENCLAMPS()
-                  ENDIF               
-               ENDIF
-               
-               ;              
-            CASE #MID
-               ;
-               IF CHK_ACTIVE_NTIME(isMID, isMID_timer,DEF_TIME_POS_SENS) THEN ;WAIT SEC 2 ;CHK_ACTIVE_NTIME(SENSOR, Timer, CHECKING_TIME)
-                  IF (CLAMPS_STATE == #CL_OPEN) THEN
-                     
-                     IF  ((DISP_PAL_STATE == #HAS_PALL) OR (DISP_PAL_STATE == #LOW_PALL)) THEN
-                        doCLOSECLAMPS()
-                     ENDIF
-                     ;
-                     ;IF (DISP_PAL_STATE == #HAS_PALL) THEN
-                     ;
-                     ;IF (CLAMPS_STATE == #CL_OPEN) THEN
-                     ;doCLOSECLAMPS()
-                     ;ELSE
-                     ;DISPGOTOP()
-                     ;ENDIF                     
-                     ;ENDIF  
-                     ;
-                     IF (DISP_PAL_STATE == #NO_PALL) THEN
-                        
-                        IF (CLAMPS_STATE == #CL_OPEN) THEN
-                           doCLOSECLAMPS()
-                        ELSE
-                           DISPGOTOP()
-                        ENDIF                     
-                     ENDIF  
-                     
-                  ELSE
-                     IF ((DISP_PAL_STATE == #HAS_PALL) OR (DISP_PAL_STATE == #LOW_PALL)) THEN
-                        
-                        If PallONConvey OR (PALL_conveyors[4].state == #CONV_RUN)THEN 
-                           DISPGOTOP()
-                        ELSE
-                           IF NOT isPallONConvey THEN
-                              DISPGOBOT()
-                           ENDIF
-                           
-                        ENDIF 
-                     ENDIF                  
-                  ENDIF  
-               ENDIF
-               
-               ;
-            CASE #TOP
-               If PallONConvey OR (PALL_conveyors[4].state == #CONV_RUN) THEN 
-               ELSE
-                  IF NOT isPallONConvey THEN
-                     IF ((DISP_PAL_STATE == #HAS_PALL) OR (DISP_PAL_STATE == #LOW_PALL)) THEN
-                        
-                        IF NOT isPallONConvey THEN
-                           DISPGOBOT()
-                        ENDIF
-                        
-                     ENDIF   
-                  ENDIF
-               ENDIF 
-               ;
-               
-            DEFAULT
-               ; continue
-         ENDSWITCH   
-         
-      ENDIF
-   ENDIF
+        else
+            isMID = false;
+        if (DispCur == TOP)
+        {
+            isTOP = true;
+        }
+        else
+        {
+            isTOP = false;
+        }
+    }
+
+    if ((!isPallONConvey) && (1 /*doRunConv4*/))
+    {
+        isPallONConvey_flag = true;
+    }
+    else
+    {
+        isPallONConvey_flag = false;
+    }
+
+    if (isPallONConvey)
+    {
+        PallONConvey = true;
+    }
+
+    if (ArtCylinder::CHK_ACTIVE_NTIME(isPallONConvey_flag, isPallONConvey_timer, isPallONConvey_TIME))
+    {
+        PallONConvey = false;
+    }
+
+    if ((!isAutoMode) && (!isBotlleConvServiceMode))
+    {
+        if (DISP_STATE == ready)
+        {
+            switch (DispCur)
+            {
+
+            case BOT:
+            {
+                if (ArtCylinder::CHK_ACTIVE_NTIME(isBOT, isBOT_timer, DEF_TIME_POS_SENS))
+                {
+                    if (isPalletsInStack)
+                    {
+                        DispPallState = HAS_PALL;
+                    }
+
+                    if (isPalletOnConvey && !isPalletsInStack)
+                    {
+                        DispPallState = LOW_PALL;
+                    }
+
+                    if (!isPalletsInStack)
+                    {
+                        DispPallState = NO_PALL;
+                    }
+
+                    if (ClampState == CL_OPEN)
+                    {
+                        DISPGOMID();
+                    }
+                    else
+                    {
+                        doOPENCLAMPS();
+                    }
+                }
+            }
+
+            case MID:
+            {
+                if (ArtCylinder::CHK_ACTIVE_NTIME(isMID, isMID_timer, DEF_TIME_POS_SENS))
+                {
+                    if (ClampState == CL_OPEN)
+                    {
+                        if ((DispPallState == HAS_PALL) || (DispPallState == LOW_PALL))
+                        {
+                            doCLOSECLAMPS();
+                        }
+
+                        if (DispPallState == NO_PALL)
+                        {
+                            if (ClampState == CL_OPEN)
+                            {
+                                doCLOSECLAMPS();
+                            }
+                            else
+                            {
+                                DISPGOTOP();
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if ((DispPallState == HAS_PALL) || (DispPallState == LOW_PALL))
+                        {
+                            if (PallONConvey || (/*PALL_conveyors[4].state == CONV_RUN*/ 1))
+                            {
+                                DISPGOTOP();
+                            }
+                            else
+                            {
+                                if (!isPallONConvey)
+                                {
+                                    DISPGOBOT();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            case TOP:
+                if (PallONConvey || (/*PALL_conveyors[4].state == CONV_RUN*/ 1))
+                {
+                }
+                else
+                {
+                    if (!isPallONConvey)
+                    {
+                        if ((DispPallState == HAS_PALL) || (DispPallState == LOW_PALL))
+                        {
+                            if (!isPallONConvey)
+                            {
+                                DISPGOBOT();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
+
+void PalletMagazine::ART_DISP_BTN_SPS()
+{
+    if( isButtonRESET && (DispPallState == NO_PALL)) 
+    {
+        DispPallState = HAS_PALL;      
+    }
+   
+    if (isButtonRESET) 
+    {
+        DISP_STATE=READY;
+        PallONConvey = false;
+        isMID_timer = 0;
+        isBOT_timer = 0;
+    }
+}
+
+void PalletMagazine::DISPGOMID()
+{
+    TOPCylinder->ARTCylinderOpen();
+    BOTCylinder->ARTCylinderClose();
+    doTOPCylinderUP = false;
+    doTOPCylinderDOWN = true;
+
+    doBOTCylinderDOWN = false;
+    doBOTCylinderUP = true;
+}
+
+void PalletMagazine::DISPGOTOP()
+{
+    TOPCylinder->ARTCylinderClose();
+    BOTCylinder->ARTCylinderClose();
+    doTOPCylinderDOWN = false;
+    doTOPCylinderUP = true;
+
+    doBOTCylinderDOWN = false;
+    doBOTCylinderUP = true;
+}
+
+void PalletMagazine::DISPGOBOT()
+{
+    TOPCylinder->ARTCylinderOpen();
+    BOTCylinder->ARTCylinderOpen();
+
+    doTOPCylinderUP = false;
+    doTOPCylinderDOWN = true;
+    doBOTCylinderUP = false;
+    doBOTCylinderDOWN = true;
+}
+
+void PalletMagazine::DISPGOSTOP()
+{
+    doTOPCylinderUP_start = doTOPCylinderUP;
+    doTOPCylinderDOWN_start = doTOPCylinderDOWN;
+    doBOTCylinderUP_start = doBOTCylinderUP;
+    doBOTCylinderDOWN_start = doBOTCylinderDOWN;
+
+    doTOPCylinderUP = false;
+    doTOPCylinderDOWN = false;
+
+    doBOTCylinderUP = false;
+    doBOTCylinderDOWN = false;
+    disp_run_bool = true;
+}
+
+void PalletMagazine::DISPGORUN()
+{
+    doTOPCylinderUP = doTOPCylinderUP_start;
+    doTOPCylinderDOWN = doTOPCylinderDOWN_start;
+    doBOTCylinderUP = doBOTCylinderUP_start;
+    doBOTCylinderDOWN = doBOTCylinderDOWN_start;
+}
+
+void PalletMagazine::doOPENCLAMPS()
+{
+    doOpenClamps = true;
+    Clamp1->ARTCylinderClose();
+}
+
+void PalletMagazine::doCLOSECLAMPS()
+{
+    doOpenClamps = false;
+    Clamp1->ARTCylinderOpen();
+}
+
