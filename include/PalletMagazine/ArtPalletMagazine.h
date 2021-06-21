@@ -3,7 +3,7 @@
 #include "interface\IHasCycleLogic.h"
 #include "Actuator\ArtActCylinder.h"
 #include "Sensor\ArtSensor.h"
-
+#undef READY
 class PalletMagazine : public IHasCycleLogic
 {
 protected:
@@ -40,7 +40,7 @@ protected:
         isTOPcylinderError_timer,
         isBOT_timer,
         isMID_timer,
-        DispCur,
+        DispCurPosition,
         isPallONConvey_timer,
         isPallONConvey_TIME,
         ResButtonInput,
@@ -64,7 +64,7 @@ protected:
         NO_PALL
     };
 
-    enum ClampSt
+    enum ClampStates
     {
         CL_OPEN,
         CL_CLOSE,
@@ -75,11 +75,13 @@ protected:
     {
         TOP,
         MID,
-        BOT
+        BOT,
+        ERROR
     };
-    enum DisStates
+    enum DispStates
     {
-        ready
+        READY,
+        ERROR
     };
 
 public:

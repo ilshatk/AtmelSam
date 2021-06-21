@@ -74,22 +74,24 @@ void setup()
   //Cylinders  ArtCylinder(int id, const char name[], int CloseTime, int OpenTime, bool TimeoutControl, bool CylinderSet,
   //distType type, int cylOpenOut, int cylCloseOut,ArtSensor *cylOpenIn,ArtSensor *cylCloseIn);
 
-  ArtCylinder Clamp1(11, ("Clamp1"), 10, 10, false, true, ArtCylinder::BI_STABLE,
-                     0, 1, &Clamp1Open, &Clamp1Close);
 
-  ArtCylinder Clamp2(12, ("Clamp2"), 10, 10, false, true, ArtCylinder::BI_STABLE,
-                     0, 1, &Clamp2Open, &Clamp2Close);
+  ArtCylinder Clamp1(11, ("Clamp1"), 10, 10, false, true, ArtCylinder::MONO_STABLE,
+                     1, 2, &Clamp1Open, &Clamp1Close);
+
+  ArtCylinder Clamp2(12, ("Clamp2"), 10, 10, false, true, ArtCylinder::MONO_STABLE,
+                     1, 2, &Clamp2Open, &Clamp2Close);
 
   ArtCylinder TOPCylinder(13, ("TOPCylinder"), 10, 10, false, true,
-                          ArtCylinder::BI_STABLE, 2, 3, &TOPCylinderOpen,
+                          ArtCylinder::MONO_STABLE, 3, 4, &TOPCylinderOpen,
                           &TOPCylinderClose);
 
   ArtCylinder BOTCylinder(14, ("BOTCylinder"), 10, 10, false, true,
-                          ArtCylinder::BI_STABLE, 4, 5, &BOTCylinderOpen,
+                          ArtCylinder::MONO_STABLE, 5, 6, &BOTCylinderOpen,
                           &BOTCylinderClose);
 
+
   PalletMagazine Dispenser(15, ("Dispenser"), &Clamp1, &Clamp2, &TOPCylinder,
-                           &BOTCylinder, 8, &PallONConvey, &PalletsInStack, 9, 10);
+                           &BOTCylinder, 9, &PallONConvey, &PalletsInStack, 10, 11);
 
   while (1)
   {

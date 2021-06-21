@@ -22,10 +22,14 @@ ArtCylinder::ArtCylinder(int id, const char name[], int CloseTime, int OpenTime,
    cylOpenTimer = OpenTime;
    bCylTimeoutControl = TimeoutControl;
    isCylinderSet = CylinderSet;
-   cylState = ACGetInitialState();
    ArtCylinder::cylOpenOut = cylOpenOut;
    ArtCylinder::cylCloseOut = cylCloseOut;
    ArtCylinder::distrType = type;
+
+   ArtCylinder::cylOpenIn = cylOpenIn;
+   ArtCylinder::cylCloseIn = cylCloseIn;
+   cylState = ACGetInitialState();
+ 
 }
 
 void ArtCylinder::doLogic()
@@ -184,8 +188,8 @@ int ArtCylinder::ACGetInitialState()
    bool isCylinderClosed;
 
    isCylinderActed = ArtIOClass::getOutputState(/*нужный выход*/ 1);
-   isCylinderOpened = ArtIOClass::getInputState(/*нужный вход*/ cylOpenOut);
-   isCylinderClosed = ArtIOClass::getInputState(/*нужный вход*/ cylCloseOut);
+   isCylinderOpened = cylOpenIn->SensorState();
+   isCylinderClosed = cylCloseIn->SensorState();
 
    if (isCylinderOpened && isCylinderClosed)
    {
@@ -221,6 +225,7 @@ void ArtCylinder::ARTCylinderOpen()
    }
    else
    {
+      ArtIOClass::setOutputState(/*выход на котором открытие цилиндра*/ cylCloseOut, false);
       ArtIOClass::setOutputState(/*выход на котором открытие цилиндра*/ cylOpenOut, true);
    }
 }
@@ -233,7 +238,8 @@ void ArtCylinder::ARTCylinderClose()
    }
    else
    {
-      ArtIOClass::setOutputState(/*выход на котором открытие цилиндра*/ cylCloseOut, false);
+      ArtIOClass::setOutputState(cylOpenOut, false);
+      ArtIOClass::setOutputState(cylCloseOut, true);
    }
 }
 
