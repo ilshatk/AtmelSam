@@ -46,7 +46,10 @@ protected:
         ResButtonInput,
         isAutoMode,
         isBotlleConvServiceMode,
-        PallONConveyIn;
+        PallONConveyIn,
+        MagazineState,
+        isBOTandNOPALLPLAC_timer,
+        isBOTandNOPALLPLAC_TIME;
 
     ArtCylinder *Clamp1;
     ArtCylinder *Clamp2;
@@ -68,7 +71,7 @@ protected:
     {
         CL_OPEN,
         CL_CLOSE,
-        ERROR
+        ERROR_CLAMPS
     };
 
     enum DispCurPos
@@ -76,12 +79,17 @@ protected:
         TOP,
         MID,
         BOT,
-        ERROR
+        ERROR_DISP
     };
     enum DispStates
     {
         READY,
-        ERROR
+        ERROR_STATE
+    };
+    enum MagazineStates
+    {
+        CRITICAL,
+        NORMAL,
     };
 
 public:
@@ -105,7 +113,7 @@ public:
     void doOPENCLAMPS();
     void doCLOSECLAMPS();
     void ART_DISP_BTN_SPS();
-
+    void ART_DISP_ERR_SPS();
 };
 
 #endif //Art_PalletMagazine_H

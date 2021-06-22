@@ -16,11 +16,15 @@ protected:
         cylCloseDelay,
         cylOpenOut,
         cylCloseOut,
-        distrType;
+        distrType,
+        ActedOut;
 
     bool bCylTimeoutControl,
         isCylinderSet,
-        cylCloseValue;
+        cylCloseValue,
+        isCylinderActed,
+        isCylinderOpened,
+        isCylinderClosed;
 
     char name[256], m_name[256];
 
@@ -51,7 +55,7 @@ public:
     void update();
     int getName();
     int getID();
-    bool static CHK_ACTIVE_NTIME(bool sens_in, int timer_in, int delta_time);
+    bool static CHK_ACTIVE_NTIME(bool sens_in, int *timer_in, int delta_time);
     int ACGetInitialState();
     void ARTCylinderOpen();
     void ARTCylinderClose();
