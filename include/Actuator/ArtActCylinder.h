@@ -60,6 +60,7 @@ public:
     void ARTCylinderOpen();
     void ARTCylinderClose();
     int getCylState();
+    void ARTCylinderOFF();
 };
 
 #endif

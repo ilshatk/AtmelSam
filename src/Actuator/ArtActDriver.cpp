@@ -4,7 +4,7 @@ ArtDriver::ArtDriver(int id, const char name[])
 {
     //IHasCycleLogicHelper::addDevice(this);
     memset(nDriverFWDSpeed, 0, sizeof(nDriverFWDSpeed));
-    memset(OutState, 0, sizeof(OutState));
+    //memset(OutState, 0, sizeof(OutState));
     //memcpy(m_name,name,sizeof(name));
 }
 
@@ -348,7 +348,7 @@ void ArtDriver::ConveySetSTOP()
 
 int ArtDriver::ConveySetDriverFWD(bool bParametr)
 {
-    int  i, j;
+    int i, j;
     bool btmpVal;
     for (i = 0; i < 3; i++)
     {
@@ -368,15 +368,14 @@ int ArtDriver::ConveySetDriverFWD(bool bParametr)
                 if (btmpVal)
                 {
                     OUT[nDriverFWDSpeed[i][j]] = btmpVal;
-                    ArtIOClass::setOutputState(m_id,true);
+                    ArtIOClass::setOutputState(m_id, true);
                 }
                 else
                 {
                     if (nDriverCurrentSpeed == i)
                     {
                         OUT[nDriverFWDSpeed[i][j]] = btmpVal;
-                        ArtIOClass::setOutputState(m_id,false);
-                
+                        ArtIOClass::setOutputState(m_id, false);
                     }
                     else
                     {
@@ -415,8 +414,8 @@ int ArtDriver::ConveySetDriverREV(bool bParametr)
                 if (btmpVal)
                 {
                     number = 0;
-                   // OutState[m_id] = 1;
-                    ArtIOClass::setOutputState(m_id,true);
+                    // OutState[m_id] = 1;
+                    ArtIOClass::setOutputState(m_id, true);
                     for (int k = 0; k <= 5; k++)
                     {
                         //number += pow(2,k)*OutState[k];
@@ -430,7 +429,7 @@ int ArtDriver::ConveySetDriverREV(bool bParametr)
                     {
                         number = 0;
                         //OutState[m_id] = 0;
-                        ArtIOClass::setOutputState(m_id,false);
+                        ArtIOClass::setOutputState(m_id, false);
                         for (int k = 0; k <= 5; k++)
                         {
                             // number += pow(2,k)*OutState[k];
@@ -538,5 +537,3 @@ int ArtDriver::ARTDriverSetSTOP()
     bDriverRUN = false;
     return (0);
 }
-
-

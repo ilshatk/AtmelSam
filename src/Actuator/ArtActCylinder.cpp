@@ -240,6 +240,12 @@ void ArtCylinder::ARTCylinderClose()
    isCylinderActed = cylCloseIn->SensorState();
 }
 
+void ArtCylinder::ARTCylinderOFF()
+{
+      ArtIOClass::setOutputState(cylOpenOut, false);
+      ArtIOClass::setOutputState(cylCloseOut, false);
+}
+
 int ArtCylinder::getCylState()
 {
    return (cylState);

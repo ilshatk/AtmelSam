@@ -5,7 +5,7 @@
 #include <cmath>
 #include "InOut.h"
 #include <cstring>
-bool static OutState[15];
+//bool static OutState[15];
 //uint16_t m_nCurrentOutputState = 0;
 class ArtDriver : public IHasCycleLogic
 {
@@ -26,7 +26,7 @@ protected:
     char name[256], m_name[256];
 
 public:
-int nDriverReadySignalIN;
+    int nDriverReadySignalIN;
 
     bool bDriverDirection,
         bDriverRUN;

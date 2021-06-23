@@ -25,7 +25,8 @@ protected:
         doOpenClamps,
         isPalletsInStack,
         DISP_STATE,
-        isButtonRESET;
+        isButtonRESET,
+        PallONConvey;
     /*isClamp1Open,
         isClamp2Open;*/
 
@@ -55,7 +56,7 @@ protected:
     ArtCylinder *Clamp2;
     ArtCylinder *TOPCylinder;
     ArtCylinder *BOTCylinder;
-    ArtSensor *PallONConvey;
+    ArtSensor *isPallONConvey;
     ArtSensor *PalletsInStack;
 
     int DEF_TIME_POS_SENS = 1000;
@@ -96,12 +97,12 @@ public:
     void doLogic();
     void update();
     int getName();
-	int getID();
+    int getID();
 
     PalletMagazine(int id, const char name[]);
-    PalletMagazine(int id, const char name[],ArtCylinder *Clamp1,ArtCylinder *Clamp2,ArtCylinder *TOPCylinder,
-                    ArtCylinder *BOTCylinder,int ResButtonInput,ArtSensor *PallONConvey,ArtSensor *PalletsInStack, int isAutoMode, int isBotlleConvServiceMode);
-      
+    PalletMagazine(int id, const char name[], ArtCylinder *Clamp1, ArtCylinder *Clamp2, ArtCylinder *TOPCylinder,
+                   ArtCylinder *BOTCylinder, int ResButtonInput, ArtSensor *PallONConvey, ArtSensor *PalletsInStack, int isAutoMode, int isBotlleConvServiceMode);
+
     void DISP_POS_STATE_SPS();
     void CLAMP_POS_STATE_SPS();
     void DISP_MAIN_CYCLE_SPS();

@@ -74,7 +74,6 @@ void setup()
   //Cylinders  ArtCylinder(int id, const char name[], int CloseTime, int OpenTime, bool TimeoutControl, bool CylinderSet,
   //distType type, int cylOpenOut, int cylCloseOut,ArtSensor *cylOpenIn,ArtSensor *cylCloseIn);
 
-
   ArtCylinder Clamp1(11, ("Clamp1"), 10, 10, false, true, ArtCylinder::MONO_STABLE,
                      1, 2, &Clamp1Open, &Clamp1Close);
 
@@ -88,7 +87,6 @@ void setup()
   ArtCylinder BOTCylinder(14, ("BOTCylinder"), 10, 10, false, true,
                           ArtCylinder::MONO_STABLE, 5, 6, &BOTCylinderOpen,
                           &BOTCylinderClose);
-
 
   PalletMagazine Dispenser(15, ("Dispenser"), &Clamp1, &Clamp2, &TOPCylinder,
                            &BOTCylinder, 9, &PallONConvey, &PalletsInStack, 10, 11);

@@ -34,7 +34,7 @@ protected:
     static uint16_t m_nCurrentOutputState;
     static const uint8_t N_MIN_INPORT_NUM, N_MAX_INPORT_NUM;
     static const uint8_t N_MIN_OUTPORT_NUM, N_MAX_OUTPORT_NUM;
-    
+
 public:
     static void initializeBoard(EasyCAT *ptrEasyCat); //DONE code form main
 
@@ -48,6 +48,7 @@ public:
 
     static void doIOLogic();
     static uint16_t getCommonOutputState();
+
 protected:
     ArtIOClass();
     ~ArtIOClass();
