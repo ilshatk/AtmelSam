@@ -45,7 +45,8 @@ protected:
 		nconveyorExtModeEnabled,
 		nconveyorExtFWD,
 		nconveyorExtSTOP,
-		nconveyorExtREV;
+		nconveyorExtREV,
+		AccumConvOn;
 	float productDeltaPassTime;
 
 public:
@@ -55,7 +56,8 @@ public:
 		CONVEYOR_TYPE_1E,
 		CONVEYOR_TYPE_2,
 		CONVEYOR_TYPE_3,
-		CONVEYOR_TYPE_4
+		CONVEYOR_TYPE_4,
+		CONVEYOR_TYPE_1A
 	};
 
 	enum ConveyorState
@@ -93,10 +95,10 @@ public:
 	};
 	ArtDriver *pointer;
 
-	ArtDriver *ActPoint;	//указатель на драйвер
+	ArtDriver *ActPoint;  //указатель на драйвер
 	ArtDriver *ActPoint2; //указатель на драйвер
 	ArtDriver *ActPoint3; //указатель на драйвер
-	
+
 	int ConveyorGetReadyReceive();
 	void ConveyorSetProdEntering();
 	bool ARTTimerIsTimePassed(int timer, int timeSpan, int timeOut);
@@ -104,6 +106,7 @@ public:
 	int ActuatorsSet(int parameter, ArtDriver *pointer);
 	int ConveyorGetState();
 	int static ARTTimerGetTime();
+	void AccumConv(bool flag);
 };
 
 class ArtConveyor2Type : public ArtBasicConveyor
@@ -138,13 +141,29 @@ class ArtConveyor1EType : public ArtBasicConveyor
 public:
 	int productPassTime3;
 	ArtSensor *EnterSensPoint3; //указатель на входной сенсор
-	ArtSensor *ExitSensPoint3;  //указатель на выходной сенсор
+	ArtSensor *ExitSensPoint3;	//указатель на выходной сенсор
 	//указатель на следующий конвейер
 	ArtConveyor1Type *NextConv1Point;
 	ArtConveyor1EType(int id, const char name[]);
 	ArtConveyor1EType(int id, const char name[], ConveyorType type, ArtDriver *Act3, ArtSensor *Sens3_Enter, ArtSensor *Sens3_Exit, ArtConveyor1Type *Next3_Conv, int PassTime, int RunTimer);
 	void ConvReturnStateAndTime();
 	void ConveyorSaveStateAndTime();
+	void doLogic();
+};
+
+class ArtConveyor1AType : public ArtBasicConveyor
+{
+private:
+	bool fproductCounted, productContSensConvey,pp_stack_ready;
+
+public:
+	int productPassTime;
+	ArtSensor *EnterSensPoint; //указатель на входной сенсор
+	ArtSensor *ExitSensPoint;  //указатель на выходной сенсор
+	//указатель на следующий конвейер
+	ArtConveyor2Type *NextConvPoint;
+	ArtConveyor1AType(int id, const char name[]);
+	ArtConveyor1AType(int id, const char name[], ConveyorType type, ArtDriver *ActPoint, ArtSensor *EnterSensPoint, ArtSensor *ExitSensPoint, ArtConveyor2Type *NextConvPoint, int PassTime, int RunTimer, int SetedProdNumberCollect);
 	void doLogic();
 };
 #endif //ArtConv

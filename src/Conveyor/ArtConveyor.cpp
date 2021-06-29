@@ -1,5 +1,206 @@
 #include "Conveyor\ArtConveyor.h"
 
+//---------------------------------Basic Conveyor--------------------------------------------------
+int ArtBasicConveyor::ActuatorsGet(int parameter, ArtDriver *pointer) //; TODO MOTOR CONTROL AS ACTUATOR
+{
+	switch (parameter)
+	{
+	case GET_CONV_ACTUATOR_READY:
+	{
+		return (pointer->ARTDriverGetREADY());
+		break;
+	}
+
+	case GET_CONV_ACTUATOR_FWD:
+	{
+		return (pointer->ARTDriverGetFWD());
+		break;
+	}
+
+	case GET_CONV_ACTUATOR_REV: //; TODO dont relase reverse.
+	{
+		return (pointer->ARTDriverGetREV());
+		break;
+	}
+
+	case GET_CONV_ACTUATOR_STOP:
+	{
+		return (pointer->ARTDriverGetSTOP());
+		break;
+	}
+
+	default:
+		break;
+	}
+	return (0);
+}
+
+int ArtBasicConveyor::ConveyorGetReadyReceive()
+{
+
+	if (conveyorType == CONVEYOR_TYPE_2)
+	{
+		if (((conveyorState == ST_CONVEYOR_FREE)) && (CalcedNumProdInConveyor < SetedProdNumberCollect))
+		{
+			return 1;
+		}
+		else
+		{
+			return 0;
+		}
+	}
+
+	if (conveyorType == CONVEYOR_TYPE_1)
+	{
+		if ((conveyorState == ST_CONVEYOR_FREE) || (conveyorState == ST_CONVEYOR_PROD_FWD))
+		{
+			return 1;
+		}
+		else
+		{
+			return 0;
+		}
+	}
+
+	if (conveyorType == CONVEYOR_TYPE_4)
+	{
+		if ((conveyorState == ST_CONVEYOR_FREE))
+		{
+			return 1;
+		}
+		else
+		{
+			return 0;
+		}
+	}
+
+	if (conveyorType == CONVEYOR_TYPE_3)
+	{
+		if ((conveyorState == ST_CONVEYOR_FREE))
+		{
+			return 1;
+		}
+		else
+		{
+			return 0;
+		}
+	}
+
+	if (conveyorType == CONVEYOR_TYPE_1A)
+	{
+		if (AccumConvOn == true)
+		{
+			if (((conveyorState == ST_CONVEYOR_FREE)) && (CalcedNumProdInConveyor < SetedProdNumberCollect))
+			{
+				return 1;
+			}
+			else
+			{
+				return 0;
+			}
+		}
+		else
+		{
+			if ((conveyorState == ST_CONVEYOR_FREE))
+			{
+				return 1;
+			}
+			else
+			{
+				return 0;
+			}
+		}
+	}
+
+	if ((conveyorState == ST_CONVEYOR_FREE))
+	{
+		return 1;
+	}
+
+	return 0;
+}
+
+int ArtBasicConveyor::ActuatorsSet(int parameter, ArtDriver *pointer) // TODO MOTOR CONTROL AS ACTUATOR
+{
+
+	switch (parameter)
+	{
+	case SET_CONV_ACTUATOR_FWD:
+	{
+		pointer->bDriverDirection = true;
+		return (pointer->ARTConveySetRun());
+		break;
+	}
+
+	case SET_CONV_ACTUATOR_REV: //TODO dont relase reverse.
+	{
+		return (pointer->ARTConveySetRun());
+		pointer->bDriverRUN = true;
+		pointer->bDriverDirection = false;
+		break;
+	}
+	case SET_CONV_ACTUATOR_STOP:
+	{
+		pointer->ARTDriverSetSTOP();
+		pointer->bDriverRUN = false;
+		break;
+	}
+	default:
+		break;
+	}
+	return (0);
+}
+
+bool ArtBasicConveyor::ARTTimerIsTimePassed(int timer, int timeSpan, int timeOut)
+{
+	int curTime, deltaTime;
+
+	if (timer > 0)
+	{
+		curTime = millis();
+		if (timer < curTime)
+		{
+			deltaTime = curTime - timer;
+			return ((deltaTime > timeSpan) && (deltaTime <= timeOut));
+		}
+		else //; exceptions check
+		{
+			if (timer == curTime)
+			{
+				return (false);
+			}
+			else
+			{
+				timer = timer - 3600000;
+			}
+		}
+	}
+	return (false);
+}
+
+void ArtBasicConveyor::ConveyorSetProdEntering()
+{
+	productFctEnterConveyor = true;
+}
+
+int ArtBasicConveyor::ARTTimerGetTime()
+{
+	int curTime;
+	curTime = millis();
+	if (curTime == 0)
+	{
+		return (1);
+	}
+
+	return (curTime);
+}
+
+void ArtBasicConveyor::AccumConv(bool flag)
+{
+	AccumConvOn = flag;
+}
+
+//---------------------------------1 Type--------------------------------------------------
 ArtConveyor1Type::ArtConveyor1Type(int id, const char name[])
 {
 	IHasCycleLogicHelper::addDevice(this);
@@ -21,35 +222,6 @@ ArtConveyor1Type::ArtConveyor1Type(int id, const char name[], ConveyorType type,
 	conveyorState = ST_CONVEYOR_UNKNOWN;
 	SetedProdNumberCollect = 0;
 	CalcedNumProdInConveyor = 0;
-}
-
-int ArtConveyor::getName()
-{
-	return (0);
-}
-
-int ArtConveyor::getID()
-{
-	return (m_id);
-}
-
-void ArtConveyor::update()
-{
-}
-
-void ArtConveyor::doLogic()
-{
-}
-int ArtBasicConveyor::ARTTimerGetTime()
-{
-	int curTime;
-	curTime = millis();
-	if (curTime == 0)
-	{
-		return (1);
-	}
-
-	return (curTime);
 }
 
 void ArtConveyor1Type::doLogic()
@@ -152,24 +324,6 @@ void ArtConveyor1Type::doLogic()
 		}
 		break;
 	}
-	/*case ST_CONVEYOR_CONT_MANUAL:
-    {
-      if (nconveyorExtSTOP)
-      {
-        retVal = ActuatorsSet( SET_CONV_ACTUATOR_STOP); //!* !Change to actual function
-      }
-
-      if (nconveyorExtFWD)
-      {
-        retVal = ActuatorsSet(SET_CONV_ACTUATOR_FWD); //!* !Change to actual function
-      }
-
-      if (nconveyorExtREV)
-      {
-        retVal = ActuatorsSet(SET_CONV_ACTUATOR_REV); //!* !Change to actual function
-      }
-	  break;
-    }*/
 	case ST_CONVEYOR_ERROR:
 	{
 		if (ActuatorsGet(GET_CONV_ACTUATOR_READY, ActPoint) == 1) //; !* !Change ARTActuatorsGet to actual function
@@ -181,164 +335,6 @@ void ArtConveyor1Type::doLogic()
 	default:
 		break;
 	}
-}
-
-int ArtBasicConveyor::ActuatorsGet(int parameter, ArtDriver *pointer) //; TODO MOTOR CONTROL AS ACTUATOR
-{
-	switch (parameter)
-	{
-	case GET_CONV_ACTUATOR_READY:
-	{
-		return (pointer->ARTDriverGetREADY());
-		break;
-	}
-
-	case GET_CONV_ACTUATOR_FWD:
-	{
-		return (pointer->ARTDriverGetFWD());
-		break;
-	}
-
-	case GET_CONV_ACTUATOR_REV: //; TODO dont relase reverse.
-	{
-		return (pointer->ARTDriverGetREV());
-		break;
-	}
-
-	case GET_CONV_ACTUATOR_STOP:
-	{
-		return (pointer->ARTDriverGetSTOP());
-		break;
-	}
-
-	default:
-		break;
-	}
-	return (0);
-}
-
-int ArtBasicConveyor::ConveyorGetReadyReceive()
-{
-
-	if (conveyorType == CONVEYOR_TYPE_2)
-	{
-		if (((conveyorState == ST_CONVEYOR_FREE)) && (CalcedNumProdInConveyor < SetedProdNumberCollect))
-		{
-			return 1;
-		}
-		else
-		{
-			return 0;
-		}
-	}
-
-	if (conveyorType == CONVEYOR_TYPE_1)
-	{
-		if ((conveyorState == ST_CONVEYOR_FREE) || (conveyorState == ST_CONVEYOR_PROD_FWD))
-		{
-			return 1;
-		}
-		else
-		{
-			return 0;
-		}
-	}
-
-	if (conveyorType == CONVEYOR_TYPE_4)
-	{
-		if ((conveyorState == ST_CONVEYOR_FREE))
-		{
-			return 1;
-		}
-		else
-		{
-			return 0;
-		}
-	}
-
-	if (conveyorType == CONVEYOR_TYPE_3)
-	{
-		if ((conveyorState == ST_CONVEYOR_FREE))
-		{
-			return 1;
-		}
-		else
-		{
-			return 0;
-		}
-	}
-
-	if ((conveyorState == ST_CONVEYOR_FREE))
-	{
-		return 1;
-	}
-
-	return 0;
-}
-
-
-
-int ArtBasicConveyor::ActuatorsSet(int parameter, ArtDriver *pointer) // TODO MOTOR CONTROL AS ACTUATOR
-{
-
-	switch (parameter)
-	{
-	case SET_CONV_ACTUATOR_FWD:
-	{
-		pointer->bDriverDirection = true;
-		return (pointer->ARTConveySetRun());
-		break;
-	}
-
-	case SET_CONV_ACTUATOR_REV: //TODO dont relase reverse.
-	{
-		return (pointer->ARTConveySetRun());
-		pointer->bDriverRUN = true;
-		pointer->bDriverDirection = false;
-		break;
-	}
-	case SET_CONV_ACTUATOR_STOP:
-	{
-		pointer->ARTDriverSetSTOP();
-		pointer->bDriverRUN = false;
-		break;
-	}
-	default:
-		break;
-	}
-	return (0);
-}
-
-bool ArtBasicConveyor::ARTTimerIsTimePassed(int timer, int timeSpan, int timeOut)
-{
-	int curTime, deltaTime;
-
-	if (timer > 0)
-	{
-		curTime = millis();
-		if (timer < curTime)
-		{
-			deltaTime = curTime - timer;
-			return ((deltaTime > timeSpan) && (deltaTime <= timeOut));
-		}
-		else //; exceptions check
-		{
-			if (timer == curTime)
-			{
-				return (false);
-			}
-			else
-			{
-				timer = timer - 3600000;
-			}
-		}
-	}
-	return (false);
-}
-
-void ArtBasicConveyor::ConveyorSetProdEntering()
-{
-	productFctEnterConveyor = true;
 }
 
 //-----------------------2 type-----------------------------------------
@@ -597,7 +593,7 @@ void ArtConveyor1EType::doLogic()
 			}
 		}
 
-		if (/*nconveyorExtModeEnabled*/(DigitalIn() & int(pow(2, 15))) == pow(2, 15) && (!/*isManualMode*/ false))
+		if (/*nconveyorExtModeEnabled*/ (DigitalIn() & int(pow(2, 15))) == pow(2, 15) && (!/*isManualMode*/ false))
 		{
 			ConveyorSaveStateAndTime();
 			conveyorState = ST_CONVEYOR_CONT_EXT;
@@ -723,15 +719,15 @@ void ArtConveyor1EType::doLogic()
 
 	case ST_CONVEYOR_CONT_EXT:
 	{
-		if (/*nconveyorExtSTOP*/(DigitalIn() & int(pow(2, 13))) == pow(2, 13))
+		if (/*nconveyorExtSTOP*/ (DigitalIn() & int(pow(2, 13))) == pow(2, 13))
 		{
 			ActuatorsSet(SET_CONV_ACTUATOR_STOP, ActPoint3);
 		}
-		if (/*nconveyorExtFWD*/(DigitalIn() & int(pow(2, 14)) )== pow(2, 14))
+		if (/*nconveyorExtFWD*/ (DigitalIn() & int(pow(2, 14))) == pow(2, 14))
 		{
 			ActuatorsSet(SET_CONV_ACTUATOR_FWD, ActPoint3);
 		}
-		if (/*nconveyorExtREV*/false)
+		if (/*nconveyorExtREV*/ false)
 		{
 			//ActuatorsSet(SET_CONV_ACTUATOR_REV, ActPoint3);
 		}
@@ -763,4 +759,327 @@ void ArtConveyor1EType::ConvReturnStateAndTime()
 		_time = ARTTimerGetTime();
 		productDeltaPassTime = _time - productDeltaPassTime;
 	}
+}
+
+//---------------------------------1A Type-----------------------------------------------------------
+
+ArtConveyor1AType::ArtConveyor1AType(int id, const char name[])
+{
+	IHasCycleLogicHelper::addDevice(this);
+	m_id = id;
+}
+
+ArtConveyor1AType::ArtConveyor1AType(int id, const char name[], ConveyorType type, ArtDriver *point, ArtSensor *point2, ArtSensor *point3, ArtConveyor2Type *point4, int PassTime, int RunTimer, int SetedProdNumberCollect) : ArtConveyor1AType(id, name)
+{
+	conveyorType = type;
+	ActPoint = point;						   //указатель на драйвер
+	EnterSensPoint = point2;				   //указатель на входной сенсор
+	ExitSensPoint = point3;					   //указатель на выходной сенсор
+	ArtConveyor1AType::NextConvPoint = point4; //указатель на следующий конвейер
+	productPassTime = PassTime;
+	conveyorRunTimer = 0;
+	productEnterSensConvey = false;
+	productExitSensConvey = false;
+	productFctEnterConveyor = false;
+	conveyorState = ST_CONVEYOR_UNKNOWN;
+	ArtBasicConveyor::SetedProdNumberCollect = SetedProdNumberCollect;
+	CalcedNumProdInConveyor = 0;
+}
+
+void ArtConveyor1AType::doLogic()
+{
+	if (productFctEnterConveyor)
+	{
+		productEnterSensConvey = true;
+		productFctEnterConveyor = false;
+	}
+	else
+	{
+		productEnterSensConvey = EnterSensPoint->SensorState();
+	}
+
+	productExitSensConvey = ExitSensPoint->SensorState();
+
+	if (/*AccumConvOn*/true) //если конвейер накопительный
+	{
+		productContSensConvey = EnterSensPoint->SensorState();
+
+		if (/*(ActuatorsGet(GET_CONV_ACTUATOR_READY, ActPoint)) == 1*/true) 
+		{
+			if (false /*isManualMode*/)
+			{
+				conveyorState = ST_CONVEYOR_CONT_MANUAL;
+			}
+			else
+			{
+				if (productContSensConvey)
+				{
+					if (!fproductCounted)
+					{
+						CalcedNumProdInConveyor = CalcedNumProdInConveyor + 1;
+						fproductCounted = true;
+					}
+				}
+				else
+				{
+					fproductCounted = false;
+				}
+				if (CalcedNumProdInConveyor > SetedProdNumberCollect)
+				{
+					conveyorState = ST_CONVEYOR_ERROR;
+				}
+			}
+		}
+
+		switch (conveyorState)
+		{
+			case ST_CONVEYOR_UNKNOWN:
+			{
+				if (productEnterSensConvey || productExitSensConvey)
+				{
+					if (conveyorRunTimer != 0)
+					{
+						ActuatorsSet(SET_CONV_ACTUATOR_STOP, ActPoint); //!*! Change to actual function
+						conveyorRunTimer = 0;
+					}
+					else
+					{
+						if (conveyorRunTimer == 0)
+						{
+							conveyorRunTimer = ARTTimerGetTime();
+							ActuatorsSet(SET_CONV_ACTUATOR_FWD, ActPoint); //!*! Change to actual function
+							conveyorState = ST_CONVEYOR_FREE;
+						}
+						if (ARTTimerIsTimePassed(conveyorRunTimer, productPassTime, 99000))
+						{
+							ActuatorsSet(SET_CONV_ACTUATOR_STOP, ActPoint); //!*! Change to actual function
+							conveyorRunTimer = 0;
+							CalcedNumProdInConveyor = 0;
+							conveyorState = ST_CONVEYOR_FREE;
+						}
+					}
+				}
+				break;
+			}
+			case ST_CONVEYOR_FREE:
+			{
+				if (productEnterSensConvey)
+				{
+					conveyorRunTimer = ARTTimerGetTime();
+					ActuatorsSet(SET_CONV_ACTUATOR_FWD, ActPoint); //!*! Change to actual function
+				}
+				/*if (ARTTimerIsTimePassed(conveyorRunTimer, 90000, 99000))
+				{
+					ActuatorsSet(SET_CONV_ACTUATOR_STOP, ActPoint); //!*! Change to actual function
+					conveyorState = ST_CONVEYOR_ERROR;
+				}*/
+				if (CalcedNumProdInConveyor == SetedProdNumberCollect)
+				{
+					conveyorState = ST_CONVEYOR_BUSY;
+					conveyorRunTimer = 0;
+					pp_stack_ready = true;
+					//ArtConveyorSetStackReady(conveyorID);
+				}
+				else
+				{
+					if (ARTTimerIsTimePassed(conveyorRunTimer, productPassTime, 99000))
+					{
+						ActuatorsSet(SET_CONV_ACTUATOR_STOP, ActPoint); //!*! Change to actual function
+						conveyorRunTimer = 0;
+					}
+				}
+				break;
+			}
+			case ST_CONVEYOR_BUSY:
+			{
+				if (conveyorRunTimer == 0)
+				{
+					conveyorRunTimer = ARTTimerGetTime();
+					ActuatorsSet(SET_CONV_ACTUATOR_FWD, ActPoint); //!*! Change to actual function
+				}
+
+				if ((ARTTimerIsTimePassed(conveyorRunTimer, (int)(productPassTime * 1.2), 99000)))
+				{
+					ActuatorsSet(SET_CONV_ACTUATOR_STOP, ActPoint); //!*! Change to actual function
+				}
+
+				if (pp_stack_ready)
+				{
+					//ftook_product = false;
+					conveyorState = ST_CONVEYOR_STACK_READY;
+				}
+		
+
+				//pp_stack_ready = false;
+				break;
+			}
+
+			case ST_CONVEYOR_STACK_READY:
+			{
+				if (!productExitSensConvey)
+				{
+					ActuatorsSet(SET_CONV_ACTUATOR_FWD, ActPoint);
+				}
+
+				if (NextConvPoint->ConveyorGetReadyReceive())
+				{
+					ActuatorsSet(SET_CONV_ACTUATOR_FWD, ActPoint);
+					CalcedNumProdInConveyor = 0;
+					conveyorState = ST_CONVEYOR_FREE;
+					conveyorRunTimer = 0;
+				}
+			/*	if (ftook_product)
+				{
+
+					/*if (productContSensConvey || productExitSensConvey)
+					{
+						conveyorState = ST_CONVEYOR_ERROR;
+					}
+					else
+					{*/
+
+					/*CalcedNumProdInConveyor = 0;
+					ftook_product = false;
+					conveyorState = ST_CONVEYOR_FREE;
+					//}
+				}*/
+				conveyorRunTimer = ARTTimerGetTime();
+				if (ARTTimerIsTimePassed(conveyorRunTimer, (int)(productPassTime * 1.2), 99000))
+				{
+					ActuatorsSet(SET_CONV_ACTUATOR_STOP, ActPoint);
+				}
+				break;
+			}
+
+			case ST_CONVEYOR_ERROR:
+			{
+				ActuatorsSet(SET_CONV_ACTUATOR_STOP, ActPoint);
+
+				if (DigitalIn() & 8)
+				{
+					CalcedNumProdInConveyor = 0;
+
+					conveyorState = ST_CONVEYOR_UNKNOWN;
+				}
+				break;
+			}
+			default:
+				break;
+		}
+	}
+	else // если конвейер проходной
+	{
+		switch (conveyorState)
+		{
+		case ST_CONVEYOR_UNKNOWN:
+		{
+			if (ConveyorGetReadyReceive() == 1)
+			{
+				conveyorState = ST_CONVEYOR_FREE;
+			}
+			else
+			{
+				if (productExitSensConvey)
+				{
+					conveyorState = ST_CONVEYOR_BUSY;
+				}
+				else
+				{
+					conveyorState = ST_CONVEYOR_FREE;
+				}
+			}
+
+			break;
+		}
+		case ST_CONVEYOR_FREE:
+		{
+			if ((NextConvPoint->ConveyorGetReadyReceive() != 1) && (productExitSensConvey))
+			{
+				conveyorState = ST_CONVEYOR_BUSY;
+			}
+
+			if (productEnterSensConvey)
+			{
+				conveyorState = ST_CONVEYOR_PROD_FWD;
+			}
+			break;
+		}
+
+		case ST_CONVEYOR_PROD_FWD:
+		{
+			if (conveyorRunTimer == 0)
+			{
+				conveyorRunTimer = ARTTimerGetTime();
+				ActuatorsSet(SET_CONV_ACTUATOR_FWD, ActPoint); //!* !Change to actual function
+			}
+
+			if (productEnterSensConvey)
+			{
+				conveyorRunTimer = ARTTimerGetTime();
+			}
+
+			if (ARTTimerIsTimePassed(conveyorRunTimer, productPassTime, 99000))
+			{
+				ActuatorsSet(SET_CONV_ACTUATOR_STOP, ActPoint); //!* !Change to actual function
+				conveyorRunTimer = 0;
+				conveyorState = ST_CONVEYOR_FREE;
+			}
+			else
+			{
+				if ((NextConvPoint->ConveyorGetReadyReceive() != 1) && productExitSensConvey)
+				{
+					ActuatorsSet(SET_CONV_ACTUATOR_STOP, ActPoint); //!* !Change to actual function
+					conveyorRunTimer = 0;
+					conveyorState = ST_CONVEYOR_BUSY;
+				}
+			}
+			break;
+		}
+		case ST_CONVEYOR_BUSY:
+		{
+			if (NextConvPoint->ConveyorGetReadyReceive() == 1)
+			{
+				ConveyorSetProdEntering();
+				conveyorState = ST_CONVEYOR_PROD_FWD;
+				conveyorRunTimer = 0;
+			}
+			else
+			{
+				ActuatorsSet(SET_CONV_ACTUATOR_STOP, ActPoint); //!* !Change to actual function
+				conveyorRunTimer = 0;
+			}
+			break;
+		}
+		case ST_CONVEYOR_ERROR:
+		{
+			if (ActuatorsGet(GET_CONV_ACTUATOR_READY, ActPoint) == 1) //; !* !Change ARTActuatorsGet to actual function
+			{
+				conveyorState = ST_CONVEYOR_UNKNOWN;
+			}
+			break;
+		}
+		default:
+			break;
+		}
+	}
+}
+
+//---------------------------------ArtConveyor--------------------------------------------------
+
+int ArtConveyor::getName()
+{
+	return (0);
+}
+
+int ArtConveyor::getID()
+{
+	return (m_id);
+}
+
+void ArtConveyor::update()
+{
+}
+
+void ArtConveyor::doLogic()
+{
 }
