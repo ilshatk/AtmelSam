@@ -45,13 +45,15 @@ public:
     static void setPulse(int nOutputPort, bool bPulsedValue, int nPulseTimeMs); //DONE
     static void setOutputState(uint16_t commonstate);
     static bool isTimerPassed(int &nTimerId, int nTimeoutMs); //
-
     static void doIOLogic();
     static uint16_t getCommonOutputState();
-
+    static bool ExtSens();
 protected:
     ArtIOClass();
     ~ArtIOClass();
+
+
+   
 };
 
 #endif //ART_LOWLEVEL_CLASS_H

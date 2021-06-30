@@ -106,7 +106,7 @@ public:
 	int ActuatorsSet(int parameter, ArtDriver *pointer);
 	int ConveyorGetState();
 	int static ARTTimerGetTime();
-	void AccumConv(bool flag);
+	
 };
 
 class ArtConveyor2Type : public ArtBasicConveyor
@@ -165,5 +165,6 @@ public:
 	ArtConveyor1AType(int id, const char name[]);
 	ArtConveyor1AType(int id, const char name[], ConveyorType type, ArtDriver *ActPoint, ArtSensor *EnterSensPoint, ArtSensor *ExitSensPoint, ArtConveyor2Type *NextConvPoint, int PassTime, int RunTimer, int SetedProdNumberCollect);
 	void doLogic();
+	void AccumConv(bool flag);
 };
 #endif //ArtConv

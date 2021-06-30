@@ -142,15 +142,45 @@ bool ArtIOClass::isTimerPassed(int &nTimerId, int nTimeoutMs)
     }
     return false;
 }
-
+bool ArtIOClass::ExtSens()
+{
+    if (m_ptrEasyCat->BufferOut.Cust.InputsFromPreviousBarda == 16)
+    {
+        ArtIOClass::setOutputState(16, true);
+        return(true);
+        
+    }
+    else
+    {
+        ArtIOClass::setOutputState(16, false);
+        return(false);
+        
+    }
+}
 void ArtIOClass::doIOLogic()
 {
     if (m_ptrEasyCat != nullptr)
     {
         if (m_ptrEasyCat->MainTask() == ESM_OP)
         {
-            m_ptrEasyCat->BufferIn.Cust.Input1 = -10;
-            m_ptrEasyCat->BufferIn.Cust.Input2 = ArtIOClass::getCommonOutputState();
+            m_ptrEasyCat->BufferIn.Cust.OutState = ArtIOClass::getCommonOutputState();
+            m_ptrEasyCat->BufferIn.Cust.DigiIn = DigitalIn();
+            m_ptrEasyCat->BufferIn.Cust.OutputsForNextBarda = DigitalIn();
+
+            if (m_ptrEasyCat->BufferOut.Cust.InputsFromPreviousBarda == 16)
+            {
+            }
+            //-----------------Это сброс ошибки конвейера, нужно переделать, но пока так
+            if (m_ptrEasyCat->BufferOut.Cust.DigiOut == 32 || m_ptrEasyCat->BufferOut.Cust.DigiOut == 16 || m_ptrEasyCat->BufferOut.Cust.DigiOut == 8 || m_ptrEasyCat->BufferOut.Cust.DigiOut == 24 || m_ptrEasyCat->BufferOut.Cust.DigiOut == 48 || m_ptrEasyCat->BufferOut.Cust.DigiOut == 40 || m_ptrEasyCat->BufferOut.Cust.DigiOut == 56)
+            {
+                DigitalOut(m_ptrEasyCat->BufferOut.Cust.DigiOut);
+            }
+            else
+            {
+                ArtIOClass::setOutputState(4, false);
+                ArtIOClass::setOutputState(5, false);
+                ArtIOClass::setOutputState(6, false);
+            }
         }
     }
 

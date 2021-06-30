@@ -17,7 +17,9 @@ protected:
         nDriverFWDSpeed[3][4],
         nDriverREVSpeed[3][4],
         number,
-        OUT[20];
+        OUT[20],
+        FwdOut,
+        RevOut;
 
     bool bisDriverSet,
         bDriverManualMode,
@@ -48,7 +50,7 @@ public:
     };
 
     ArtDriver(int id, const char name[]);
-    ArtDriver(int id, const char name[], DriverType Driver_Type, int ReadySignalIN, bool Direction, int CurrentSpeed, int FWDSpeed, int value, int inout1, int inout2, int inout3, int inout4);
+    ArtDriver(int id, const char name[], DriverType Driver_Type, int ReadySignalIN,int FwdOut,int RevOut, bool Direction, int CurrentSpeed, int FWDSpeed, int value, int inout1, int inout2, int inout3, int inout4);
     void doLogic();
     bool bcheckFWDSpeedOutEnable();
     bool bcheckREVSpeedOutEnable();

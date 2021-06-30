@@ -22,13 +22,15 @@ void ArtDriver::update()
 {
 }
 
-ArtDriver::ArtDriver(int id, const char name[], DriverType Driver_Type, int ReadySignalIN, bool Direction, int CurrentSpeed, int FWDSpeed, int value, int inout1, int inout2, int inout3, int inout4) : ArtDriver(id, name)
+ArtDriver::ArtDriver(int id, const char name[], DriverType Driver_Type, int ReadySignalIN,int FwdOut,int RevOut, bool Direction, int CurrentSpeed, int FWDSpeed, int value, int inout1, int inout2, int inout3, int inout4) : ArtDriver(id, name)
 {
     nDriverType = Driver_Type;
     nDriverReadySignalIN = ReadySignalIN;
     bDriverDirection = Direction;
     nDriverCurrentSpeed = CurrentSpeed;
     m_id = id;
+    ArtDriver::FwdOut = FwdOut;
+    ArtDriver::RevOut = RevOut;
     nDriverFWDSpeed[value][0] = inout1; // TODO check to not initilize, if use only one $out
     nDriverFWDSpeed[value][1] = inout2;
     nDriverFWDSpeed[value][2] = inout3;
@@ -368,14 +370,14 @@ int ArtDriver::ConveySetDriverFWD(bool bParametr)
                 if (btmpVal)
                 {
                     OUT[nDriverFWDSpeed[i][j]] = btmpVal;
-                    ArtIOClass::setOutputState(m_id, true);
+                    ArtIOClass::setOutputState(FwdOut, true);
                 }
                 else
                 {
                     if (nDriverCurrentSpeed == i)
                     {
                         OUT[nDriverFWDSpeed[i][j]] = btmpVal;
-                        ArtIOClass::setOutputState(m_id, false);
+                        ArtIOClass::setOutputState(FwdOut, false);
                     }
                     else
                     {
@@ -415,7 +417,7 @@ int ArtDriver::ConveySetDriverREV(bool bParametr)
                 {
                     number = 0;
                     // OutState[m_id] = 1;
-                    ArtIOClass::setOutputState(m_id, true);
+                    ArtIOClass::setOutputState(RevOut, true);
                     for (int k = 0; k <= 5; k++)
                     {
                         //number += pow(2,k)*OutState[k];
@@ -429,7 +431,7 @@ int ArtDriver::ConveySetDriverREV(bool bParametr)
                     {
                         number = 0;
                         //OutState[m_id] = 0;
-                        ArtIOClass::setOutputState(m_id, false);
+                        ArtIOClass::setOutputState(RevOut, false);
                         for (int k = 0; k <= 5; k++)
                         {
                             // number += pow(2,k)*OutState[k];

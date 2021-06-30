@@ -220,7 +220,7 @@ void ArtCylinder::ARTCylinderOpen()
    }
    else
    {
-      ArtIOClass::setOutputState(/*выход на котором открытие цилиндра*/ cylCloseOut, false);
+      //ArtIOClass::setOutputState(/*выход на котором открытие цилиндра*/ cylCloseOut, false);
       ArtIOClass::setOutputState(/*выход на котором открытие цилиндра*/ cylOpenOut, true);
    }
    isCylinderActed = !(cylCloseIn->SensorState());
@@ -230,12 +230,13 @@ void ArtCylinder::ARTCylinderClose()
 {
    if (distrType == BI_STABLE)
    {
-      ArtIOClass::setPulse(cylCloseOut, true, 30);
+      ArtIOClass::setOutputState(cylOpenOut, false);
+      ArtIOClass::setOutputState(cylCloseOut, true);
    }
    else
    {
       ArtIOClass::setOutputState(cylOpenOut, false);
-      ArtIOClass::setOutputState(cylCloseOut, true);
+      //ArtIOClass::setOutputState(cylCloseOut, true);
    }
    isCylinderActed = cylCloseIn->SensorState();
 }

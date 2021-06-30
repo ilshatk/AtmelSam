@@ -10,7 +10,8 @@ protected:
 	bool isON,
 		isFE,
 		isRE,
-		value;
+		value,
+		SensorExternal;
 	int sensorTimerFE,
 		sensorTimerRE,
 		sensorType,
@@ -29,7 +30,7 @@ public:
 	int input1,
 		m_id;
 	ArtSensor(int id, const char name[]);
-	ArtSensor(int id, const char name[], int SensorInput, SensorType type, int delayRe, int delayFe);
+	ArtSensor(int id, const char name[], int SensorInput, SensorType type, int delayRe, int delayFe, bool SensorExternal);
 	//~ArtSensor(){};
 	int update();
 	bool SensorState();

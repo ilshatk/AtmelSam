@@ -195,7 +195,7 @@ int ArtBasicConveyor::ARTTimerGetTime()
 	return (curTime);
 }
 
-void ArtBasicConveyor::AccumConv(bool flag)
+void ArtConveyor1AType::AccumConv(bool flag)
 {
 	AccumConvOn = flag;
 }
@@ -800,7 +800,7 @@ void ArtConveyor1AType::doLogic()
 
 	productExitSensConvey = ExitSensPoint->SensorState();
 
-	if (/*AccumConvOn*/true) //если конвейер накопительный
+	if (AccumConvOn) //если конвейер накопительный
 	{
 		productContSensConvey = EnterSensPoint->SensorState();
 
