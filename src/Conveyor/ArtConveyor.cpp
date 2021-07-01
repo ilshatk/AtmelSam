@@ -207,7 +207,7 @@ ArtConveyor1Type::ArtConveyor1Type(int id, const char name[])
 	m_id = id;
 }
 
-ArtConveyor1Type::ArtConveyor1Type(int id, const char name[], ConveyorType type, ArtDriver *point, ArtSensor *point2, ArtSensor *point3, ArtConveyor2Type *point4, int PassTime, int RunTimer) : ArtConveyor1Type(id, name)
+ArtConveyor1Type::ArtConveyor1Type(int id, const char name[], ConveyorType type, ArtDriver *point, ArtSensor *point2, ArtSensor *point3, ArtBasicConveyor *point4, int PassTime, int RunTimer) : ArtConveyor1Type(id, name)
 {
 	conveyorType = type;
 	ActPoint = point;		 //указатель на драйвер
@@ -227,22 +227,29 @@ ArtConveyor1Type::ArtConveyor1Type(int id, const char name[], ConveyorType type,
 void ArtConveyor1Type::doLogic()
 {
 	//int retVal;
-	/*if (ActuatorsGet(GET_CONV_ACTUATOR_READY,ActPoint) == 1)
+	if (ActuatorsGet(GET_CONV_ACTUATOR_READY,ActPoint) == 1)
 	{
-		conveyorState = ST_CONVEYOR_ERROR;
-	}*/
-	if (productFctEnterConveyor)
-	{
-		productEnterSensConvey = true;
-		productFctEnterConveyor = false;
+		ArtIOClass::Error(0);
 	}
 	else
 	{
-		productEnterSensConvey = EnterSensPoint->SensorState();
+		conveyorState = ST_CONVEYOR_ERROR;
+		ArtIOClass::Error(m_id);
 	}
+		
 
-	productExitSensConvey = ExitSensPoint->SensorState();
+		if (productFctEnterConveyor)
+		{
+			productEnterSensConvey = true;
+			productFctEnterConveyor = false;
+		}
+		else
+		{
+			productEnterSensConvey = EnterSensPoint->SensorState();
+		}
 
+		productExitSensConvey = ExitSensPoint->SensorState();
+	
 	switch (conveyorState)
 	{
 	case ST_CONVEYOR_UNKNOWN:
@@ -328,6 +335,7 @@ void ArtConveyor1Type::doLogic()
 	{
 		if (ActuatorsGet(GET_CONV_ACTUATOR_READY, ActPoint) == 1) //; !* !Change ARTActuatorsGet to actual function
 		{
+
 			conveyorState = ST_CONVEYOR_UNKNOWN;
 		}
 		break;
@@ -558,7 +566,7 @@ ArtConveyor1EType::ArtConveyor1EType(int id, const char name[])
 	m_id = id;
 }
 
-ArtConveyor1EType::ArtConveyor1EType(int id, const char name[], ConveyorType type, ArtDriver *Act3, ArtSensor *Sens3_Enter, ArtSensor *Sens3_Exit, ArtConveyor1Type *Next3_Conv, int PassTime, int RunTimer) : ArtConveyor1EType(id, name)
+ArtConveyor1EType::ArtConveyor1EType(int id, const char name[], ConveyorType type, ArtDriver *Act3, ArtSensor *Sens3_Enter, ArtSensor *Sens3_Exit, ArtBasicConveyor *Next3_Conv, int PassTime, int RunTimer) : ArtConveyor1EType(id, name)
 {
 	conveyorType = type;
 	ActPoint3 = Act3;			   //указатель на драйвер
@@ -769,7 +777,7 @@ ArtConveyor1AType::ArtConveyor1AType(int id, const char name[])
 	m_id = id;
 }
 
-ArtConveyor1AType::ArtConveyor1AType(int id, const char name[], ConveyorType type, ArtDriver *point, ArtSensor *point2, ArtSensor *point3, ArtConveyor2Type *point4, int PassTime, int RunTimer, int SetedProdNumberCollect) : ArtConveyor1AType(id, name)
+ArtConveyor1AType::ArtConveyor1AType(int id, const char name[], ConveyorType type, ArtDriver *point, ArtSensor *point2, ArtSensor *point3, ArtBasicConveyor *point4, int PassTime, int RunTimer, int SetedProdNumberCollect) : ArtConveyor1AType(id, name)
 {
 	conveyorType = type;
 	ActPoint = point;						   //указатель на драйвер

@@ -142,21 +142,26 @@ bool ArtIOClass::isTimerPassed(int &nTimerId, int nTimeoutMs)
     }
     return false;
 }
+
 bool ArtIOClass::ExtSens()
 {
     if (m_ptrEasyCat->BufferOut.Cust.InputsFromPreviousBarda == 16)
     {
         ArtIOClass::setOutputState(16, true);
         return(true);
-        
     }
     else
     {
         ArtIOClass::setOutputState(16, false);
         return(false);
-        
     }
 }
+
+void ArtIOClass::Error(uint8_t error)
+{
+    m_ptrEasyCat->BufferIn.Cust.OutFault = error;
+}
+
 void ArtIOClass::doIOLogic()
 {
     if (m_ptrEasyCat != nullptr)

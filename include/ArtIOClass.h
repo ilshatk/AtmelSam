@@ -48,6 +48,7 @@ public:
     static void doIOLogic();
     static uint16_t getCommonOutputState();
     static bool ExtSens();
+    static void Error(uint8_t error);
 protected:
     ArtIOClass();
     ~ArtIOClass();

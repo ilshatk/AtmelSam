@@ -67,9 +67,9 @@ void setup()
   ArtDriver M5DRV(10, ("M4DRV"), ArtDriver::DRIVER_TYPE_1, 10, 2, 2, true, 0, 2, 0, 2, 0, 0, 0);//Драйвер на M5
   ArtDriver M6DRV(11, ("M4DRV"), ArtDriver::DRIVER_TYPE_1, 11, 3, 3, true, 0, 2, 0, 2, 0, 0, 0);//Драйвер на M6
 
-  ArtConveyor2Type Conv3(8, ("Conveyor3"), ArtConveyor2Type::CONVEYOR_TYPE_2, &M5DRV, &B6, &M5End, 4000, 4, 9000);
-  ArtConveyor1Type ConvM5(9, ("ConvM4"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M4DRV, &B5, &B6, &Conv3, 1000, 0);
-  ArtConveyor1Type ConvM4(9, ("ConvM4"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M4DRV, &B5, &B6, &ConvM5, 1000, 0);
+  ArtConveyor2Type ConvM6(8, ("Conveyor3"), ArtConveyor2Type::CONVEYOR_TYPE_2, &M5DRV, &B6, &M5End, 4000, 4, 9000);
+  ArtConveyor1Type ConvM5(9, ("ConvM4"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M4DRV, &B5, &B6, &ConvM6, 1000, 0);
+  ArtConveyor1Type ConvM4(9, ("ConvM4"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M4DRV, &B5, &B6, &ConvM5, 1000,0);
 
   
   //ArtConveyor1AType Conv2(9, ("Conveyor2"), ArtConveyor1Type::CONVEYOR_TYPE_1, &Act2, &Sens1, &Sens2, &Conv3, 1000, 0,3);
@@ -150,7 +150,7 @@ void setup()
 
       if (EASYCAT.BufferOut.Cust.Output1 == 1)
       {
-        Conv2.AccumConv(true);
+        //Conv2.AccumConv(true);
       }
      
       AnaInChannel++;
