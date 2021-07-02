@@ -18,8 +18,8 @@ protected:
 		sensorDelayRE,
 		sensorDelayFE,
 		delayRe,
-		delayFe,
-		SensorInput;
+		delayFe;
+		
 
 public:
 	enum SensorType
@@ -28,7 +28,8 @@ public:
 		SENSOR_TYPE_INVERSE
 	};
 	int input1,
-		m_id;
+		m_id,
+		SensorInput;
 	ArtSensor(int id, const char name[]);
 	ArtSensor(int id, const char name[], int SensorInput, SensorType type, int delayRe, int delayFe, bool SensorExternal);
 	//~ArtSensor(){};

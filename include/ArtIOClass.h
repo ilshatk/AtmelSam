@@ -47,7 +47,7 @@ public:
     static bool isTimerPassed(int &nTimerId, int nTimeoutMs); //
     static void doIOLogic();
     static uint16_t getCommonOutputState();
-    static bool ExtSens();
+    static bool ExtSens(uint16_t sensinput);
     static void Error(uint8_t error);
     static bool readySignalFromNext();
 protected:

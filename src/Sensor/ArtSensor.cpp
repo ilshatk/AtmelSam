@@ -57,7 +57,7 @@ bool ArtSensor::SensorState()
 	}
 	else
 	{
-		if (ArtIOClass::ExtSens() == true)
+		if (ArtIOClass::ExtSens(SensorInput) == true)
 		{
 			return (true);
 		}

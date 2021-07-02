@@ -143,9 +143,9 @@ bool ArtIOClass::isTimerPassed(int &nTimerId, int nTimeoutMs)
     return false;
 }
 
-bool ArtIOClass::ExtSens()
+bool ArtIOClass::ExtSens(uint16_t sensinput)
 {
-    if (m_ptrEasyCat->BufferOut.Cust.InputsFromPreviousBarda == 16)
+    if (m_ptrEasyCat->BufferOut.Cust.SensSignalFromPrevBarda  == (1<<(sensinput-1)) )
     {
         ArtIOClass::setOutputState(16, true);
         return(true);
@@ -159,7 +159,7 @@ bool ArtIOClass::ExtSens()
 
 bool ArtIOClass::readySignalFromNext()
 {
-    if(m_ptrEasyCat->BufferOut.Cust.ConvStateFromNextBarda)
+    if(m_ptrEasyCat->BufferOut.Cust.NextConvReadySignal & 1 == 1)
     {
         return(true);
     }
@@ -182,11 +182,9 @@ void ArtIOClass::doIOLogic()
         {
             m_ptrEasyCat->BufferIn.Cust.OutState = ArtIOClass::getCommonOutputState();
             m_ptrEasyCat->BufferIn.Cust.DigiIn = DigitalIn();
-            m_ptrEasyCat->BufferIn.Cust.OutputsForNextBarda = DigitalIn();
+            m_ptrEasyCat->BufferIn.Cust.SensSignalOnNextBarda = DigitalIn();
 
-            if (m_ptrEasyCat->BufferOut.Cust.InputsFromPreviousBarda == 16)
-            {
-            }
+
             //-----------------Это сброс ошибки конвейера, нужно переделать, но пока так
             if (m_ptrEasyCat->BufferOut.Cust.DigiOut == 32 || m_ptrEasyCat->BufferOut.Cust.DigiOut == 16 || m_ptrEasyCat->BufferOut.Cust.DigiOut == 8 || m_ptrEasyCat->BufferOut.Cust.DigiOut == 24 || m_ptrEasyCat->BufferOut.Cust.DigiOut == 48 || m_ptrEasyCat->BufferOut.Cust.DigiOut == 40 || m_ptrEasyCat->BufferOut.Cust.DigiOut == 56)
             {
