@@ -45,32 +45,56 @@ void setup()
       delay(300);                      //
     }                                  //
   }
-
   // DogTimer = millis();                      // load the watchdog timer
   PORT->Group[0].OUTSET.reg = WDOG; //этот выход включает пин OUT_EN на драйвере перифирии ISO8200B
 
+
+  /*/----setup for A31---------------------------------------------------------------------------------------
+  ArtSensor AfterSiat(1, ("B1"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false); // Фотодатчик после Сиата 1 (B1) (тип R)
+  ArtSensor M1End(2, ("B2"), 2, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false); // Фотодатчик на конце М1 (B2) (тип R)
+  ArtSensor M2End(3, ("B3"), 2, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false); // Фотодатчик на конце М2 (B3) (тип R)
+  ArtSensor M3Perepoln(3, ("B4"), 3, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false); // Фотодатчик переполнения М3 (B4) (тип R)
+  ArtSensor M3End(4, ("B5"), 4, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false); // Фотодатчик на конце М3 (B5) (тип R)
+  
+  ArtDriver M1DRV(5, ("M1DRV"), ArtDriver::DRIVER_TYPE_1, 9, 1, 1, true, 0, 2, 0, 2, 0, 0, 0);//Драйвер на M1
+  ArtDriver M2DRV(10, ("M2DRV"), ArtDriver::DRIVER_TYPE_1, 10, 2, 2, true, 0, 2, 0, 2, 0, 0, 0);//Драйвер на M2
+  ArtDriver M3DRV(11, ("M3DRV"), ArtDriver::DRIVER_TYPE_1, 11, 3, 3, true, 0, 2, 0, 2, 0, 0, 0);//Драйвер на M3
+
+  ArtConveyor1AType ConvM3(12, ("ConvM3"), ArtConveyor1AType::CONVEYOR_TYPE_1_EXTERNAL_BARDA, &M3DRV, &M2End, &M3End, false, 4000, 4,4);
+  //ArtConveyor1Type ConvM2(13, ("ConvM2"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M4DRV, &B5, &B6, &ConvM6, 1000, 0);
+  //ArtConveyor1Type ConvM1(14, ("ConvM1"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M4DRV, &B5, &B6, &ConvM5, 1000,0);
+  //----setup for A31---------------------------------------------------------------------------------------
+*/
   //----setup for A32---------------------------------------------------------------------------------------
+  //Эта A32 барда берет сигнал с датчика B5 с предыдущей барды поэтому в ArtIOClass распарсиваются входы 
+  //с предыдущей, также там добавлен сброс ошибки драйвера
+ 
   ArtSensor B5(1, ("B6"), 16, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,true); // Фотодатчик на пушере М4 (B6) (тип BGS)
-  ArtSensor B6(1, ("B6"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false); // Фотодатчик на пушере М4 (B6) (тип BGS)
-  ArtSensor PushHome(2, ("B7"), 2, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false); // Датчик пушер 1 дома (B7) (тип геркон)
-  ArtSensor PushNoHome(3, ("B8"), 3, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false); // Датчик пушер 1 НЕ дома (B8) (тип геркон)
-  ArtSensor M5Perepoln(4, ("B9"), 4, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false); // Фотодатчик переполнения М5 (B9) (тип R)
-  ArtSensor M5End(5, ("B10"), 5, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false); // Фотодатчик на конце М5 (B10) (тип R)
-  ArtSensor M6Start(6, ("B11"), 6, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false); // Фотодатчик на начале М6 пикпойнт (B11) (тип BGS)
-  ArtSensor M6Start2(7, ("B12"), 7, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false); // Фотодатчик на начале M6 пикпойнт (B12) (тип BGS)
-  ArtSensor M6End(8, ("B13"), 8, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false); // Фотодатчик на конце М6 пикпойнт (B13) (тип BGS)
+  ArtSensor B6(2, ("B6"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false); // Фотодатчик на пушере М4 (B6) (тип BGS)
+  ArtSensor PushHome(3, ("B7"), 2, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false); // Датчик пушер 1 дома (B7) (тип геркон)
+  ArtSensor PushNoHome(4, ("B8"), 3, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false); // Датчик пушер 1 НЕ дома (B8) (тип геркон)
+  ArtSensor M5Perepoln(5, ("B9"), 4, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false); // Фотодатчик переполнения М5 (B9) (тип R)
+  ArtSensor M5End(6, ("B10"), 5, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false); // Фотодатчик на конце М5 (B10) (тип R)
+  ArtSensor M6Start(7, ("B11"), 6, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false); // Фотодатчик на начале М6 пикпойнт (B11) (тип BGS)
+  ArtSensor M6Start2(8, ("B12"), 7, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false); // Фотодатчик на начале M6 пикпойнт (B12) (тип BGS)
+  ArtSensor M6End(9, ("B13"), 8, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false); // Фотодатчик на конце М6 пикпойнт (B13) (тип BGS)
 
   ArtCylinder Clamp1(12, ("SV1"), 10, 10, false, true, ArtCylinder::MONO_STABLE,
                      7, 7, &PushNoHome, &PushHome); //Пушер SV1
 
-  ArtDriver M4DRV(9, ("M4DRV"), ArtDriver::DRIVER_TYPE_1, 9, 1, 1, true, 0, 2, 0, 2, 0, 0, 0);//Драйвер на M4
-  ArtDriver M5DRV(10, ("M4DRV"), ArtDriver::DRIVER_TYPE_1, 10, 2, 2, true, 0, 2, 0, 2, 0, 0, 0);//Драйвер на M5
-  ArtDriver M6DRV(11, ("M4DRV"), ArtDriver::DRIVER_TYPE_1, 11, 3, 3, true, 0, 2, 0, 2, 0, 0, 0);//Драйвер на M6
+  ArtDriver M4DRV(10, ("M4DRV"), ArtDriver::DRIVER_TYPE_1, 9, 1, 1, true, 0, 2, 0, 2, 0, 0, 0);//Драйвер на M4
+  ArtDriver M5DRV(11, ("M4DRV"), ArtDriver::DRIVER_TYPE_1, 10, 2, 2, true, 0, 2, 0, 2, 0, 0, 0);//Драйвер на M5
+  ArtDriver M6DRV(12, ("M4DRV"), ArtDriver::DRIVER_TYPE_1, 11, 3, 3, true, 0, 2, 0, 2, 0, 0, 0);//Драйвер на M6
 
-  ArtConveyor2Type ConvM6(8, ("Conveyor3"), ArtConveyor2Type::CONVEYOR_TYPE_2, &M5DRV, &B6, &M5End, 4000, 4, 9000);
-  ArtConveyor1Type ConvM5(9, ("ConvM4"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M4DRV, &B5, &B6, &ConvM6, 1000, 0);
-  ArtConveyor1Type ConvM4(9, ("ConvM4"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M4DRV, &B5, &B6, &ConvM5, 1000,0);
+  ArtConveyor2Type ConvM6(13, ("Conveyor3"), ArtConveyor2Type::CONVEYOR_TYPE_2, &M6DRV, &B6, &M5End, 4000, 4, 9000);
+  ArtConveyor1Type ConvM5(14, ("ConvM4"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M5DRV, &B5, &B6, &ConvM6, 1000, 0);
+  ArtConveyor1Type ConvM4(15, ("ConvM4"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M4DRV, &B5, &B6, &ConvM5, 1000,0);
 
+  //----setup for A32---------------------------------------------------------------------------------------
+  
+  
+  
+  
   
   //ArtConveyor1AType Conv2(9, ("Conveyor2"), ArtConveyor1Type::CONVEYOR_TYPE_1, &Act2, &Sens1, &Sens2, &Conv3, 1000, 0,3);
 
@@ -152,7 +176,7 @@ void setup()
       {
         //Conv2.AccumConv(true);
       }
-     
+
       AnaInChannel++;
       AnaInChannel &= 0x03;
 
@@ -164,6 +188,7 @@ void setup()
       PORT->Group[1].OUTCLR.reg = LED;
       PORT->Group[0].OUTCLR.reg = WDOG;
     }
+    EASYCAT.BufferIn.Cust.ConvState = ConvM4.ConveyorGetReadyReceive() | 1 << 3;
   }
 }
 

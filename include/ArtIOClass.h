@@ -49,12 +49,11 @@ public:
     static uint16_t getCommonOutputState();
     static bool ExtSens();
     static void Error(uint8_t error);
+    static bool readySignalFromNext();
 protected:
     ArtIOClass();
     ~ArtIOClass();
 
-
-   
 };
 
 #endif //ART_LOWLEVEL_CLASS_H

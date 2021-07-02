@@ -470,7 +470,7 @@ int ArtDriver::ARTDriverGetREADY()
     }
     else
     {
-        if ((DigitalIn() & int(pow(2, nDriverReadySignalIN))) == pow(2, nDriverReadySignalIN)) //$IN[nDriverReadySignalIN[DriverID]])//вход барды
+        if (ArtIOClass::getInputState(nDriverReadySignalIN)) //$IN[nDriverReadySignalIN[DriverID]])//вход барды
         {
             return (1);
         }

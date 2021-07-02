@@ -57,7 +57,8 @@ public:
 		CONVEYOR_TYPE_2,
 		CONVEYOR_TYPE_3,
 		CONVEYOR_TYPE_4,
-		CONVEYOR_TYPE_1A
+		CONVEYOR_TYPE_1A,
+		CONVEYOR_TYPE_1_EXTERNAL_BARDA
 	};
 
 	enum ConveyorState
@@ -154,7 +155,7 @@ public:
 class ArtConveyor1AType : public ArtBasicConveyor
 {
 private:
-	bool fproductCounted, productContSensConvey,pp_stack_ready;
+	bool fproductCounted, productContSensConvey,pp_stack_ready,readySignalFromNextBarda;
 
 public:
 	int productPassTime;
@@ -164,6 +165,7 @@ public:
 	ArtBasicConveyor *NextConvPoint;
 	ArtConveyor1AType(int id, const char name[]);
 	ArtConveyor1AType(int id, const char name[], ConveyorType type, ArtDriver *ActPoint, ArtSensor *EnterSensPoint, ArtSensor *ExitSensPoint, ArtBasicConveyor *NextConvPoint, int PassTime, int RunTimer, int SetedProdNumberCollect);
+	ArtConveyor1AType(int id, const char name[], ConveyorType type, ArtDriver *ActPoint, ArtSensor *EnterSensPoint, ArtSensor *ExitSensPoint,bool readySignalFromNextBarda, int PassTime, int RunTimer, int SetedProdNumberCollect);
 	void doLogic();
 	void AccumConv(bool flag);
 };

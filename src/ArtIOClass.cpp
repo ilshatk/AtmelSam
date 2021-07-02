@@ -157,6 +157,18 @@ bool ArtIOClass::ExtSens()
     }
 }
 
+bool ArtIOClass::readySignalFromNext()
+{
+    if(m_ptrEasyCat->BufferOut.Cust.ConvStateFromNextBarda)
+    {
+        return(true);
+    }
+    else
+    {
+        return(false);
+    }
+}
+
 void ArtIOClass::Error(uint8_t error)
 {
     m_ptrEasyCat->BufferIn.Cust.OutFault = error;
