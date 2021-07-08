@@ -32,11 +32,12 @@ ArtCylinder::ArtCylinder(int id, const char name[], int CloseTime, int OpenTime,
 }
 
 void ArtCylinder::doLogic()
-{
+{  
+   isCylinderActed = ArtIOClass::getOutputState(cylOpenOut);
    isCylinderOpened = cylOpenIn->SensorState();
    isCylinderClosed = cylCloseIn->SensorState();
 
-   if (isCylinderOpened && isCylinderClosed)
+   if (!isCylinderOpened && !isCylinderClosed)
    {
       /*вывод ошибки*/
    }
@@ -220,8 +221,8 @@ void ArtCylinder::ARTCylinderOpen()
    }
    else
    {
-      //ArtIOClass::setOutputState(/*выход на котором открытие цилиндра*/ cylCloseOut, false);
-      ArtIOClass::setOutputState(/*выход на котором открытие цилиндра*/ cylOpenOut, true);
+      //ArtIOClass::setOutputState(cylCloseOut, false);
+      ArtIOClass::setOutputState( cylOpenOut, true);
    }
    isCylinderActed = !(cylCloseIn->SensorState());
 }

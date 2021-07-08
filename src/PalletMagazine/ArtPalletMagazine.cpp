@@ -313,7 +313,7 @@ void PalletMagazine::DISP_MAIN_CYCLE_SPS()
                             }
                             else
                             {
-                                DISPGOTOP();
+                                DISPGOTOP();//проверить
                             }
                         }
                     }
