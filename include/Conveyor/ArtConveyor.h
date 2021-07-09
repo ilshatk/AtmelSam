@@ -116,10 +116,11 @@ public:
 	bool productContSensConvey, fproductCounted, pp_stack_ready, ftook_product;
 	int productInSensAllowTime,
 		productPassTime;
-	ArtSensor *ExitSensPoint2;	//указатель на входной сенсор
-	ArtSensor *EnterSensPoint2; //указатель на выходной сенсор
+	ArtSensor *ExitSensPtr;	//указатель на входной сенсор
+	ArtSensor *EnterSensPtr; //указатель на выходной сенсор
+	ArtSensor *CountSensPtr; //указатель на выходной сенсор
 	ArtConveyor2Type(int id, const char name[]);
-	ArtConveyor2Type(int id, const char name[], ConveyorType type, ArtDriver *ActPoint2, ArtSensor *EnterSensPoint2, ArtSensor *ExitSensPoint2, int PassTime, int NumProdInConveyor, int InSensAllowTime);
+	ArtConveyor2Type(int id, const char name[], ConveyorType type, ArtDriver *ActPoint2, ArtSensor *EnterSensPtr,ArtSensor *CountSensPtr, ArtSensor *ExitSensPtr, int PassTime, int NumProdInConveyor, int InSensAllowTime);
 	void doLogic();
 	void ArtConveyorTookProduct();
 };

@@ -51,6 +51,9 @@ public:
     ArtCylinder(int id, const char name[], int CloseTime, int OpenTime, bool TimeoutControl,
                 bool CylinderSet, distType type, int cylOpenOut, int cylCloseOut,
                 ArtSensor *cylOpenIn, ArtSensor *cylCloseIn);
+    ArtCylinder(int id, const char name[], int OpenTime, bool TimeoutControl,
+                bool CylinderSet, distType type, int cylOpenOut,
+                ArtSensor *cylOpenIn, ArtSensor *cylCloseIn);
     void doLogic();
     void update();
     int getName();

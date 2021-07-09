@@ -352,15 +352,16 @@ ArtConveyor2Type::ArtConveyor2Type(int id, const char name[])
 	IHasCycleLogicHelper::addDevice(this);
 }
 
-ArtConveyor2Type::ArtConveyor2Type(int id, const char name[], ConveyorType type, ArtDriver *act2, ArtSensor *entersens, ArtSensor *exitsens, int PassTime, int NumProdInConveyor, int InSensAllowTime) : ArtConveyor2Type(id, name)
+ArtConveyor2Type::ArtConveyor2Type(int id, const char name[], ConveyorType type, ArtDriver *act2, ArtSensor *EnterSensPtr, ArtSensor *CountSensPtr, ArtSensor *ExitSensPtr, int PassTime, int NumProdInConveyor, int InSensAllowTime) : ArtConveyor2Type(id, name)
 {
 	productPassTime = PassTime;
 	productInSensAllowTime = InSensAllowTime;
 	m_id = id;
 	conveyorType = type;
 	ActPoint2 = act2;			 //указатель на драйвер
-	EnterSensPoint2 = entersens; //указатель на входной сенсор
-	ExitSensPoint2 = exitsens;	 //указатель на выходной(считающий) сенсор
+	ArtConveyor2Type::EnterSensPtr = EnterSensPtr; //указатель на входной сенсор
+	ArtConveyor2Type::ExitSensPtr = ExitSensPtr;
+	ArtConveyor2Type::CountSensPtr = CountSensPtr; //указатель на выходной(считающий) сенсор
 	conveyorRunTimer = 0;
 	productEnterSensConvey = false;
 	productExitSensConvey = false;
@@ -385,11 +386,11 @@ void ArtConveyor2Type::doLogic()
 	}
 	else
 	{
-		productEnterSensConvey = EnterSensPoint2->SensorState();
+		productEnterSensConvey = EnterSensPtr->SensorState();
 	}
 
-	productExitSensConvey = ExitSensPoint2->SensorState();
-	productContSensConvey = ExitSensPoint2->SensorState();
+	productExitSensConvey = ExitSensPtr->SensorState();
+	productContSensConvey = CountSensPtr->SensorState();
 
 	if ((ActuatorsGet(GET_CONV_ACTUATOR_READY, ActPoint2)) == 1) // ; TODO: Change ARTActuatorsGet to actual function
 	{
