@@ -9,6 +9,7 @@
 #include "interface\IHasCycleLogic.h"
 #include "ArtIOClass.h"
 #include "PalletMagazine\ArtPalletMagazine.h"
+#include "Pusher\ArtPusher.h"
 #include "EasyCAT\EasyCAT.h" // EasyCAT library to interface the LAN9252
 #include <SPI.h>
 EasyCAT EASYCAT; // EasyCAT istantiation
@@ -155,7 +156,7 @@ void setup()
   ArtConveyor1Type ConvM14(15, ("ConvM14"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M14DRV, &OnPusherM13, &M14End, &ConvM15, 8000,0);
   ArtConveyor1Type ConvM13(15, ("ConvM13"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M13DRV, &AfterSiatB28, &OnPusherM13, &ConvM14, 8000,0);
   //----setup for A35---------------------------------------------------------------------------------------
- 
+ */
   //----setup for A36---------------------------------------------------------------------------------------
   ArtSensor AfterSiatB39(1, ("B39"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false); // Фотодатчик после Сиата 4 (B39) (тип R)
   ArtSensor M17End(5, ("B40"), 2, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false); // Фотодатчик на конце М17 (B40) (тип R)
@@ -168,8 +169,6 @@ void setup()
   ArtSensor M21Start(9, ("B47"), 9, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false); // Фотодатчик на начале М21 пикпойнт (B47) (тип BGS)
   ArtSensor M21Count(10, ("B48"), 10, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false); // Фотодатчик на начале M21 пикпойнт (B48) (тип BGS)
   ArtSensor M21End(11, ("B49"), 11, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false); // Фотодатчик на конце М21 пикпойнт (B49) (тип BGS)
-  
-  ArtCylinder PusherSV4(17, ("SV4"), 10, false, true, ArtCylinder::MONO_STABLE, 11,  &PusherNOHomeB46, &PusherHomeB45); //Пушер SV1
 
   ArtDriver M17DRV(12, ("M17DRV"), ArtDriver::DRIVER_TYPE_1, 12, 1, 1, true, 0, 2, 0, 2, 0, 0, 0);//Драйвер на M17
   ArtDriver M18DRV(13, ("M18DRV"), ArtDriver::DRIVER_TYPE_1, 13, 2, 2, true, 0, 2, 0, 2, 0, 0, 0);//Драйвер на M18
@@ -182,9 +181,12 @@ void setup()
   ArtConveyor1AType ConvM19(15, ("ConvM14"), ArtConveyor1Type::CONVEYOR_TYPE_1A, &M19DRV, &M18End, &M19End, &ConvM20, 8000,0,3);
   ArtConveyor1Type ConvM18(15, ("ConvM13"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M18DRV, &M17End, &M18End, &ConvM19, 8000,0);
   ArtConveyor1Type ConvM17(15, ("ConvM13"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M17DRV, &AfterSiatB39, &M17End, &ConvM18, 8000,0);
+  
+  ArtCylinder PusherSV4(17, ("SV4"), 10, false, true, ArtCylinder::MONO_STABLE, 11,  &PusherNOHomeB46, &PusherHomeB45); //Пушер SV1
+  ArtPusher PusherSV4(18,("SV4"),&OnPusherM20,&ConvM20,&ConvM21,&PusherSV4);
   //----setup for A36---------------------------------------------------------------------------------------
-  */
-
+  
+/*
   //----setup for Dispenser---------------------------------------------------------------------------------------
   ArtSensor PallONConvey(1, ("PallONConvey"), 10, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false);
   ArtSensor PalletsInStack(2, ("PalletsInStack"), 9, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false);
@@ -214,7 +216,7 @@ void setup()
   PalletMagazine Dispenser(15, ("Dispenser"), &Clamp1, &Clamp2, &TOPCylinder,
                            &BOTCylinder, 12, &PallONConvey, &PalletsInStack, 11, 16);
 //----setup for Dispenser---------------------------------------------------------------------------------------
-
+*/
   while (1)
   {
     if (EASYCAT.MainTask() == ESM_OP) // execute the EasyCAT task
