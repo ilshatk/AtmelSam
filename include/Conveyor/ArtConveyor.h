@@ -113,7 +113,7 @@ public:
 class ArtConveyor2Type : public ArtBasicConveyor
 {
 public:
-	bool productContSensConvey, fproductCounted, pp_stack_ready, ftook_product;
+	bool productCountSensConvey, fproductCounted, pp_stack_ready, ftook_product;
 	int productInSensAllowTime,
 		productPassTime;
 	ArtSensor *ExitSensPtr;	//указатель на входной сенсор
@@ -156,7 +156,7 @@ public:
 class ArtConveyor1AType : public ArtBasicConveyor
 {
 private:
-	bool fproductCounted, productContSensConvey,pp_stack_ready,readySignalFromNextBarda;
+	bool fproductCounted, productCountSensConvey,pp_stack_ready,readySignalFromNextBarda;
 
 public:
 	int productPassTime;

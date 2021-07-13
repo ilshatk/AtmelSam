@@ -157,6 +157,42 @@ bool ArtIOClass::ExtSens(uint16_t sensinput)
     }
 }
 
+bool ArtIOClass::TookProd()
+{
+    if (m_ptrEasyCat->BufferOut.Cust.TookProduct == 1)
+    {
+        return(true);
+    }
+    else
+    {
+        return(false);
+    }
+}
+
+void ArtIOClass::StackReady(bool ready)
+{
+    if(ready)
+    {
+        m_ptrEasyCat->BufferIn.Cust.GaveStack = 1;
+    }
+    else
+    {
+        m_ptrEasyCat->BufferIn.Cust.GaveStack = 0;
+    }
+}
+
+void ArtIOClass::GaveStack(bool gave)
+{
+    if(gave)
+    {
+        m_ptrEasyCat->BufferIn.Cust.GaveStack = 1;
+    }
+    else
+    {
+       m_ptrEasyCat->BufferIn.Cust.GaveStack = 0; 
+    }
+}
+
 bool ArtIOClass::readySignalFromNext()
 {
     if(m_ptrEasyCat->BufferOut.Cust.NextConvReadySignal & 1 == 1)

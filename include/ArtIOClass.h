@@ -50,6 +50,9 @@ public:
     static bool ExtSens(uint16_t sensinput);
     static void Error(uint8_t error);
     static bool readySignalFromNext();
+    static bool TookProd();
+    static void GaveStack(bool gave);
+    static void StackReady(bool ready);
 protected:
     ArtIOClass();
     ~ArtIOClass();

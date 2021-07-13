@@ -390,7 +390,7 @@ void ArtConveyor2Type::doLogic()
 	}
 
 	productExitSensConvey = ExitSensPtr->SensorState();
-	productContSensConvey = CountSensPtr->SensorState();
+	productCountSensConvey = CountSensPtr->SensorState();
 
 	if ((ActuatorsGet(GET_CONV_ACTUATOR_READY, ActPoint2)) == 1) // ; TODO: Change ARTActuatorsGet to actual function
 	{
@@ -400,7 +400,7 @@ void ArtConveyor2Type::doLogic()
 		}
 		else
 		{
-			if (productContSensConvey)
+			if (productCountSensConvey)
 			{
 				if (!fproductCounted)
 				{
@@ -421,7 +421,6 @@ void ArtConveyor2Type::doLogic()
 
 	switch (conveyorState)
 	{
-
 	case ST_CONVEYOR_UNKNOWN:
 	{
 		if (productEnterSensConvey || productExitSensConvey)
@@ -464,11 +463,11 @@ void ArtConveyor2Type::doLogic()
 		}
 		if (CalcedNumProdInConveyor == SetedProdNumberCollect)
 		{
+			ArtIOClass::GaveStack(false);
 			conveyorState = ST_CONVEYOR_BUSY;
 			conveyorRunTimer = 0;
 			pp_stack_ready = true;
-
-			//ArtConveyorSetStackReady(conveyorID);
+			ArtIOClass::StackReady(true);
 		}
 		else
 		{
@@ -497,32 +496,33 @@ void ArtConveyor2Type::doLogic()
 		{
 			ftook_product = false;
 			conveyorState = ST_CONVEYOR_STACK_READY;
+			pp_stack_ready = false;
 		}
+
 		if (ARTTimerIsTimePassed(conveyorRunTimer, (int)(productPassTime * 1.2), 99000))
 		{
 			ActuatorsSet(SET_CONV_ACTUATOR_STOP, ActPoint2); //!*! Change to actual function
 		}
-
-		pp_stack_ready = false;
 		break;
 	}
 
-	case ST_CONVEYOR_STACK_READY:
+	case ST_CONVEYOR_STACK_READY: 
 	{
+		ArtConveyorTookProduct();
 		if (ftook_product)
 		{
-
-			/*if (productContSensConvey || productExitSensConvey)
+			if (productCountSensConvey || productExitSensConvey)
 			{
 				conveyorState = ST_CONVEYOR_ERROR;
 			}
 			else
-			{*/
-
+			{
 			CalcedNumProdInConveyor = 0;
 			ftook_product = false;
 			conveyorState = ST_CONVEYOR_FREE;
-			//}
+			ArtIOClass::StackReady(false);
+			ArtIOClass::GaveStack(true);
+			}
 		}
 
 		if (ARTTimerIsTimePassed(conveyorRunTimer, (int)(productPassTime * 1.2), 99000))
@@ -551,7 +551,10 @@ void ArtConveyor2Type::doLogic()
 
 void ArtConveyor2Type::ArtConveyorTookProduct()
 {
-	ftook_product = true;
+	if (ArtIOClass::TookProd())
+	{
+		ftook_product = true;
+	}
 }
 
 int ArtBasicConveyor::ConveyorGetState()
@@ -834,7 +837,7 @@ void ArtConveyor1AType::doLogic()
 
 	if (AccumConvOn) //если конвейер накопительный
 	{
-		productContSensConvey = EnterSensPoint->SensorState();
+		productCountSensConvey = EnterSensPoint->SensorState();
 
 		if (/*(ActuatorsGet(GET_CONV_ACTUATOR_READY, ActPoint)) == 1*/ true)
 		{
@@ -844,7 +847,7 @@ void ArtConveyor1AType::doLogic()
 			}
 			else
 			{
-				if (productContSensConvey)
+				if (productCountSensConvey)
 				{
 					if (!fproductCounted)
 					{
@@ -974,7 +977,7 @@ void ArtConveyor1AType::doLogic()
 			/*	if (ftook_product)
 				{
 
-					/*if (productContSensConvey || productExitSensConvey)
+					/*if (productCountSensConvey || productExitSensConvey)
 					{
 						conveyorState = ST_CONVEYOR_ERROR;
 					}
