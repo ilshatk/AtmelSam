@@ -29,6 +29,7 @@ typedef union												//---- output buffer ----
 		uint8_t     DriversReset;
 		uint8_t     SensSignalFromPrevBarda;
 		uint8_t     TookProduct;
+		uint8_t     ReqPosition;
 	}Cust;
 } PROCBUFFER_OUT;
 

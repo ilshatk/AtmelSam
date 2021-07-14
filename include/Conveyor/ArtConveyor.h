@@ -170,4 +170,22 @@ public:
 	void doLogic();
 	void AccumConv(bool flag);
 };
+
+class ArtConveyorShuttleType : public ArtBasicConveyor
+{
+private:
+	bool fproductCounted, productCountSensConvey,pp_stack_ready,readySignalFromNextBarda;
+	int AnalogOut,Pos1,Pos2,Pos3,Pos4,Pos5,CurPos,ReqPos;
+	ArtDriver *DrivPtr;
+public:
+	int productPassTime;
+	ArtAnalogSensor *PositionSens; //указатель на аналоговый датчик
+	ArtBasicConveyor *PrevConvPtr;//указатель на приниммающий конвейер
+	ArtConveyorShuttleType(int id, const char name[]);
+	ArtConveyorShuttleType(int id, const char name[], ConveyorType type, ArtDriver *ActPoint, ArtSensor *EnterSensPoint, ArtSensor *ExitSensPoint, ArtBasicConveyor *NextConvPoint, int PassTime, int RunTimer, int SetedProdNumberCollect);
+	ArtConveyorShuttleType(int id, const char name[], ArtDriver *ActPoint, ArtAnalogSensor *PositionSens, ArtBasicConveyor *PrevConvPtr, bool readySignalFromNextBarda, int PassTime, int RunTimer,int Pos1, int Pos2, int Pos3, int Pos4, int Pos5, int AnalogOut );
+	void doLogic();
+	void AccumConv(bool flag);
+};
+
 #endif //ArtConv

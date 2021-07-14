@@ -156,7 +156,7 @@ void setup()
   ArtConveyor1Type ConvM14(15, ("ConvM14"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M14DRV, &OnPusherM13, &M14End, &ConvM15, 8000,0);
   ArtConveyor1Type ConvM13(15, ("ConvM13"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M13DRV, &AfterSiatB28, &OnPusherM13, &ConvM14, 8000,0);
   //----setup for A35---------------------------------------------------------------------------------------
- */
+ 
   //----setup for A36---------------------------------------------------------------------------------------
   ArtSensor AfterSiatB39(1, ("B39"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false); // Фотодатчик после Сиата 4 (B39) (тип R)
   ArtSensor M17End(5, ("B40"), 2, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false); // Фотодатчик на конце М17 (B40) (тип R)
@@ -185,7 +185,10 @@ void setup()
   ArtCylinder PusherSV4(17, ("SV4"), 10, false, true, ArtCylinder::MONO_STABLE, 11,  &PusherNOHomeB46, &PusherHomeB45); //Пушер SV1
   ArtPusher Pusher(18,("SV4"),&OnPusherM20,&ConvM20,&ConvM21,&PusherSV4);
   //----setup for A36---------------------------------------------------------------------------------------
+  */
+  //----setup for A51---------------------------------------------------------------------------------------
   
+  //----setup for A51---------------------------------------------------------------------------------------
 /*
   //----setup for Dispenser---------------------------------------------------------------------------------------
   ArtSensor PallONConvey(1, ("PallONConvey"), 10, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false);
@@ -222,7 +225,7 @@ void setup()
     if (EASYCAT.MainTask() == ESM_OP) // execute the EasyCAT task
     {
       int16_t AdcResult;
-      Helper.doLogic();
+     // Helper.doLogic();
       AdcResult = ReadAdc(AnaInChannel);
       ArtIOClass::doIOLogic();
       switch (AnaInChannel) // we read one channel each round

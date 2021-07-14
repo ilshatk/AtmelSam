@@ -5,8 +5,7 @@
 #include <cmath>
 #include "InOut.h"
 #include <cstring>
-//bool static OutState[15];
-//uint16_t m_nCurrentOutputState = 0;
+
 class ArtDriver : public IHasCycleLogic
 {
 protected:
@@ -32,6 +31,7 @@ public:
 
     bool bDriverDirection,
         bDriverRUN;
+
     enum DriverState
     {
         ST_DRIVER_UNKNOWN,
@@ -51,6 +51,8 @@ public:
 
     ArtDriver(int id, const char name[]);
     ArtDriver(int id, const char name[], DriverType Driver_Type, int ReadySignalIN,int FwdOut,int RevOut, bool Direction, int CurrentSpeed, int FWDSpeed, int value, int inout1, int inout2, int inout3, int inout4);
+    //ArtDriver(int id, const char name[], DriverType Driver_Type, int ReadySignalIN,int FwdOut,int RevOut, bool Direction,
+    //            int CurrentSpeed, int FWDSpeed, int value, int inout1, int inout2, int inout3, int inout4, int pos1, int pos2, int pos3, int pos4);
     void doLogic();
     bool bcheckFWDSpeedOutEnable();
     bool bcheckREVSpeedOutEnable();

@@ -53,6 +53,7 @@ public:
     static bool TookProd();
     static void GaveStack(bool gave);
     static void StackReady(bool ready);
+    static uint8_t ReqPos();
 protected:
     ArtIOClass();
     ~ArtIOClass();

@@ -205,6 +205,11 @@ bool ArtIOClass::readySignalFromNext()
     }
 }
 
+uint8_t ArtIOClass::ReqPos()
+{
+    return( m_ptrEasyCat->BufferOut.Cust.ReqPosition);
+}
+
 void ArtIOClass::Error(uint8_t error)
 {
     m_ptrEasyCat->BufferIn.Cust.OutFault = error;

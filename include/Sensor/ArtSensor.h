@@ -19,7 +19,6 @@ protected:
 		sensorDelayFE,
 		delayRe,
 		delayFe;
-		
 
 public:
 	enum SensorType
@@ -35,6 +34,22 @@ public:
 	//~ArtSensor(){};
 	int update();
 	bool SensorState();
+};
+
+class ArtAnalogSensor
+{
+protected:
+	bool isON,
+		value;
+
+public:
+	int input1,
+		m_id,
+		SensorInput;
+	ArtAnalogSensor(int id, const char name[]);
+	ArtAnalogSensor(int id, const char name[], int SensorInput);
+	int update();
+	int SensorState();
 };
 
 #endif

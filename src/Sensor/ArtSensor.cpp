@@ -6,7 +6,7 @@ ArtSensor::ArtSensor(int id, const char name[]) // Создаем сенсор (
 	sensorTimerRE = 0;
 }
 
-ArtSensor::ArtSensor(int id, const char name[], int SensorInput, SensorType type, int delayRe = 0, int delayFe = 0,  bool SensorExternal = false) : ArtSensor( id, name) //Задаем параметры(Конструктор)
+ArtSensor::ArtSensor(int id, const char name[], int SensorInput, SensorType type, int delayRe = 0, int delayFe = 0, bool SensorExternal = false) : ArtSensor(id, name) //Задаем параметры(Конструктор)
 {
 	sensorType = type;
 	sensorTimerFE = delayFe;
@@ -65,5 +65,25 @@ bool ArtSensor::SensorState()
 		{
 			return (false);
 		}
-	}	
+	}
+}
+
+ArtAnalogSensor::ArtAnalogSensor(int id, const char name[]) // Создаем сенсор (конструктор по умолчанию)
+{
+}
+
+ArtAnalogSensor::ArtAnalogSensor(int id, const char name[], int SensorInput) : ArtAnalogSensor(id, name) //Задаем параметры(Конструктор)
+{
+	m_id = id;
+	ArtAnalogSensor::SensorInput = SensorInput;
+}
+
+int ArtAnalogSensor::update()
+{
+	return (SensorState());
+}
+
+int ArtAnalogSensor::SensorState()
+{
+	return (ReadAdc(SensorInput)); // на первый вход enter sensor
 }
