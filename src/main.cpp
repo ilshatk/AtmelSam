@@ -220,12 +220,55 @@ void setup()
                            &BOTCylinder, 12, &PallONConvey, &PalletsInStack, 11, 16);
 //----setup for Dispenser---------------------------------------------------------------------------------------
 */
+bool flag;
+flag = false;
+ArtIOClass::setOutputState(2, true) ;
   while (1)
   {
+    
+    
+    /*if (ArtIOClass::getInputState(1) == true  )
+    {
+      if (ArtIOClass::getOutputState(1) == false && ArtIOClass::getOutputState(2) == true && flag == false)
+      {
+        
+        ArtIOClass::setOutputState(1, true);
+        ArtIOClass::setOutputState(2, false);//цилиндр1 открыт
+
+        delay(1000);
+
+        ArtIOClass::setOutputState(1, false);//цилиндр1 закрыт
+        ArtIOClass::setOutputState(2, true);
+        flag = true;
+      }
+
+      if(ArtIOClass::getOutputState(1) == false && flag == true && ArtIOClass::getOutputState(2) == true)
+      {
+        delay(300);
+        ArtIOClass::setOutputState(3, true); //цилиндр2 открыт
+        ArtIOClass::setOutputState(4, false);
+        delay(1000);
+        ArtIOClass::setOutputState(3, false);
+        ArtIOClass::setOutputState(4, true);//цилиндр2 закрыт
+
+        delay(300);
+        
+        ArtIOClass::setOutputState(3, true);//цилиндр2 открыт
+        ArtIOClass::setOutputState(4, false);
+        delay(1000);
+        ArtIOClass::setOutputState(3, false);//цилиндр2 закрыт
+        ArtIOClass::setOutputState(4, true);
+        delay(300);
+        flag = false;
+      }
+
+
+    }*/
+
     if (EASYCAT.MainTask() == ESM_OP) // execute the EasyCAT task
     {
       int16_t AdcResult;
-     // Helper.doLogic();
+      Helper.doLogic();
       AdcResult = ReadAdc(AnaInChannel);
       ArtIOClass::doIOLogic();
       switch (AnaInChannel) // we read one channel each round
@@ -263,7 +306,7 @@ void setup()
       PORT->Group[1].OUTCLR.reg = LED;
       PORT->Group[0].OUTCLR.reg = WDOG;
     }
-   // EASYCAT.BufferIn.Cust.ConvReadySignal = ConvM4.ConveyorGetReadyReceive();
+    //EASYCAT.BufferIn.Cust.ConvReadySignal = ConvM4.ConveyorGetReadyReceive();
     //EASYCAT.BufferIn.Cust.SensSignalOnNextBarda = M3End.SensorState()<<(M3End.SensorInput-1);
   }
 }
