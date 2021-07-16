@@ -54,10 +54,11 @@ public:
     static void GaveStack(bool gave);
     static void StackReady(bool ready);
     static uint8_t ReqPos();
+    static bool LoaUnloadind();
+
 protected:
     ArtIOClass();
     ~ArtIOClass();
-
 };
 
 #endif //ART_LOWLEVEL_CLASS_H

@@ -22,7 +22,7 @@ void ArtDriver::update()
 {
 }
 
-ArtDriver::ArtDriver(int id, const char name[], DriverType Driver_Type, int ReadySignalIN,int FwdOut,int RevOut, bool Direction, int CurrentSpeed, int FWDSpeed, int value, int inout1, int inout2, int inout3, int inout4) : ArtDriver(id, name)
+ArtDriver::ArtDriver(int id, const char name[], DriverType Driver_Type, int ReadySignalIN, int FwdOut, int RevOut, bool Direction, int CurrentSpeed, int FWDSpeed, int value, int inout1, int inout2, int inout3, int inout4) : ArtDriver(id, name)
 {
     nDriverType = Driver_Type;
     nDriverReadySignalIN = ReadySignalIN;
@@ -495,13 +495,13 @@ int ArtDriver::ARTDriverGetFWD()
 
 int ArtDriver::ARTDriverGetREV()
 {
-    if (bDriverDirection && bDriverRUN)
+    if (!bDriverDirection && bDriverRUN)
     {
-        return (0);
+        return (1);
     }
     else
     {
-        return (1);
+        return (0);
     }
 }
 

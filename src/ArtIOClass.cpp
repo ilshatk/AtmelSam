@@ -210,6 +210,18 @@ uint8_t ArtIOClass::ReqPos()
     return( m_ptrEasyCat->BufferOut.Cust.ReqPosition);
 }
 
+bool ArtIOClass::LoaUnloadind()
+{
+    if (m_ptrEasyCat->BufferOut.Cust.Flags & 1 == 1 )
+    {
+        return(true);
+    }
+    else
+    {
+        return(false);
+    }
+}
+
 void ArtIOClass::Error(uint8_t error)
 {
     m_ptrEasyCat->BufferIn.Cust.OutFault = error;
