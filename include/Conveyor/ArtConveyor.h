@@ -176,20 +176,32 @@ class ArtConveyorShuttleType : public ArtBasicConveyor
 {
 private:
 	bool fproductCounted, productCountSensConvey, pp_stack_ready, readySignalFromNextBarda, On_Position;
-	int AnalogOut, Pos1, Pos2, Pos3, Pos4, Pos5, CurPos, ReqPos;
+	int Pos1, Pos2, Pos3, Pos4, Pos5, CurPos, ReqPos, ConveyorRunTimerShuttle, ConveyorRunTimerOverShuttle;
 	ArtDriver *ShuttlePtr;
 	ArtDriver *OverShuttlePtr;
+
 public:
-	int productPassTime;
+	int productPassOverShuttle, PassTimeShuttle;
 	ArtAnalogSensor *PositionSens; //указатель на аналоговый датчик
 	ArtSensor *PalletOnConv;
+
 	ArtBasicConveyor *NextConvPtr; //указатель на приниммающий конвейер
 	ArtConveyorShuttleType(int id, const char name[]);
 	ArtConveyorShuttleType(int id, const char name[], ArtDriver *ShuttlePtr, ArtDriver *OverShuttlePtr, ArtAnalogSensor *PositionSens, ArtSensor *PalletOnConv,
-	 						ArtBasicConveyor *NextConvPtr, bool readySignalFromNextBarda, int PassTime, int RunTimer, int Pos1, int Pos2, int Pos3, int Pos4,
-							int Pos5, int AnalogOut);
+						   ArtBasicConveyor *NextConvPtr, bool readySignalFromNextBarda, int PassTimeOverShuttle, int PassTimeShuttle, int RunTimer, int ConveyorRunTimerOverShuttle);
 	void doLogic();
 };
 
+class ArtConveyor1TypeNextExtDev : public ArtBasicConveyor
+{
+private:
+	ArtSensor *EnterSensPoint; //указатель на входной сенсор
+	ArtSensor *ExitSensPoint;  //указатель на выходной сенсор
+	int productPassTime, ExtDevReady;
+public:
+	ArtConveyor1TypeNextExtDev(int id, const char name[]);
+	ArtConveyor1TypeNextExtDev(int id, const char name[], ConveyorType type, ArtDriver *ActPoint, ArtSensor *EnterSensPoint, ArtSensor *ExitSensPoint, int PassTime, int RunTimer, int ExtDevReady);
+	void doLogic();
+};
 
 #endif //ArtConv

@@ -205,9 +205,14 @@ bool ArtIOClass::readySignalFromNext()
     }
 }
 
-uint8_t ArtIOClass::ReqPos()
+void ArtIOClass::OnPosition(uint8_t pos)
 {
-    return( m_ptrEasyCat->BufferOut.Cust.ReqPosition);
+    m_ptrEasyCat->BufferIn.Cust.OnPosition = pos;
+}
+
+uint16_t ArtIOClass::ReqPos()
+{
+    return(m_ptrEasyCat->BufferOut.Cust.ReqPosition);
 }
 
 bool ArtIOClass::LoaUnloadind()

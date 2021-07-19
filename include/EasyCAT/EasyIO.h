@@ -11,7 +11,7 @@
 
 
 #define CUST_BYTE_NUM_OUT	15
-#define CUST_BYTE_NUM_IN	17
+#define CUST_BYTE_NUM_IN	18
 #define TOT_BYTE_NUM_ROUND_OUT	16
 #define TOT_BYTE_NUM_ROUND_IN	20
 
@@ -51,6 +51,7 @@ typedef union												//---- input buffer ----
 		uint8_t     SensSignalOnNextBarda;
 		uint8_t     StackReady;
 		uint8_t     GaveStack;
+		uint8_t     OnPosition;
 	}Cust;
 } PROCBUFFER_IN;
 

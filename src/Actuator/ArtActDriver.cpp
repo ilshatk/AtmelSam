@@ -35,6 +35,10 @@ ArtDriver::ArtDriver(int id, const char name[], DriverType Driver_Type, int Read
     nDriverFWDSpeed[value][1] = inout2;
     nDriverFWDSpeed[value][2] = inout3;
     nDriverFWDSpeed[value][3] = inout4;
+    nDriverREVSpeed[value][0] = inout1; // TODO check to not initilize, if use only one $out
+    nDriverREVSpeed[value][1] = inout2;
+    nDriverREVSpeed[value][2] = inout3;
+    nDriverREVSpeed[value][3] = inout4;
     bisDriverSet = true;
     nDriverState = ST_DRIVER_UNKNOWN;
     bDriverManualMode = false;
@@ -398,7 +402,7 @@ int ArtDriver::ConveySetDriverREV(bool bParametr)
     int i, j;
     bool btmpVal;
 
-    for (i = 1; i < 3; i++)
+    for (i = 0; i < 3; i++)
     {
         if ((i == nDriverCurrentSpeed) && bParametr)
         {
@@ -409,7 +413,7 @@ int ArtDriver::ConveySetDriverREV(bool bParametr)
             btmpVal = false;
         }
 
-        for (j = 1; j <= 4; j++)
+        for (j = 0; j <= 3; j++)
         {
             if (nDriverREVSpeed[i][j] > 1)
             {
