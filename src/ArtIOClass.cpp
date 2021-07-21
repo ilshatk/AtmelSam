@@ -246,13 +246,13 @@ void ArtIOClass::doIOLogic()
             //-----------------Это сброс ошибки конвейера, нужно переделать, но пока так
             if (m_ptrEasyCat->BufferOut.Cust.DigiOut == 32 || m_ptrEasyCat->BufferOut.Cust.DigiOut == 16 || m_ptrEasyCat->BufferOut.Cust.DigiOut == 8 || m_ptrEasyCat->BufferOut.Cust.DigiOut == 24 || m_ptrEasyCat->BufferOut.Cust.DigiOut == 48 || m_ptrEasyCat->BufferOut.Cust.DigiOut == 40 || m_ptrEasyCat->BufferOut.Cust.DigiOut == 56)
             {
-                DigitalOut(m_ptrEasyCat->BufferOut.Cust.DigiOut);
+                //DigitalOut(m_ptrEasyCat->BufferOut.Cust.DigiOut);
             }
             else
             {
-                ArtIOClass::setOutputState(4, false);
+               /* ArtIOClass::setOutputState(4, false);
                 ArtIOClass::setOutputState(5, false);
-                ArtIOClass::setOutputState(6, false);
+                ArtIOClass::setOutputState(6, false);*/
             }
         }
     }

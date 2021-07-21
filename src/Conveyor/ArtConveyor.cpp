@@ -1142,7 +1142,6 @@ ArtConveyorShuttleType::ArtConveyorShuttleType(int id, const char name[], ArtDri
 	PassTimeShuttle = PassTimeShuttle;
 	conveyorState = ST_CONVEYOR_UNKNOWN;
 	CalcedNumProdInConveyor = 0;
-
 	ArtConveyorShuttleType::CurPos = PositionSens->SensorState();
 	On_Position = false;
 	ArtConveyorShuttleType::ConveyorRunTimerShuttle = ConveyorRunTimerShuttle;
@@ -1152,7 +1151,9 @@ ArtConveyorShuttleType::ArtConveyorShuttleType(int id, const char name[], ArtDri
 void ArtConveyorShuttleType::doLogic()
 {
 	ReqPos = ArtIOClass::ReqPos();
-	CurPos = PositionSens->SensorState();
+	//CurPos = expRunningAverage(findMedianN_optim(((31  * CurPos + PositionSens->SensorState()) >> 5)));
+	CurPos = expRunningAverage(((31  * CurPos + PositionSens->SensorState()) >> 5));
+	//CurPos = ((31  * CurPos + PositionSens->SensorState()) >> 5);
 	if (ActuatorsGet(GET_CONV_ACTUATOR_READY, ShuttlePtr) == 1)
 	{
 	}
@@ -1173,7 +1174,7 @@ void ArtConveyorShuttleType::doLogic()
 			}
 			else
 			{
-				if (abs(CurPos - ReqPos) >= 5)
+				if (abs(CurPos - ReqPos) >= 40)
 				{
 					if (conveyorRunTimer == 0)
 					{
@@ -1191,7 +1192,7 @@ void ArtConveyorShuttleType::doLogic()
 		{
 			if (PalletOnConv->SensorState() == true)
 			{
-				if (abs(CurPos - ReqPos) <= 5)
+				if (abs(CurPos - ReqPos) <= 40)
 				{
 					conveyorState = ST_CONVEYOR_AT_THE_POINT;
 				}
@@ -1216,60 +1217,67 @@ void ArtConveyorShuttleType::doLogic()
 			conveyorRunTimer = ARTTimerGetTime();
 			ActuatorsSet(SET_CONV_ACTUATOR_FWD, ShuttlePtr); //!*! Change to actual function
 		}*/
-		if ((CurPos - ReqPos) > 5 || (CurPos - ReqPos) < -5)
+		if ((CurPos - ReqPos) > 40 || (CurPos - ReqPos) < (-40))
 		{
-			if ((CurPos - ReqPos) < -5)
+			if ((CurPos - ReqPos) < (-40))
 			{
 				conveyorRunTimer = ARTTimerGetTime();
 
-				if ((CurPos - ReqPos) <= (-1000))
+				if ((CurPos - ReqPos) <= (-10000))
 				{
-					WriteDacValues(0, 32000);
 					ActuatorsSet(SET_CONV_ACTUATOR_FWD, ShuttlePtr);
+					WriteDacValues(0, 32600);
 				}
 
-				if ((-200) >= (CurPos - ReqPos) >= (-1000))
+				if ((CurPos - ReqPos) <= (-500) && (CurPos - ReqPos) > (-10000))
 				{
-					WriteDacValues(0, 20000);
 					ActuatorsSet(SET_CONV_ACTUATOR_FWD, ShuttlePtr);
+					WriteDacValues(0, 25000);
 				}
 
-				if ((CurPos - ReqPos) >= (-200))
+				if ((CurPos - ReqPos) < (-40) && (CurPos - ReqPos) > (-500))
 				{
-					WriteDacValues(0, 10000);
 					ActuatorsSet(SET_CONV_ACTUATOR_FWD, ShuttlePtr);
+					WriteDacValues(0, 8000);
 				}
 			}
-
-			if ((CurPos - ReqPos) >= 5)
+			else
 			{
-				if ((CurPos - ReqPos) >= 1000)
+				if ((CurPos - ReqPos) > 40)
 				{
-					WriteDacValues(0, 32600);
-					ActuatorsSet(SET_CONV_ACTUATOR_REV, ShuttlePtr);
-				}
+					if ((CurPos - ReqPos) >= 10000)
+					{
+						ActuatorsSet(SET_CONV_ACTUATOR_REV, ShuttlePtr);
+						WriteDacValues(0, 32600);
+					}
 
-				if (1000 >= (CurPos - ReqPos) >= 200)
-				{
-					WriteDacValues(0, 20000);
-					ActuatorsSet(SET_CONV_ACTUATOR_REV, ShuttlePtr);
-				}
+					if ((CurPos - ReqPos) >= 500 && (CurPos - ReqPos) < 10000)
+					{
+						ActuatorsSet(SET_CONV_ACTUATOR_REV, ShuttlePtr);
+						WriteDacValues(0, 25000);
+					}
 
-				if ((CurPos - ReqPos) <= 200)
-				{
-					WriteDacValues(0, 10000);
-					ActuatorsSet(SET_CONV_ACTUATOR_REV, ShuttlePtr);
+					if ((CurPos - ReqPos) > 40 && (CurPos - ReqPos) < 500)
+					{
+						ActuatorsSet(SET_CONV_ACTUATOR_REV, ShuttlePtr);
+						WriteDacValues(0, 8000);
+					}
 				}
 			}
 
 			if (ARTTimerIsTimePassed(ConveyorRunTimerShuttle, PassTimeShuttle, 99000))
 			{
+				WriteDacValues(0, 0);
 				ActuatorsSet(SET_CONV_ACTUATOR_STOP, ShuttlePtr); //!*! Change to actual function
 				conveyorState = ST_CONVEYOR_ERROR;
 			}
 		}
-		
-		if ((CurPos - ReqPos) <= 5 && (CurPos - ReqPos) > -5)
+		else
+		{
+			ActuatorsSet(SET_CONV_ACTUATOR_STOP, ShuttlePtr);
+		}
+
+		if ((CurPos - ReqPos) < 40 && (CurPos - ReqPos) > (-40))
 		{
 			WriteDacValues(0, 0);
 			ActuatorsSet(SET_CONV_ACTUATOR_STOP, ShuttlePtr);
@@ -1281,7 +1289,7 @@ void ArtConveyorShuttleType::doLogic()
 	}
 	case ST_CONVEYOR_AT_THE_POINT:
 	{
-		if (abs(CurPos - ReqPos) <= 5)
+		if (abs(CurPos - ReqPos) < 40)
 		{
 			ArtIOClass::OnPosition(1);
 			if (ArtIOClass::LoaUnloadind() == true && PalletOnConv->SensorState() == false) // true - загрузка, false - выгрузка
@@ -1479,6 +1487,53 @@ void ArtConveyor1TypeNextExtDev::doLogic()
 	default:
 		break;
 	}
+}
+
+float k = 0.1; // коэффициент фильтрации, 0.0-1.0
+// бегущее среднее
+static int filVal = 0;
+
+int ArtConveyorShuttleType::expRunningAverage(int newVal)
+{
+	filVal += (newVal - filVal) * k;
+	return filVal;
+}
+
+int ArtConveyorShuttleType::findMedianN_optim(int newVal)
+{
+	static int buffer[50]; // статический буфер
+	static byte count = 0;
+	buffer[count] = newVal;
+	if ((count < 50 - 1) and (buffer[count] > buffer[count + 1]))
+	{
+		for (int i = count; i < 50 - 1; i++)
+		{
+			if (buffer[i] > buffer[i + 1])
+			{
+				float buff = buffer[i];
+				buffer[i] = buffer[i + 1];
+				buffer[i + 1] = buff;
+			}
+		}
+	}
+	else
+	{
+		if ((count > 0) and (buffer[count - 1] > buffer[count]))
+		{
+			for (int i = count; i > 0; i--)
+			{
+				if (buffer[i] < buffer[i - 1])
+				{
+					float buff = buffer[i];
+					buffer[i] = buffer[i - 1];
+					buffer[i - 1] = buff;
+				}
+			}
+		}
+	}
+	if (++count >= 50)
+		count = 0;
+	return buffer[(int)50 / 2];
 }
 
 //---------------------------------ArtConveyor1TypeNextExtDev--------------------------------------------------

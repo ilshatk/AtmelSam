@@ -4,6 +4,7 @@ ArtDriver::ArtDriver(int id, const char name[])
 {
     //IHasCycleLogicHelper::addDevice(this);
     memset(nDriverFWDSpeed, 0, sizeof(nDriverFWDSpeed));
+    memset(nDriverREVSpeed, 0, sizeof(nDriverREVSpeed));
     //memset(OutState, 0, sizeof(OutState));
     //memcpy(m_name,name,sizeof(name));
 }
@@ -527,10 +528,12 @@ int ArtDriver::ARTConveySetRun()
     bDriverRUN = true;
     if (bDriverDirection)
     {
+        ConveySetDriverREV(false);
         ConveySetDriverFWD(true);
     }
     else
     {
+        ConveySetDriverFWD(false);
         ConveySetDriverREV(true);
     }
 
