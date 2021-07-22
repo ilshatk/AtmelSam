@@ -1,6 +1,7 @@
 #ifndef ArtConv
 #define ArtConv
 #include "Actuator\ArtActDriver.h"
+#include "Actuator\ArtActCylinder.h"
 #include "Sensor\ArtSensor.h"
 #include "interface\IHasCycleLogic.h"
 
@@ -208,5 +209,26 @@ public:
 	void doLogic();
 
 };
+
+class ArtPalletConveyorWithStoppers : public ArtBasicConveyor
+{
+private:
+	ArtSensor *Pos1Ptr; //указатель на сенсор 1 позиция
+ 	ArtSensor *Pos2Ptr;  //указатель на сенсор 2 позиция
+	ArtSensor *Pos3Ptr; //указатель на сенсор 3 позиция
+	ArtSensor *Pos4Ptr; //указатель на сенсор 4 позиция
+	ArtCylinder *StopperPos1;
+	ArtCylinder *StopperPos2;
+	ArtCylinder *StopperPos3;
+	ArtCylinder *StopperPos4;
+	bool Pos1Sens,Pos2Sens,Pos3Sens,Pos4Sens
+	int productPassTime, ExtDevReady;
+public:
+	ArtPalletConveyorWithStoppers(int id, const char name[]);
+	ArtPalletConveyorWithStoppers::ArtPalletConveyorWithStoppers(int id, const char name[], ConveyorType type, ArtDriver *ActPoint, ArtSensor *Pos1Ptr, ArtSensor *Pos2Ptr,ArtSensor *Pos3Ptr,ArtSensor *Pos4Ptr, ArtCylinder *StopperPos1, ArtCylinder *StopperPos2, ArtCylinder *StopperPos3, ArtCylinder *StopperPos4, int PassTime, int RunTimer, int ExtDevReady) ;
+	void doLogic();
+
+};
+
 
 #endif //ArtConv

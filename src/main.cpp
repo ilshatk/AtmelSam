@@ -186,6 +186,21 @@ void setup()
   ArtPusher Pusher(18,("SV4"),&OnPusherM20,&ConvM20,&ConvM21,&PusherSV4);
   //----setup for A36---------------------------------------------------------------------------------------
   */
+
+  //----setup for A50---------------------------------------------------------------------------------------
+  ArtDriver ShuttleDrv(1, ("M21DRV"), ArtDriver::DRIVER_TYPE_1, 9, 5, 6, true, 2, 2, 2, 2, 2, 2, 2);     //Драйвер на M21
+  ArtDriver OverShuttleDrv(2, ("M21DRV"), ArtDriver::DRIVER_TYPE_1, 7, 8, 5, true, 1, 2, 2, 2, 2, 2, 2); //Драйвер на M21
+  ArtDriver BeforWind(3, ("M21DRV"), ArtDriver::DRIVER_TYPE_1, 11, 9, 10, true, 1, 2, 2, 0, 0, 0, 0);    //Драйвер на M21
+  ArtAnalogSensor AnSens(4, ("ConvM16"), 1);
+  ArtSensor PalletOnConv(5, ("B49"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false); // Фотодатчик на конце М21 пикпойнт (B49) (тип BGS)
+  ArtSensor EnterSens(6, ("B49"), 2, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);    // Фотодатчик на конце М21 пикпойнт (B49) (тип BGS)
+  ArtSensor ExitSens(7, ("B49"), 3, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);     // Фотодатчик на конце М21 пикпойнт (B49) (тип BGS)
+  ArtConveyor1TypeNextExtDev BeforWin(8, ("B49"), ArtBasicConveyor::CONVEYOR_TYPE_1, &BeforWind, &EnterSens, &ExitSens, 1000, 0, 8);
+  ArtConveyorShuttleType Shuttle(9, ("ConvM16"), &ShuttleDrv, &OverShuttleDrv, &AnSens, &PalletOnConv, &BeforWin,
+                                 true, 40000, 100000, 0, 0);
+  //----setup for A50--------------------------------------------------------------------------------------
+  
+ /*
   //----setup for A51---------------------------------------------------------------------------------------
   ArtDriver ShuttleDrv(1, ("M21DRV"), ArtDriver::DRIVER_TYPE_1, 9, 5, 6, true, 2, 2, 2, 2, 2, 2, 2);     //Драйвер на M21
   ArtDriver OverShuttleDrv(2, ("M21DRV"), ArtDriver::DRIVER_TYPE_1, 7, 8, 5, true, 1, 2, 2, 2, 2, 2, 2); //Драйвер на M21
@@ -197,9 +212,12 @@ void setup()
   ArtConveyor1TypeNextExtDev BeforWin(8, ("B49"), ArtBasicConveyor::CONVEYOR_TYPE_1, &BeforWind, &EnterSens, &ExitSens, 1000, 0, 8);
   ArtConveyorShuttleType Shuttle(9, ("ConvM16"), &ShuttleDrv, &OverShuttleDrv, &AnSens, &PalletOnConv, &BeforWin,
                                  true, 40000, 100000, 0, 0);
-  //ПРОБЛЕМА В ДРАЙВЕРЕ
   //----setup for A51---------------------------------------------------------------------------------------
+  */
   /*
+
+
+
   //----setup for Dispenser---------------------------------------------------------------------------------------
   ArtSensor PallONConvey(1, ("PallONConvey"), 10, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false);
   ArtSensor PalletsInStack(2, ("PalletsInStack"), 9, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false);

@@ -1152,7 +1152,7 @@ void ArtConveyorShuttleType::doLogic()
 {
 	ReqPos = ArtIOClass::ReqPos();
 	//CurPos = expRunningAverage(findMedianN_optim(((31  * CurPos + PositionSens->SensorState()) >> 5)));
-	CurPos = expRunningAverage(((31  * CurPos + PositionSens->SensorState()) >> 5));
+	CurPos = expRunningAverage(((31 * CurPos + PositionSens->SensorState()) >> 5));
 	//CurPos = ((31  * CurPos + PositionSens->SensorState()) >> 5);
 	if (ActuatorsGet(GET_CONV_ACTUATOR_READY, ShuttlePtr) == 1)
 	{
@@ -1219,9 +1219,9 @@ void ArtConveyorShuttleType::doLogic()
 		}*/
 		if ((CurPos - ReqPos) > 40 || (CurPos - ReqPos) < (-40))
 		{
+			ConveyorRunTimerShuttle = ARTTimerGetTime();
 			if ((CurPos - ReqPos) < (-40))
 			{
-				conveyorRunTimer = ARTTimerGetTime();
 
 				if ((CurPos - ReqPos) <= (-10000))
 				{
@@ -1289,13 +1289,13 @@ void ArtConveyorShuttleType::doLogic()
 	}
 	case ST_CONVEYOR_AT_THE_POINT:
 	{
-		if (abs(CurPos - ReqPos) < 40)
+		if ((CurPos - ReqPos) < 40 && (CurPos - ReqPos) > (-40))
 		{
 			ArtIOClass::OnPosition(1);
 			if (ArtIOClass::LoaUnloadind() == true && PalletOnConv->SensorState() == false) // true - загрузка, false - выгрузка
 			{
+				ConveyorRunTimerOverShuttle = ARTTimerGetTime();
 				ActuatorsSet(SET_CONV_ACTUATOR_FWD, OverShuttlePtr);
-				conveyorRunTimer = ARTTimerGetTime();
 			}
 
 			if (ArtIOClass::LoaUnloadind() == true && PalletOnConv->SensorState() == true)
@@ -1306,6 +1306,7 @@ void ArtConveyorShuttleType::doLogic()
 
 			if (ArtIOClass::LoaUnloadind() == false && PalletOnConv->SensorState() == true)
 			{
+				ConveyorRunTimerOverShuttle = ARTTimerGetTime();
 				ActuatorsSet(SET_CONV_ACTUATOR_FWD, OverShuttlePtr);
 			}
 
@@ -1318,6 +1319,7 @@ void ArtConveyorShuttleType::doLogic()
 			if (ARTTimerIsTimePassed(ConveyorRunTimerOverShuttle, productPassOverShuttle, 99000))
 			{
 				ActuatorsSet(SET_CONV_ACTUATOR_STOP, ShuttlePtr); //!*! Change to actual function
+				conveyorRunTimer = 0;
 				conveyorState = ST_CONVEYOR_ERROR;
 			}
 		}
@@ -1361,7 +1363,7 @@ ArtConveyor1TypeNextExtDev::ArtConveyor1TypeNextExtDev(int id, const char name[]
 	ArtConveyor1TypeNextExtDev::ActPoint = ActPoint;			 //указатель на драйвер
 	ArtConveyor1TypeNextExtDev::EnterSensPoint = EnterSensPoint; //указатель на входной сенсор
 	ArtConveyor1TypeNextExtDev::ExitSensPoint = ExitSensPoint;	 //указатель на выходной сенсор
-	ArtConveyor1TypeNextExtDev::ExtDevReady = ExtDevReady;		 //указатель на следующий конвейер
+	ArtConveyor1TypeNextExtDev::ExtDevReady = ExtDevReady;		 //указатель на следующее устройство
 	productPassTime = PassTime;
 	conveyorRunTimer = 0;
 	productEnterSensConvey = false;
@@ -1438,11 +1440,6 @@ void ArtConveyor1TypeNextExtDev::doLogic()
 			ActuatorsSet(SET_CONV_ACTUATOR_FWD, ActPoint); //!* !Change to actual function
 		}
 
-		/*if (productEnterSensConvey)
-		{
-			conveyorRunTimer = ARTTimerGetTime();
-		}*/
-
 		if (ARTTimerIsTimePassed(conveyorRunTimer, productPassTime, 99000))
 		{
 			ActuatorsSet(SET_CONV_ACTUATOR_STOP, ActPoint); //!* !Change to actual function
@@ -1489,7 +1486,7 @@ void ArtConveyor1TypeNextExtDev::doLogic()
 	}
 }
 
-float k = 0.1; // коэффициент фильтрации, 0.0-1.0
+float k = 0.9; // коэффициент фильтрации, 0.0-1.0
 // бегущее среднее
 static int filVal = 0;
 
@@ -1537,6 +1534,227 @@ int ArtConveyorShuttleType::findMedianN_optim(int newVal)
 }
 
 //---------------------------------ArtConveyor1TypeNextExtDev--------------------------------------------------
+
+//---------------------------------ArtPalletConveyorWithStoppers--------------------------------------------------
+
+ArtPalletConveyorWithStoppers::ArtPalletConveyorWithStoppers(int id, const char name[])
+{
+	IHasCycleLogicHelper::addDevice(this);
+	m_id = id;
+}
+
+ArtPalletConveyorWithStoppers::ArtPalletConveyorWithStoppers(int id, const char name[], ConveyorType type, ArtDriver *ActPoint, ArtSensor *Pos1Ptr, ArtSensor *Pos2Ptr, ArtSensor *Pos3Ptr, ArtSensor *Pos4Ptr, ArtCylinder *StopperPos1, ArtCylinder *StopperPos2, ArtCylinder *StopperPos3, ArtCylinder *StopperPos4, int PassTime, int RunTimer, int ExtDevReady) : ArtPalletConveyorWithStoppers(id, name)
+{
+	conveyorType = type;
+	ArtPalletConveyorWithStoppers::Pos1Ptr = Pos1Ptr; //указатель на драйвер
+	ArtPalletConveyorWithStoppers::Pos2Ptr = Pos2Ptr; //указатель на входной сенсор
+	ArtPalletConveyorWithStoppers::Pos3Ptr = Pos3Ptr; //указатель на выходной сенсор
+	ArtPalletConveyorWithStoppers::Pos4Ptr = Pos4Ptr; //указатель на следующее устройство
+	ArtPalletConveyorWithStoppers::StopperPos1 = StopperPos1;
+	ArtPalletConveyorWithStoppers::StopperPos2 = StopperPos2;
+	ArtPalletConveyorWithStoppers::StopperPos3 = StopperPos3;
+	ArtPalletConveyorWithStoppers::StopperPos4 = StopperPos4;
+	ArtPalletConveyorWithStoppers::ActPoint = ActPoint;
+	productPassTime = PassTime;
+	conveyorRunTimer = 0;
+	Pos1Sens = false;
+	Pos2Sens = false;
+	Pos3Sens = false;
+	Pos4Sens = false;
+	productExitSensConvey = false;
+	productFctEnterConveyor = false;
+	conveyorState = ST_CONVEYOR_UNKNOWN;
+}
+
+void ArtPalletConveyorWithStoppers::doLogic()
+{
+	if (ActuatorsGet(GET_CONV_ACTUATOR_READY, ActPoint) == 1)
+	{
+		ArtIOClass::Error(0);
+	}
+	else
+	{
+		conveyorState = ST_CONVEYOR_ERROR;
+		ArtIOClass::Error(m_id);
+	}
+
+	Pos1Sens = Pos1Ptr->SensorState();
+	Pos2Sens = Pos2Ptr->SensorState();
+	Pos3Sens = Pos3Ptr->SensorState();
+	Pos4Sens = Pos4Ptr->SensorState();
+
+	switch (conveyorState)
+	{
+	case ST_CONVEYOR_UNKNOWN:
+	{
+		if (ConveyorGetReadyReceive() == 1 && (!Pos1Sens || !Pos2Sens || !Pos3Sens || !Pos4Sens))
+		{
+			conveyorState = ST_CONVEYOR_FREE;
+		}
+		else
+		{
+			if (productExitSensConvey)
+			{
+				conveyorState = ST_CONVEYOR_BUSY;
+			}
+			else
+			{
+				conveyorState = ST_CONVEYOR_FREE;
+			}
+		}
+
+		break;
+	}
+	case ST_CONVEYOR_FREE:
+	{
+		if (!Pos4Sens)
+		{
+			StopperPos4->ARTCylinderOpen();
+			while(!StopperPos4 ->getCylState() == ArtCylinder::ARTCYL_ST_OPEN)
+			{
+				break;
+			}
+			ActPoint->ConveySetDriverFWD(true);
+			if (Pos3Sens)
+			{
+				StopperPos3->ARTCylinderClose();
+			}
+			else
+			{
+				StopperPos3->ARTCylinderClose();
+				if (Pos2Sens)
+				{
+					StopperPos2->ARTCylinderClose();
+				}
+				else
+				{
+					StopperPos2->ARTCylinderClose();
+					StopperPos1->ARTCylinderClose();
+				}
+			}
+		}
+		else 
+		{
+			StopperPos4->ARTCylinderOpen();
+			StopperPos3->ARTCylinderOpen();
+		}
+
+
+		if ((ArtIOClass::getInputState(ExtDevReady) != true) && (productExitSensConvey))
+		{
+			conveyorState = ST_CONVEYOR_BUSY;
+		}
+
+		if (productEnterSensConvey)
+		{
+			conveyorState = ST_CONVEYOR_PROD_FWD;
+		}
+		break;
+	}
+
+	case ST_CONVEYOR_PROD_FWD:
+	{
+		if (conveyorRunTimer == 0)
+		{
+			conveyorRunTimer = ARTTimerGetTime();
+			ActuatorsSet(SET_CONV_ACTUATOR_FWD, ActPoint); //!* !Change to actual function
+		}
+
+		if (ARTTimerIsTimePassed(conveyorRunTimer, productPassTime, 99000))
+		{
+			ActuatorsSet(SET_CONV_ACTUATOR_STOP, ActPoint); //!* !Change to actual function
+			conveyorRunTimer = 0;
+			conveyorState = ST_CONVEYOR_FREE;
+		}
+		else
+		{
+			if ((ArtIOClass::getInputState(ExtDevReady) != 1) && productExitSensConvey)
+			{
+				ActuatorsSet(SET_CONV_ACTUATOR_STOP, ActPoint); //!* !Change to actual function
+				conveyorRunTimer = 0;
+				conveyorState = ST_CONVEYOR_BUSY;
+			}
+		}
+		break;
+	}
+	case ST_CONVEYOR_BUSY:
+	{
+		if (ArtIOClass::getInputState(ExtDevReady) == 1)
+		{
+			ConveyorSetProdEntering();
+			conveyorState = ST_CONVEYOR_PROD_FWD;
+			conveyorRunTimer = 0;
+		}
+		else
+		{
+			ActuatorsSet(SET_CONV_ACTUATOR_STOP, ActPoint); //!* !Change to actual function
+			conveyorRunTimer = 0;
+		}
+		break;
+	}
+	case ST_CONVEYOR_ERROR:
+	{
+		if (ActuatorsGet(GET_CONV_ACTUATOR_READY, ActPoint) == 1) //; !* !Change ARTActuatorsGet to actual function
+		{
+
+			conveyorState = ST_CONVEYOR_UNKNOWN;
+		}
+		break;
+	}
+	default:
+		break;
+	}
+}
+
+float k = 0.9; // коэффициент фильтрации, 0.0-1.0
+// бегущее среднее
+static int filVal = 0;
+
+int ArtConveyorShuttleType::expRunningAverage(int newVal)
+{
+	filVal += (newVal - filVal) * k;
+	return filVal;
+}
+
+int ArtConveyorShuttleType::findMedianN_optim(int newVal)
+{
+	static int buffer[50]; // статический буфер
+	static byte count = 0;
+	buffer[count] = newVal;
+	if ((count < 50 - 1) and (buffer[count] > buffer[count + 1]))
+	{
+		for (int i = count; i < 50 - 1; i++)
+		{
+			if (buffer[i] > buffer[i + 1])
+			{
+				float buff = buffer[i];
+				buffer[i] = buffer[i + 1];
+				buffer[i + 1] = buff;
+			}
+		}
+	}
+	else
+	{
+		if ((count > 0) and (buffer[count - 1] > buffer[count]))
+		{
+			for (int i = count; i > 0; i--)
+			{
+				if (buffer[i] < buffer[i - 1])
+				{
+					float buff = buffer[i];
+					buffer[i] = buffer[i - 1];
+					buffer[i - 1] = buff;
+				}
+			}
+		}
+	}
+	if (++count >= 50)
+		count = 0;
+	return buffer[(int)50 / 2];
+}
+
+//---------------------------------ArtConveyor1TypeNextExtDev--------------------------------------------------
+
 //---------------------------------ArtConveyor--------------------------------------------------
 
 int ArtConveyor::getName()
