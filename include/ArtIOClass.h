@@ -50,12 +50,14 @@ public:
     static bool ExtSens(uint16_t sensinput);
     static void Error(uint8_t error);
     static bool readySignalFromNext();
+    static bool readySignalFromNext(int convnum, int boardnum);
     static bool TookProd();
     static void GaveStack(bool gave);
     static void StackReady(bool ready);
     static uint16_t ReqPos();
     static bool LoaUnloadind();
     static void OnPosition(uint8_t pos);
+    static int ARTTimerGetTime();
 
 protected:
     ArtIOClass();

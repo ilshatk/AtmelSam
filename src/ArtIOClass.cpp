@@ -145,15 +145,15 @@ bool ArtIOClass::isTimerPassed(int &nTimerId, int nTimeoutMs)
 
 bool ArtIOClass::ExtSens(uint16_t sensinput)
 {
-    if (m_ptrEasyCat->BufferOut.Cust.SensSignalFromPrevBarda  == (1<<(sensinput-1)) )
+    if (m_ptrEasyCat->BufferOut.Cust.SensSignalFromPrevBarda == (1 << (sensinput - 1)))
     {
-        ArtIOClass::setOutputState(16, true);
-        return(true);
+        // ArtIOClass::setOutputState(16, true);
+        return (true);
     }
     else
     {
-        ArtIOClass::setOutputState(16, false);
-        return(false);
+        // ArtIOClass::setOutputState(16, false);
+        return (false);
     }
 }
 
@@ -161,17 +161,17 @@ bool ArtIOClass::TookProd()
 {
     if (m_ptrEasyCat->BufferOut.Cust.TookProduct == 1)
     {
-        return(true);
+        return (true);
     }
     else
     {
-        return(false);
+        return (false);
     }
 }
 
 void ArtIOClass::StackReady(bool ready)
 {
-    if(ready)
+    if (ready)
     {
         m_ptrEasyCat->BufferIn.Cust.GaveStack = 1;
     }
@@ -183,25 +183,52 @@ void ArtIOClass::StackReady(bool ready)
 
 void ArtIOClass::GaveStack(bool gave)
 {
-    if(gave)
+    if (gave)
     {
         m_ptrEasyCat->BufferIn.Cust.GaveStack = 1;
     }
     else
     {
-       m_ptrEasyCat->BufferIn.Cust.GaveStack = 0; 
+        m_ptrEasyCat->BufferIn.Cust.GaveStack = 0;
     }
 }
 
 bool ArtIOClass::readySignalFromNext()
 {
-    if(m_ptrEasyCat->BufferOut.Cust.NextConvReadySignal & 1 == 1)
+    if (m_ptrEasyCat->BufferOut.Cust.NextConvReadySignal & 1 == 1)
     {
-        return(true);
+        return (true);
     }
     else
     {
-        return(false);
+        return (false);
+    }
+}
+
+bool ArtIOClass::readySignalFromNext(int convnum, int boardnum)//сигнал готовности следующих четырех конвейеров
+{
+    if (boardnum == 1)
+    {
+        if (m_ptrEasyCat->BufferOut.Cust.NextConvReadySignal1 & convnum == 1)
+        {
+            return (true);
+        }
+        else
+        {
+            return (false);
+        }
+    }
+
+    if (boardnum == 2)
+    {
+        if (m_ptrEasyCat->BufferOut.Cust.NextConvReadySignal1 & convnum == 1)
+        {
+            return (true);
+        }
+        else
+        {
+            return (false);
+        }
     }
 }
 
@@ -212,24 +239,36 @@ void ArtIOClass::OnPosition(uint8_t pos)
 
 uint16_t ArtIOClass::ReqPos()
 {
-    return(m_ptrEasyCat->BufferOut.Cust.ReqPosition);
+    return (m_ptrEasyCat->BufferOut.Cust.ReqPosition);
 }
 
 bool ArtIOClass::LoaUnloadind()
 {
-    if (m_ptrEasyCat->BufferOut.Cust.Flags & 1 == 1 )
+    if (m_ptrEasyCat->BufferOut.Cust.Flags & 1 == 1)
     {
-        return(true);
+        return (true);
     }
     else
     {
-        return(false);
+        return (false);
     }
 }
 
 void ArtIOClass::Error(uint8_t error)
 {
     m_ptrEasyCat->BufferIn.Cust.OutFault = error;
+}
+
+int ArtIOClass::ARTTimerGetTime()
+{
+    int curTime;
+    curTime = millis();
+    if (curTime == 0)
+    {
+        return (1);
+    }
+
+    return (curTime);
 }
 
 void ArtIOClass::doIOLogic()
@@ -242,7 +281,6 @@ void ArtIOClass::doIOLogic()
             m_ptrEasyCat->BufferIn.Cust.DigiIn = DigitalIn();
             m_ptrEasyCat->BufferIn.Cust.SensSignalOnNextBarda = DigitalIn();
 
-
             //-----------------Это сброс ошибки конвейера, нужно переделать, но пока так
             if (m_ptrEasyCat->BufferOut.Cust.DigiOut == 32 || m_ptrEasyCat->BufferOut.Cust.DigiOut == 16 || m_ptrEasyCat->BufferOut.Cust.DigiOut == 8 || m_ptrEasyCat->BufferOut.Cust.DigiOut == 24 || m_ptrEasyCat->BufferOut.Cust.DigiOut == 48 || m_ptrEasyCat->BufferOut.Cust.DigiOut == 40 || m_ptrEasyCat->BufferOut.Cust.DigiOut == 56)
             {
@@ -250,7 +288,7 @@ void ArtIOClass::doIOLogic()
             }
             else
             {
-               /* ArtIOClass::setOutputState(4, false);
+                /* ArtIOClass::setOutputState(4, false);
                 ArtIOClass::setOutputState(5, false);
                 ArtIOClass::setOutputState(6, false);*/
             }

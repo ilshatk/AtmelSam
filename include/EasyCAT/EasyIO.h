@@ -10,9 +10,9 @@
 //-------------------------------------------------------------------//
 
 
-#define CUST_BYTE_NUM_OUT	15
-#define CUST_BYTE_NUM_IN	18
-#define TOT_BYTE_NUM_ROUND_OUT	16
+#define CUST_BYTE_NUM_OUT	17
+#define CUST_BYTE_NUM_IN	20
+#define TOT_BYTE_NUM_ROUND_OUT	20
 #define TOT_BYTE_NUM_ROUND_IN	20
 
 
@@ -31,6 +31,8 @@ typedef union												//---- output buffer ----
 		uint8_t     TookProduct;
 		uint8_t     Flags;
 		uint8_t     NextConvReadySignal;
+		uint8_t     NextConvReadySignal1;
+		uint8_t     NextConvReadySignal2;
 	}Cust;
 } PROCBUFFER_OUT;
 
@@ -46,12 +48,13 @@ typedef union												//---- input buffer ----
 		uint16_t    AnaIn_3;
 		uint16_t    DigiIn;
 		uint16_t    OutState;
-		uint8_t     OutFault;
+		uint16_t    SensSignalOnNextBarda;
 		uint8_t     ConvReadySignal;
-		uint8_t     SensSignalOnNextBarda;
 		uint8_t     StackReady;
 		uint8_t     GaveStack;
 		uint8_t     OnPosition;
+		uint8_t     OutFault;
+		uint8_t     DevReady;
 	}Cust;
 } PROCBUFFER_IN;
 

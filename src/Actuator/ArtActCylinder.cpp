@@ -69,7 +69,7 @@ void ArtCylinder::doLogic()
          if (isCylinderActed == cylCloseValue)
          {
             cylState = ARTCYL_ST_MOVING;
-            cylCloseTimer = ArtBasicConveyor::ARTTimerGetTime();
+            cylCloseTimer = ArtIOClass::ARTTimerGetTime();
          }
          break;
       }
@@ -86,7 +86,7 @@ void ArtCylinder::doLogic()
          if (isCylinderActed == !cylCloseValue)
          {
             cylState = ARTCYL_ST_MOVING;
-            cylOpenTimer = ArtBasicConveyor::ARTTimerGetTime();
+            cylOpenTimer = ArtIOClass::ARTTimerGetTime();
          }
 
          break;
@@ -211,7 +211,7 @@ int ArtCylinder::ACGetInitialState()
          return (ARTCYL_ST_OPEN);
       }
 
-      cylOpenTimer = ArtBasicConveyor::ARTTimerGetTime();
+      cylOpenTimer = ArtIOClass::ARTTimerGetTime();
       return (ARTCYL_ST_MOVING);
    }
    else
@@ -220,7 +220,7 @@ int ArtCylinder::ACGetInitialState()
       {
          return (ARTCYL_ST_CLOSED);
       }
-      cylCloseTimer = ArtBasicConveyor::ARTTimerGetTime();
+      cylCloseTimer = ArtIOClass::ARTTimerGetTime();
       return (ARTCYL_ST_MOVING);
    }
 }

@@ -2,12 +2,11 @@
 #define Art_Act_Cylinder_H
 #include "interface\IHasCycleLogic.h"
 #include "ArtIOClass.h"
-#include "Conveyor\ArtConveyor.h"
 #include "Sensor\ArtSensor.h"
 
 class ArtCylinder : public IHasCycleLogic
 {
-protected:
+private:
     int m_id,
         cylCloseTimer,
         cylOpenTimer,

@@ -186,22 +186,35 @@ void setup()
   ArtPusher Pusher(18,("SV4"),&OnPusherM20,&ConvM20,&ConvM21,&PusherSV4);
   //----setup for A36---------------------------------------------------------------------------------------
   */
+/*
+//----setup for A37---------------------------------------------------------------------------------------
+ArtSensor PalletOnM24(1, ("B51"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false); // Фотодатчик паллеты на М24 (B51) (тип BGS G10)
+ArtSensor PalletOnM25(2, ("B62"), 2, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false); // Фотодатчик паллеты на М25 (B62) (тип BGS G10)
+ArtSensor PalletOnM26(3, ("B73"), 3, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false); // Фотодатчик паллеты на М26 (B73) (тип BGS G10)
+ArtSensor PalletOnM27(4, ("B84"), 4, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false); // Фотодатчик паллеты на М27 (B84) (тип BGS G10)
 
-  //----setup for A50---------------------------------------------------------------------------------------
-  ArtDriver ShuttleDrv(1, ("M21DRV"), ArtDriver::DRIVER_TYPE_1, 9, 5, 6, true, 2, 2, 2, 2, 2, 2, 2);     //Драйвер на M21
-  ArtDriver OverShuttleDrv(2, ("M21DRV"), ArtDriver::DRIVER_TYPE_1, 7, 8, 5, true, 1, 2, 2, 2, 2, 2, 2); //Драйвер на M21
-  ArtDriver BeforWind(3, ("M21DRV"), ArtDriver::DRIVER_TYPE_1, 11, 9, 10, true, 1, 2, 2, 0, 0, 0, 0);    //Драйвер на M21
-  ArtAnalogSensor AnSens(4, ("ConvM16"), 1);
-  ArtSensor PalletOnConv(5, ("B49"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false); // Фотодатчик на конце М21 пикпойнт (B49) (тип BGS)
-  ArtSensor EnterSens(6, ("B49"), 2, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);    // Фотодатчик на конце М21 пикпойнт (B49) (тип BGS)
-  ArtSensor ExitSens(7, ("B49"), 3, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);     // Фотодатчик на конце М21 пикпойнт (B49) (тип BGS)
-  ArtConveyor1TypeNextExtDev BeforWin(8, ("B49"), ArtBasicConveyor::CONVEYOR_TYPE_1, &BeforWind, &EnterSens, &ExitSens, 1000, 0, 8);
-  ArtConveyorShuttleType Shuttle(9, ("ConvM16"), &ShuttleDrv, &OverShuttleDrv, &AnSens, &PalletOnConv, &BeforWin,
-                                 true, 40000, 100000, 0, 0);
-  //----setup for A50--------------------------------------------------------------------------------------
+ArtSensor Stopper1DOWN(6, ("B52"), 6, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false); // Стопер 1 внизу (B52) (тип геркон)
+ArtSensor Stopper1UP(7, ("B53"), 7, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false); // Стопер 1 наверху (B53) (тип геркон)
+ArtSensor Stopper3DOWN(8, ("B63"), 8, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false); // Стопер 3 внизу (B63) (тип геркон)
+ArtSensor Stopper3UP(9, ("B64"), 9, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false); // Стопер 3 наверху (B64) (тип геркон)
+ArtSensor Stopper5DOWN(10, ("B74"), 10, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false); // Стопер 5 внизу (B74) (тип геркон)
+ArtSensor Stopper5UP(11, ("B75"), 11, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false); // Стопер 5 наверху (B75) (тип геркон)
+ArtSensor Stopper7DOWN(12, ("B85"), 12, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false); // Стопер 7 внизу (B85) (тип геркон)
+ArtSensor Stopper7UP(13, ("B86"), 13, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false); // Стопер 7 наверху (B86) (тип геркон)
+
+ArtCylinder Stopper1(14, ("SV4"), 10, false, true, ArtCylinder::MONO_STABLE, 11,  &Stopper1UP, &Stopper1DOWN); //Пушер SV1
+ArtCylinder Stopper3(15, ("SV4"), 10, false, true, ArtCylinder::MONO_STABLE, 11,  &Stopper3UP, &Stopper3DOWN); //Пушер SV1
+ArtCylinder Stopper5(16, ("SV4"), 10, false, true, ArtCylinder::MONO_STABLE, 11,  &Stopper5UP, &Stopper5DOWN); //Пушер SV1
+ArtCylinder Stopper7(17, ("SV4"), 10, false, true, ArtCylinder::MONO_STABLE, 11,  &Stopper7UP, &Stopper7DOWN); //Пушер SV1
+
+ArtDriver M22DRV(18, ("M21DRV"), ArtDriver::DRIVER_TYPE_1, 15, 13, 6, true, 0, 2, 0, 2, 0, 0, 0);//Драйвер на M21
+ArtDriver M23DRV(19, ("M21DRV"), ArtDriver::DRIVER_TYPE_1, 16, 14, 6, true, 0, 2, 0, 2, 0, 0, 0);//Драйвер на M21
+*/
+
+//----setup for A37----------------------------------------------------------------------------------------
   
- /*
-  //----setup for A51---------------------------------------------------------------------------------------
+
+  //----setup for A41--Shuttle-------------------------------------------------------------------------------------
   ArtDriver ShuttleDrv(1, ("M21DRV"), ArtDriver::DRIVER_TYPE_1, 9, 5, 6, true, 2, 2, 2, 2, 2, 2, 2);     //Драйвер на M21
   ArtDriver OverShuttleDrv(2, ("M21DRV"), ArtDriver::DRIVER_TYPE_1, 7, 8, 5, true, 1, 2, 2, 2, 2, 2, 2); //Драйвер на M21
   ArtDriver BeforWind(3, ("M21DRV"), ArtDriver::DRIVER_TYPE_1, 11, 9, 10, true, 1, 2, 2, 0, 0, 0, 0);    //Драйвер на M21
@@ -212,8 +225,8 @@ void setup()
   ArtConveyor1TypeNextExtDev BeforWin(8, ("B49"), ArtBasicConveyor::CONVEYOR_TYPE_1, &BeforWind, &EnterSens, &ExitSens, 1000, 0, 8);
   ArtConveyorShuttleType Shuttle(9, ("ConvM16"), &ShuttleDrv, &OverShuttleDrv, &AnSens, &PalletOnConv, &BeforWin,
                                  true, 40000, 100000, 0, 0);
-  //----setup for A51---------------------------------------------------------------------------------------
-  */
+  //----setup for A41--Shuttle-------------------------------------------------------------------------------------
+  
   /*
 
 
@@ -298,7 +311,7 @@ void setup()
       Helper.doLogic();
       AdcResult = ReadAdc(AnaInChannel);
       ArtIOClass::doIOLogic();
-      /*switch (AnaInChannel) // we read one channel each round
+      switch (AnaInChannel) // we read one channel each round
       {
       case 0:
         EASYCAT.BufferIn.Cust.AnaIn_3 = AdcResult;
@@ -315,7 +328,7 @@ void setup()
       case 3:
         EASYCAT.BufferIn.Cust.AnaIn_0 = AdcResult;
         break;
-      }*/
+      }
       EASYCAT.BufferIn.Cust.AnaIn_2 = Shuttle.PositionSens->SensorState();
       EASYCAT.BufferIn.Cust.AnaIn_3 = Shuttle.CurPos;
       if (EASYCAT.BufferOut.Cust.Output1 == 1)

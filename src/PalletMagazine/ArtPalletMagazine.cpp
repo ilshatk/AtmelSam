@@ -342,6 +342,7 @@ void PalletMagazine::DISP_MAIN_CYCLE_SPS()
             {
                 if (PallONConvey && (/*PALL_conveyors[4].state == CONV_RUN*/ 1))
                 {
+                    
                 }
                 else
                 {
