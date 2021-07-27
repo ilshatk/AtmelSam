@@ -221,7 +221,7 @@ private:
 	ArtCylinder *StopperPos3;
 	ArtCylinder *StopperPos4;
 
-	bool Pos1Sens, Pos2Sens, Pos3Sens, Pos4Sens, Conv1Free, Conv2Free, Conv3Free, Conv4Free;
+	bool Pos1Sens, Pos2Sens, Pos3Sens, Pos4Sens, Conv1Free, Conv2Free, Conv3Free, Conv4Free,flag;
 	int productPassTime, ExtDevReady;
 public:
 

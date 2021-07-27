@@ -66,7 +66,7 @@ void PalletMagazine::CLAMP_POS_STATE_SPS()
     {
         if (Clamp1->getCylState() == ArtCylinder::ARTCYL_ST_CLOSED) // Состояние цилиндра
         {
-            if (ArtCylinder::CHK_ACTIVE_NTIME(Clamp1->getCylState() == ArtCylinder::ARTCYL_ST_CLOSED, &isClamp1Open_timer, DEF_TIME_POS_SENS)) //Проверка отсчитал ли таймер isClamp1Open_timer до DEF_TIME_POS_SENS
+            if (ArtIOClass::CHK_ACTIVE_NTIME(Clamp1->getCylState() == ArtCylinder::ARTCYL_ST_CLOSED, &isClamp1Open_timer, DEF_TIME_POS_SENS)) //Проверка отсчитал ли таймер isClamp1Open_timer до DEF_TIME_POS_SENS
             {
                 if (Clamp2->getCylState() == ArtCylinder::ARTCYL_ST_CLOSED)
                 {
@@ -79,7 +79,7 @@ void PalletMagazine::CLAMP_POS_STATE_SPS()
             }
             else
             {
-                if (ArtCylinder::CHK_ACTIVE_NTIME(Clamp1->getCylState() == ArtCylinder::ARTCYL_ST_CLOSED, &isClamp1Open_timer, DEF_TIME_POS_SENS))
+                if (ArtIOClass::CHK_ACTIVE_NTIME(Clamp1->getCylState() == ArtCylinder::ARTCYL_ST_CLOSED, &isClamp1Open_timer, DEF_TIME_POS_SENS))
                 {
                     //;reset timer
                 }
@@ -89,7 +89,7 @@ void PalletMagazine::CLAMP_POS_STATE_SPS()
 
         if (Clamp1->getCylState() == ArtCylinder::ARTCYL_ST_OPEN)
         {
-            if (ArtCylinder::CHK_ACTIVE_NTIME(Clamp1->getCylState() == ArtCylinder::ARTCYL_ST_OPEN, &isClamp1Close_timer, DEF_TIME_POS_SENS))
+            if (ArtIOClass::CHK_ACTIVE_NTIME(Clamp1->getCylState() == ArtCylinder::ARTCYL_ST_OPEN, &isClamp1Close_timer, DEF_TIME_POS_SENS))
             {
                 if (Clamp2->getCylState() == ArtCylinder::ARTCYL_ST_OPEN)
                 {
@@ -102,7 +102,7 @@ void PalletMagazine::CLAMP_POS_STATE_SPS()
             }
             else
             {
-                if (ArtCylinder::CHK_ACTIVE_NTIME(Clamp1->getCylState() == ArtCylinder::ARTCYL_ST_OPEN, &isClamp1Close_timer, DEF_TIME_POS_SENS))
+                if (ArtIOClass::CHK_ACTIVE_NTIME(Clamp1->getCylState() == ArtCylinder::ARTCYL_ST_OPEN, &isClamp1Close_timer, DEF_TIME_POS_SENS))
                 {
                     //;reset timer
                 }
@@ -145,7 +145,7 @@ void PalletMagazine::DISP_POS_STATE_SPS()
 
     if (isTOPCylinderUP)
     {
-        if (ArtCylinder::CHK_ACTIVE_NTIME(isTOPCylinderUP, &isTOPCylinderUP_timer, DEF_TIME_POS_SENS))
+        if (ArtIOClass::CHK_ACTIVE_NTIME(isTOPCylinderUP, &isTOPCylinderUP_timer, DEF_TIME_POS_SENS))
         {
             if (isBOTCylinderUP)
             {
@@ -165,7 +165,7 @@ void PalletMagazine::DISP_POS_STATE_SPS()
     }
     else
     {
-        if (ArtCylinder::CHK_ACTIVE_NTIME(isBOTCylinderUP, &isTOPCylinderUP_timer, DEF_TIME_POS_SENS))
+        if (ArtIOClass::CHK_ACTIVE_NTIME(isBOTCylinderUP, &isTOPCylinderUP_timer, DEF_TIME_POS_SENS))
         {
             // ;reset timer;
         }
@@ -173,7 +173,7 @@ void PalletMagazine::DISP_POS_STATE_SPS()
 
     if (isTOPCylinderDOWN)
     {
-        if (ArtCylinder::CHK_ACTIVE_NTIME(isTOPCylinderDOWN, &isTOPCylinderDOWN_timer, DEF_TIME_POS_SENS))
+        if (ArtIOClass::CHK_ACTIVE_NTIME(isTOPCylinderDOWN, &isTOPCylinderDOWN_timer, DEF_TIME_POS_SENS))
         {
             if (isBOTCylinderUP)
             {
@@ -195,7 +195,7 @@ void PalletMagazine::DISP_POS_STATE_SPS()
     }
     else
     {
-        if (ArtCylinder::CHK_ACTIVE_NTIME(isTOPCylinderDOWN, &isTOPCylinderDOWN_timer, DEF_TIME_POS_SENS))
+        if (ArtIOClass::CHK_ACTIVE_NTIME(isTOPCylinderDOWN, &isTOPCylinderDOWN_timer, DEF_TIME_POS_SENS))
         {
             //;reset timer
         }
@@ -203,7 +203,7 @@ void PalletMagazine::DISP_POS_STATE_SPS()
 
     isTOPcylinderError = (!isTOPCylinderUP && !isTOPCylinderDOWN);
 
-    if (ArtCylinder::CHK_ACTIVE_NTIME(isTOPcylinderError, &isTOPcylinderError_timer, DEF_TIME_POS_SENS))
+    if (ArtIOClass::CHK_ACTIVE_NTIME(isTOPcylinderError, &isTOPcylinderError_timer, DEF_TIME_POS_SENS))
     {
         //ARTHMISetMessage(m_disp_pos_error, TRUE, "ARTDISP", "DISPENSER_CYLINDER_NOT_IN_END_POSITION")
         //artOpcMessage[200]=1
@@ -252,7 +252,7 @@ void PalletMagazine::DISP_MAIN_CYCLE_SPS()
     {
         PallONConvey = true;
     }
-    if (ArtCylinder::CHK_ACTIVE_NTIME(isPallONConvey_flag, &isPallONConvey_timer, isPallONConvey_TIME))
+    if (ArtIOClass::CHK_ACTIVE_NTIME(isPallONConvey_flag, &isPallONConvey_timer, isPallONConvey_TIME))
     {
         PallONConvey = false;
     }
@@ -265,7 +265,8 @@ void PalletMagazine::DISP_MAIN_CYCLE_SPS()
             {
             case BOT:
             {
-                if (ArtCylinder::CHK_ACTIVE_NTIME(isBOT, &isBOT_timer, DEF_TIME_POS_SENS))
+                ArtIOClass::DevReady(false);
+                if (ArtIOClass::CHK_ACTIVE_NTIME(isBOT, &isBOT_timer, DEF_TIME_POS_SENS))
                 {
                     if (PalletsInStack->SensorState())
                     {
@@ -296,7 +297,8 @@ void PalletMagazine::DISP_MAIN_CYCLE_SPS()
 
             case MID:
             {
-                if (ArtCylinder::CHK_ACTIVE_NTIME(isMID, &isMID_timer, DEF_TIME_POS_SENS))
+                ArtIOClass::DevReady(false);
+                if (ArtIOClass::CHK_ACTIVE_NTIME(isMID, &isMID_timer, DEF_TIME_POS_SENS))
                 {
                     if (ClampState == CL_OPEN)
                     {
@@ -313,7 +315,7 @@ void PalletMagazine::DISP_MAIN_CYCLE_SPS()
                             }
                             else
                             {
-                                DISPGOTOP();//проверить
+                                DISPGOTOP(); //проверить
                             }
                         }
                     }
@@ -330,6 +332,7 @@ void PalletMagazine::DISP_MAIN_CYCLE_SPS()
                                 if (!PallONConvey)
                                 {
                                     DISPGOBOT();
+                                    
                                 }
                             }
                         }
@@ -342,10 +345,11 @@ void PalletMagazine::DISP_MAIN_CYCLE_SPS()
             {
                 if (PallONConvey && (/*PALL_conveyors[4].state == CONV_RUN*/ 1))
                 {
-                    
+                    ArtIOClass::DevReady(true);
                 }
                 else
                 {
+                    ArtIOClass::DevReady(false);
                     if (!PallONConvey)
                     {
                         if ((DispPallState == DispPallSt::HAS_PALL) || (DispPallState == DispPallSt::LOW_PALL))
@@ -459,7 +463,7 @@ void PalletMagazine::ART_DISP_ERR_SPS()
         doGREENcolumn = false;
     }
    */
-    if (ArtCylinder::CHK_ACTIVE_NTIME((DispCurPosition == BOT), &isBOTandNOPALLPLAC_timer, isBOTandNOPALLPLAC_TIME))
+    if (ArtIOClass::CHK_ACTIVE_NTIME((DispCurPosition == BOT), &isBOTandNOPALLPLAC_timer, isBOTandNOPALLPLAC_TIME))
     {
         if (!isPallONConvey->SensorState())
         {

@@ -58,6 +58,10 @@ public:
     static bool LoaUnloadind();
     static void OnPosition(uint8_t pos);
     static int ARTTimerGetTime();
+    static void DevReady(bool ready);
+    static void DevReady(int posnum);
+    static bool ExtDevReady();
+    bool static CHK_ACTIVE_NTIME(bool sens_in, int *timer_in, int delta_time);
 
 protected:
     ArtIOClass();

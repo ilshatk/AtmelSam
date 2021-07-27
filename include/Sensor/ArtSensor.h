@@ -11,7 +11,11 @@ protected:
 		isFE,
 		isRE,
 		value,
-		SensorExternal;
+		SensorExternal,
+		valueOFF,
+		valueON,
+		flag,
+		lastSensorState;
 	int sensorTimerFE,
 		sensorTimerRE,
 		sensorType,
@@ -32,7 +36,7 @@ public:
 	ArtSensor(int id, const char name[]);
 	ArtSensor(int id, const char name[], int SensorInput, SensorType type, int delayRe, int delayFe, bool SensorExternal);
 	//~ArtSensor(){};
-	int update();
+	bool update();
 	bool SensorState();
 };
 

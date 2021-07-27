@@ -1597,7 +1597,31 @@ void ArtPalletConveyorWithStoppers::doLogic() //на переменную flags 
 	{
 		if (Conv1Free)
 		{
-			StopperPos1->ARTCylinderOpen();
+			if (!Pos1Sens)// нужно сделать задержку выключения сигнала с датчика
+			{
+				StopperPos1->ARTCylinderOpen();
+				while (!(StopperPos1->getCylState() == ArtCylinder::ARTCYL_ST_OPEN))
+				{
+					break;
+				}
+				if (ArtIOClass::ExtDevReady())
+				{
+					ActPoint->ConveySetDriverFWD(true);
+					//включить конвейер диспенсера
+				}
+			}
+			else
+			{
+				flag = true;
+				ActPoint->ConveySetSTOP();
+				//остановить конвейер диспенсера
+				StopperPos1->ARTCylinderClose();
+				while (!(StopperPos1->getCylState() == ArtCylinder::ARTCYL_ST_CLOSED))
+				{
+					break;
+				}
+				ArtIOClass::DevReady(1);
+			}
 		}
 		if (!Pos1Sens)
 		{
@@ -1629,7 +1653,7 @@ void ArtPalletConveyorWithStoppers::doLogic() //на переменную flags 
 					StopperPos1->ARTCylinderOpen();
 				}
 
-				while ((!StopperPos4->getCylState() == ArtCylinder::ARTCYL_ST_OPEN) && (!StopperPos1->getCylState() == ArtCylinder::ARTCYL_ST_OPEN) && ((!StopperPos2->getCylState() == ArtCylinder::ARTCYL_ST_OPEN) || (!StopperPos2->getCylState() == ArtCylinder::ARTCYL_ST_CLOSED)) && (!StopperPos3->getCylState() == ArtCylinder::ARTCYL_ST_CLOSED))
+				while ((!StopperPos4->getCylState() ==ArtCylinder::ARTCYL_ST_OPEN) && (!StopperPos1->getCylState() == ArtCylinder::ARTCYL_ST_OPEN) && ((!StopperPos2->getCylState() == ArtCylinder::ARTCYL_ST_OPEN) || (!StopperPos2->getCylState() == ArtCylinder::ARTCYL_ST_CLOSED)) && (!StopperPos3->getCylState() == ArtCylinder::ARTCYL_ST_CLOSED))
 				{
 					break;
 				}

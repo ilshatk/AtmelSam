@@ -57,7 +57,6 @@ public:
     void update();
     int getName();
     int getID();
-    bool static CHK_ACTIVE_NTIME(bool sens_in, int *timer_in, int delta_time);
     int ACGetInitialState();
     void ARTCylinderOpen();
     void ARTCylinderClose();

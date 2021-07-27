@@ -105,7 +105,7 @@ void ArtCylinder::doLogic()
             {
                if (bCylTimeoutControl)
                {
-                  if (CHK_ACTIVE_NTIME(isCylinderActed == !cylCloseValue, &cylOpenTimer, cylOpenDelay))
+                  if (ArtIOClass::CHK_ACTIVE_NTIME(isCylinderActed == !cylCloseValue, &cylOpenTimer, cylOpenDelay))
                   {
                      // ArtDebugMsg("RUNTIME ERROR: Opening timeout from %1 millisecs", "ArtActCylinder", cylOpenDelay[handle])
                      cylOpenTimer = 0;
@@ -126,7 +126,7 @@ void ArtCylinder::doLogic()
             {
                if (bCylTimeoutControl)
                {
-                  if (!CHK_ACTIVE_NTIME(isCylinderActed == cylCloseValue, &cylCloseTimer, cylCloseDelay))
+                  if (!ArtIOClass::CHK_ACTIVE_NTIME(isCylinderActed == cylCloseValue, &cylCloseTimer, cylCloseDelay))
                   {
                      cylCloseTimer = 0;
                      //ArtDebugMsg("RUNTIME ERROR: Closing timeout from %1 millisecs", "ArtActCylinder", cylCloseDelay[handle])
@@ -148,47 +148,7 @@ void ArtCylinder::doLogic()
    }
 }
 
-bool ArtCylinder::CHK_ACTIVE_NTIME(bool sens_in, int *timer_in, int delta_time) //sensor,timer for check, active time before return true
-{
-   int curTime, deltaTime;
 
-   if (!sens_in)
-   {
-      (*timer_in) = 0;
-   }
-   else
-   {
-      if ((*timer_in) == 0)
-      {
-         (*timer_in) = millis();
-      }
-
-      curTime = millis();
-
-      if ((*timer_in) < curTime)
-      {
-         deltaTime = curTime - (*timer_in);
-         return (deltaTime > delta_time);
-      }
-      else //exceptions check
-      {
-         if ((*timer_in) == curTime)
-         {
-            return (false);
-         }
-         else
-         {
-            if ((*timer_in) > curTime)
-            {
-               timer_in = timer_in - 2147483647;
-               deltaTime = curTime - (*timer_in);
-               return (deltaTime > delta_time);
-            }
-         }
-      }
-   }
-   return (false);
-}
 
 int ArtCylinder::ACGetInitialState()
 {

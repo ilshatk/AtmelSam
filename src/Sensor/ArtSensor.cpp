@@ -9,8 +9,6 @@ ArtSensor::ArtSensor(int id, const char name[]) // Создаем сенсор (
 ArtSensor::ArtSensor(int id, const char name[], int SensorInput, SensorType type, int delayRe = 0, int delayFe = 0, bool SensorExternal = false) : ArtSensor(id, name) //Задаем параметры(Конструктор)
 {
 	sensorType = type;
-	sensorTimerFE = delayFe;
-	sensorTimerRE = delayRe;
 	ArtSensor::SensorExternal = SensorExternal;
 	m_id = id;
 	isRE = false;
@@ -33,11 +31,40 @@ ArtSensor::ArtSensor(int id, const char name[], int SensorInput, SensorType type
 	{
 		sensorDelayFE = 0;
 	}
+	valueON = false;
+	valueOFF = true;
+	lastSensorState = false;
+	flag = false;
 }
 
-int ArtSensor::update()
+bool ArtSensor::update()
 {
-	return (SensorState());
+	value = ArtIOClass::getInputState(SensorInput);
+
+		if (sensorDelayRE > 0)
+		{
+			valueON = ArtIOClass::CHK_ACTIVE_NTIME(value, &sensorTimerRE, sensorDelayRE);
+		}
+
+		if (sensorDelayFE > 0 && lastSensorState == true && value == false)
+		{
+			flag = true;
+		}
+		if (flag)
+		{
+			valueOFF = ArtIOClass::CHK_ACTIVE_NTIME(!value, &sensorTimerFE, sensorDelayFE);
+			if (valueOFF)
+			{
+				flag = false;
+				sensorTimerFE = 0;
+			}
+		}
+		lastSensorState = value;
+		return (!valueOFF || value);
+	
+
+
+
 }
 
 bool ArtSensor::SensorState()
@@ -45,8 +72,8 @@ bool ArtSensor::SensorState()
 	bool state;
 	if (SensorExternal == false)
 	{
-		state = ArtIOClass::getInputState(SensorInput); // на первый вход enter sensor
-		if ((sensorType & 0x1) != 0)					//0x1 это инверсный тип датчика
+		state = update(); /*ArtIOClass::getInputState(SensorInput)*/ // на первый вход enter sensor
+		if ((sensorType & 0x1) != 0)								 //0x1 это инверсный тип датчика
 		{
 			return (!state);
 		}

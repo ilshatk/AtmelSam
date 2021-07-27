@@ -205,7 +205,7 @@ bool ArtIOClass::readySignalFromNext()
     }
 }
 
-bool ArtIOClass::readySignalFromNext(int convnum, int boardnum)//сигнал готовности следующих четырех конвейеров
+bool ArtIOClass::readySignalFromNext(int convnum, int boardnum) //сигнал готовности следующих четырех конвейеров
 {
     if (boardnum == 1)
     {
@@ -230,6 +230,37 @@ bool ArtIOClass::readySignalFromNext(int convnum, int boardnum)//сигнал г
             return (false);
         }
     }
+}
+
+bool ArtIOClass::ExtDevReady() // для приема сигнала готов с диспенсера на следующий конвейер
+{
+    if (m_ptrEasyCat->BufferOut.Cust.Flags == 1)
+    {
+        // ArtIOClass::setOutputState(16, true);
+        return (true);
+    }
+    else
+    {
+        // ArtIOClass::setOutputState(16, false);
+        return (false);
+    }
+}
+
+void ArtIOClass::DevReady(bool ready) // для передачи сигнала готов с диспенсера на следующий конвейер
+{
+    if (ready)
+    {
+        m_ptrEasyCat->BufferIn.Cust.DevReady = 1;
+    }
+    else
+    {
+        m_ptrEasyCat->BufferIn.Cust.DevReady = 0;
+    }
+}
+
+void ArtIOClass::DevReady(int posnum) // для передачи сигнала какая позиция готова передать с цепного конвейера на следующий конвейер
+{
+    m_ptrEasyCat->BufferIn.Cust.DevReady | posnum ;
 }
 
 void ArtIOClass::OnPosition(uint8_t pos)
@@ -320,4 +351,47 @@ void ArtIOClass::setOutputState(uint16_t nOutputCommonState)
 {
     m_nCurrentOutputState = nOutputCommonState;
     DigitalOut(m_nCurrentOutputState);
+}
+
+
+bool ArtIOClass::CHK_ACTIVE_NTIME(bool sens_in, int *timer_in, int delta_time) //sensor,timer for check, active time before return true
+{
+   int curTime, deltaTime;
+
+   if (!sens_in)
+   {
+      (*timer_in) = 0;
+   }
+   else
+   {
+      if ((*timer_in) == 0)
+      {
+         (*timer_in) = millis();
+      }
+
+      curTime = millis();
+
+      if ((*timer_in) < curTime)
+      {
+         deltaTime = curTime - (*timer_in);
+         return (deltaTime > delta_time);
+      }
+      else //exceptions check
+      {
+         if ((*timer_in) == curTime)
+         {
+            return (false);
+         }
+         else
+         {
+            if ((*timer_in) > curTime)
+            {
+               timer_in = timer_in - 2147483647;
+               deltaTime = curTime - (*timer_in);
+               return (deltaTime > delta_time);
+            }
+         }
+      }
+   }
+   return (false);
 }
