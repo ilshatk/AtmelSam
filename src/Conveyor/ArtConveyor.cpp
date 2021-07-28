@@ -1530,7 +1530,7 @@ ArtPalletConveyorWithStoppers::ArtPalletConveyorWithStoppers(int id, const char 
 	m_id = id;
 }
 
-ArtPalletConveyorWithStoppers::ArtPalletConveyorWithStoppers(int id, const char name[], ConveyorType type, ArtDriver *ActPoint, ArtSensor *Pos1Ptr, ArtSensor *Pos2Ptr, ArtSensor *Pos3Ptr, ArtSensor *Pos4Ptr, ArtCylinder *StopperPos1, ArtCylinder *StopperPos2, ArtCylinder *StopperPos3, ArtCylinder *StopperPos4, int PassTime, int RunTimer, int ExtDevReady) : ArtPalletConveyorWithStoppers(id, name)
+ArtPalletConveyorWithStoppers::ArtPalletConveyorWithStoppers(int id, const char name[], ConveyorType type, ArtDriver *ActPoint, ArtDriver *DispDrvPtr, ArtSensor *Pos1Ptr, ArtSensor *Pos2Ptr, ArtSensor *Pos3Ptr, ArtSensor *Pos4Ptr, ArtCylinder *StopperPos1, ArtCylinder *StopperPos2, ArtCylinder *StopperPos3, ArtCylinder *StopperPos4, int PassTime, int RunTimer) : ArtPalletConveyorWithStoppers(id, name)
 {
 	conveyorType = type;
 	ArtPalletConveyorWithStoppers::Pos1Ptr = Pos1Ptr; //указатель на драйвер
@@ -1542,6 +1542,7 @@ ArtPalletConveyorWithStoppers::ArtPalletConveyorWithStoppers(int id, const char 
 	ArtPalletConveyorWithStoppers::StopperPos3 = StopperPos3;
 	ArtPalletConveyorWithStoppers::StopperPos4 = StopperPos4;
 	ArtPalletConveyorWithStoppers::ActPoint = ActPoint;
+	ArtPalletConveyorWithStoppers::DispDrvPtr = DispDrvPtr;
 	conveyorRunTimer = 0;
 	Pos1Sens = false;
 	Pos2Sens = false;
@@ -1576,173 +1577,219 @@ void ArtPalletConveyorWithStoppers::doLogic() //на переменную flags 
 	{
 	case ST_CONVEYOR_UNKNOWN:
 	{
-		if (ConveyorGetReadyReceive() == 1 && (!Pos1Sens && !Pos2Sens && !Pos3Sens && !Pos4Sens))
+		if (ConveyorGetReadyReceive() == 1 && !Pos1Sens)
 		{
-			conveyorState = ST_CONVEYOR_FREE;
+			conveyorState = ST_1_POS;
+			break;
+		}
+
+		if (ConveyorGetReadyReceive() == 1 && !Pos2Sens)
+		{
+			conveyorState = ST_2_POS;
+			break;
+		}
+
+		if (ConveyorGetReadyReceive() == 1 && !Pos3Sens)
+		{
+			conveyorState = ST_3_POS;
+			break;
+		}
+
+		if (ConveyorGetReadyReceive() == 1 && !Pos4Sens)
+		{
+			conveyorState = ST_4_POS;
+			break;
+		}
+		conveyorState = ST_1_POS;
+		break;
+	}
+
+	case ST_1_POS:
+	{
+		if (!Pos1Sens && /*сигнал о том что мини-конвейеры не вверху и не крутятся*/ )
+		{
+			StopperPos1->ARTCylinderOpen();
+			if (ArtIOClass::ExtDevReady() && ((StopperPos1->getCylState() == ArtCylinder::ARTCYL_ST_OPEN)))
+			{
+				ActPoint->ConveySetDriverFWD(true); // запуск цепного конвейера
+				DispDrvPtr->ConveySetDriverFWD(true);
+			}
 		}
 		else
 		{
-			if (productExitSensConvey)
+			if (Pos1Sens)
 			{
-				conveyorState = ST_CONVEYOR_BUSY;
-			}
-			else
-			{
-				conveyorState = ST_CONVEYOR_FREE;
+				ActPoint->ConveySetSTOP();
+				DispDrvPtr->ConveySetSTOP();
+
+				if (Conv1Free && !(ActPoint->ARTDriverGetFWD()))
+				{
+					//поднимаем мини-конвейер и передаем паллету пикпоинту 1
+					//даем сигнал готовности
+				}
+
+				if (!Conv1Free && !(ActPoint->ARTDriverGetFWD()))
+				{
+					conveyorState = ST_2_POS;
+				}
 			}
 		}
 		break;
 	}
-	case ST_CONVEYOR_FREE:
+
+	case ST_2_POS:
 	{
-		if (Conv1Free)
+		if (!Pos2Sens && /*сигнал о том что мини-конвейеры не вверху и не крутятся*/)
 		{
-			if (!Pos1Sens)// нужно сделать задержку выключения сигнала с датчика
+			StopperPos2->ARTCylinderOpen();
+			if (!Pos1Sens)
 			{
 				StopperPos1->ARTCylinderOpen();
-				while (!(StopperPos1->getCylState() == ArtCylinder::ARTCYL_ST_OPEN))
-				{
-					break;
-				}
-				if (ArtIOClass::ExtDevReady())
-				{
-					ActPoint->ConveySetDriverFWD(true);
-					//включить конвейер диспенсера
-				}
 			}
 			else
 			{
-				flag = true;
-				ActPoint->ConveySetSTOP();
-				//остановить конвейер диспенсера
 				StopperPos1->ARTCylinderClose();
-				while (!(StopperPos1->getCylState() == ArtCylinder::ARTCYL_ST_CLOSED))
-				{
-					break;
-				}
-				ArtIOClass::DevReady(1);
+			}
+
+			if (ArtIOClass::ExtDevReady() && (StopperPos2->getCylState() == ArtCylinder::ARTCYL_ST_OPEN))
+			{
+				ActPoint->ConveySetDriverFWD(true); // запуск цепного конвейера
+				DispDrvPtr->ConveySetDriverFWD(true);
 			}
 		}
-		if (!Pos1Sens)
+		else
 		{
-		}
-
-		if (!Pos4Sens)
-		{
-			StopperPos4->ARTCylinderOpen();
-
-			if (Pos3Sens)
+			if (Pos1Sens)
 			{
-				StopperPos3->ARTCylinderClose();
+				ActPoint->ConveySetSTOP();
+				DispDrvPtr->ConveySetSTOP();
 
-				if (Pos2Sens)
-				{
-					StopperPos2->ARTCylinderOpen();
-				}
-				else
+				if (Conv2Free && !(ActPoint->ARTDriverGetFWD()))
 				{
 					StopperPos2->ARTCylinderClose();
+					//поднимаем мини-конвейер и передаем паллету пикпоинту 2
 				}
 
-				if (Pos1Sens)
+				if (!Conv2Free && !(ActPoint->ARTDriverGetFWD()))
 				{
-					StopperPos1->ARTCylinderOpen();
+					conveyorState = ST_3_POS;
 				}
-				else
-				{
-					StopperPos1->ARTCylinderOpen();
-				}
+			}
+		}
+		break;
+	}
 
-				while ((!StopperPos4->getCylState() ==ArtCylinder::ARTCYL_ST_OPEN) && (!StopperPos1->getCylState() == ArtCylinder::ARTCYL_ST_OPEN) && ((!StopperPos2->getCylState() == ArtCylinder::ARTCYL_ST_OPEN) || (!StopperPos2->getCylState() == ArtCylinder::ARTCYL_ST_CLOSED)) && (!StopperPos3->getCylState() == ArtCylinder::ARTCYL_ST_CLOSED))
-				{
-					break;
-				}
-				ActPoint->ConveySetDriverFWD(true);
+	case ST_3_POS:
+	{
+		if (!Pos3Sens && /*сигнал о том что мини-конвейеры не вверху и не крутятся*/)
+		{
+			StopperPos3->ARTCylinderOpen();
+			if (!Pos2Sens)
+			{
+				StopperPos2->ARTCylinderOpen();
 			}
 			else
 			{
-				if (Pos4Sens)
+				StopperPos2->ARTCylinderClose();
+			}
+
+			if (!Pos1Sens)
+			{
+				StopperPos1->ARTCylinderOpen();
+			}
+			else
+			{
+				StopperPos1->ARTCylinderClose();
+			}
+
+			if (ArtIOClass::ExtDevReady() && (StopperPos3->getCylState() == ArtCylinder::ARTCYL_ST_OPEN))
+			{
+				ActPoint->ConveySetDriverFWD(true); // запуск цепного конвейера
+				DispDrvPtr->ConveySetDriverFWD(true);
+			}
+		}
+		else
+		{
+			if (Pos1Sens && Pos2Sens)
+			{
+				ActPoint->ConveySetSTOP();
+				DispDrvPtr->ConveySetSTOP();
+
+				if (Conv3Free && !(ActPoint->ARTDriverGetFWD()))
 				{
 					StopperPos3->ARTCylinderClose();
-					if (Pos2Sens)
-					{
-						StopperPos2->ARTCylinderClose();
-					}
-					else
-					{
-						StopperPos2->ARTCylinderClose();
-						StopperPos1->ARTCylinderClose();
-					}
+					//поднимаем мини-конвейер и передаем паллету пикпоинту 2
+				}
+
+				if (!Conv2Free && !(ActPoint->ARTDriverGetFWD()))
+				{
+					conveyorState = ST_4_POS;
 				}
 			}
 		}
-		else
-		{
-			StopperPos4->ARTCylinderOpen();
-			StopperPos3->ARTCylinderOpen();
-		}
-
-		if ((ArtIOClass::getInputState(ExtDevReady) != true) && (productExitSensConvey))
-		{
-			conveyorState = ST_CONVEYOR_BUSY;
-		}
-
-		if (productEnterSensConvey)
-		{
-			conveyorState = ST_CONVEYOR_PROD_FWD;
-		}
 		break;
 	}
 
-	case ST_CONVEYOR_PROD_FWD:
+	case ST_4_POS:
 	{
-		if (conveyorRunTimer == 0)
+		if (!Pos4Sens && /*сигнал о том что мини-конвейеры не вверху и не крутятся*/)
 		{
-			conveyorRunTimer = ArtIOClass::ARTTimerGetTime();
-			ActuatorsSet(SET_CONV_ACTUATOR_FWD, ActPoint); //!* !Change to actual function
-		}
+			StopperPos4->ARTCylinderOpen();
+			if (!Pos3Sens)
+			{
+				StopperPos3->ARTCylinderOpen();
+			}
+			else
+			{
+				StopperPos3->ARTCylinderClose();
+			}
 
-		if (ARTTimerIsTimePassed(conveyorRunTimer, productPassTime, 99000))
-		{
-			ActuatorsSet(SET_CONV_ACTUATOR_STOP, ActPoint); //!* !Change to actual function
-			conveyorRunTimer = 0;
-			conveyorState = ST_CONVEYOR_FREE;
+			if (!Pos2Sens)
+			{
+				StopperPos2->ARTCylinderOpen();
+			}
+			else
+			{
+				StopperPos2->ARTCylinderClose();
+			}
+
+			if (!Pos1Sens)
+			{
+				StopperPos1->ARTCylinderOpen();
+			}
+			else
+			{
+				StopperPos1->ARTCylinderClose();
+			}
+
+			if (ArtIOClass::ExtDevReady() && (StopperPos4->getCylState() == ArtCylinder::ARTCYL_ST_OPEN))
+			{
+				ActPoint->ConveySetDriverFWD(true);	  // запуск цепного конвейера
+				DispDrvPtr->ConveySetDriverFWD(true); // запуск конвейера диспенсера
+			}
 		}
 		else
 		{
-			if ((ArtIOClass::getInputState(ExtDevReady) != 1) && productExitSensConvey)
+			if (Pos1Sens && Pos2Sens && Pos3Sens)
 			{
-				ActuatorsSet(SET_CONV_ACTUATOR_STOP, ActPoint); //!* !Change to actual function
-				conveyorRunTimer = 0;
-				conveyorState = ST_CONVEYOR_BUSY;
+				ActPoint->ConveySetSTOP();
+				DispDrvPtr->ConveySetSTOP();
+
+				if (Conv4Free && !(ActPoint->ARTDriverGetFWD()))
+				{
+					StopperPos4->ARTCylinderClose();
+					//поднимаем мини-конвейер и передаем паллету пикпоинту 2
+				}
+
+				if (!Conv2Free && !(ActPoint->ARTDriverGetFWD()))
+				{
+					conveyorState = ST_1_POS;
+				}
 			}
 		}
 		break;
 	}
-	case ST_CONVEYOR_BUSY:
-	{
-		if (ArtIOClass::getInputState(ExtDevReady) == 1)
-		{
-			ConveyorSetProdEntering();
-			conveyorState = ST_CONVEYOR_PROD_FWD;
-			conveyorRunTimer = 0;
-		}
-		else
-		{
-			ActuatorsSet(SET_CONV_ACTUATOR_STOP, ActPoint); //!* !Change to actual function
-			conveyorRunTimer = 0;
-		}
-		break;
-	}
-	case ST_CONVEYOR_ERROR:
-	{
-		if (ActuatorsGet(GET_CONV_ACTUATOR_READY, ActPoint) == 1) //; !* !Change ARTActuatorsGet to actual function
-		{
 
-			conveyorState = ST_CONVEYOR_UNKNOWN;
-		}
-		break;
-	}
 	default:
 		break;
 	}

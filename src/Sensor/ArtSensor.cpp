@@ -41,30 +41,26 @@ bool ArtSensor::update()
 {
 	value = ArtIOClass::getInputState(SensorInput);
 
-		if (sensorDelayRE > 0)
+	if (sensorDelayRE > 0)
+	{
+		valueON = ArtIOClass::CHK_ACTIVE_NTIME(value, &sensorTimerRE, sensorDelayRE);
+	}
+
+	if (sensorDelayFE > 0 && lastSensorState == true && value == false)
+	{
+		flag = true;
+	}
+	if (flag)
+	{
+		valueOFF = ArtIOClass::CHK_ACTIVE_NTIME(!value, &sensorTimerFE, sensorDelayFE);
+		if (valueOFF)
 		{
-			valueON = ArtIOClass::CHK_ACTIVE_NTIME(value, &sensorTimerRE, sensorDelayRE);
+			flag = false;
+			sensorTimerFE = 0;
 		}
-
-		if (sensorDelayFE > 0 && lastSensorState == true && value == false)
-		{
-			flag = true;
-		}
-		if (flag)
-		{
-			valueOFF = ArtIOClass::CHK_ACTIVE_NTIME(!value, &sensorTimerFE, sensorDelayFE);
-			if (valueOFF)
-			{
-				flag = false;
-				sensorTimerFE = 0;
-			}
-		}
-		lastSensorState = value;
-		return (!valueOFF || value);
-	
-
-
-
+	}
+	lastSensorState = value;
+	return (!valueOFF || value || valueON);
 }
 
 bool ArtSensor::SensorState()
