@@ -31,7 +31,7 @@ ArtCylinder::ArtCylinder(int id, const char name[], int CloseTime, int OpenTime,
    cylState = ACGetInitialState();
 }
 
-ArtCylinder::ArtCylinder(int id, const char name[], int OpenTime, bool TimeoutControl,bool CylinderSet, distType type, int cylOpenOut,ArtSensor *cylOpenIn, ArtSensor *cylCloseIn) : ArtCylinder(id, name)
+ArtCylinder::ArtCylinder(int id, const char name[], int OpenTime, bool TimeoutControl,bool CylinderSet, distType type, int cylOpenOut,ArtSensor *cylOpenIn, ArtSensor *cylCloseIn, int cylCloseDelay, int cylOpenDelay) : ArtCylinder(id, name)
 {
    cylOpenTimer = OpenTime;
    bCylTimeoutControl = TimeoutControl;
@@ -42,6 +42,8 @@ ArtCylinder::ArtCylinder(int id, const char name[], int OpenTime, bool TimeoutCo
    ArtCylinder::cylOpenIn = cylOpenIn;
    ArtCylinder::cylCloseIn = cylCloseIn;
    cylState = ACGetInitialState();
+   ArtCylinder::cylCloseDelay = cylCloseDelay;
+   ArtCylinder::cylOpenDelay = cylOpenDelay;
 }
 
 void ArtCylinder::doLogic()

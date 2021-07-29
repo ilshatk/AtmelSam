@@ -52,7 +52,7 @@ public:
                 ArtSensor *cylOpenIn, ArtSensor *cylCloseIn);
     ArtCylinder(int id, const char name[], int OpenTime, bool TimeoutControl,
                 bool CylinderSet, distType type, int cylOpenOut,
-                ArtSensor *cylOpenIn, ArtSensor *cylCloseIn);
+                ArtSensor *cylOpenIn, ArtSensor *cylCloseIn, int cylCloseDelay, int cylOpenDelay);
     void doLogic();
     void update();
     int getName();

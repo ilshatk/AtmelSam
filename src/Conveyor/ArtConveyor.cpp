@@ -1408,7 +1408,7 @@ void ArtConveyor1TypeNextExtDev::doLogic()
 
 	case ST_CONVEYOR_FREE:
 	{
-		if ((ArtIOClass::getInputState(ExtDevReady) != true) && (productExitSensConvey))// для барды A38 оставить только (productExitSensConvey)
+		if ((ArtIOClass::getInputState(ExtDevReady) != true) && (productExitSensConvey)) // для барды A38 оставить только (productExitSensConvey)
 		{
 			conveyorState = ST_CONVEYOR_BUSY;
 		}
@@ -1564,7 +1564,7 @@ void ArtPalletConveyorWithStoppers::doLogic() //на переменную flags 
 		conveyorState = ST_CONVEYOR_ERROR;
 		ArtIOClass::Error(m_id);
 	}
-
+	 
 	Pos1Sens = Pos1Ptr->SensorState();
 	Pos2Sens = Pos2Ptr->SensorState();
 	Pos3Sens = Pos3Ptr->SensorState();
@@ -1606,7 +1606,7 @@ void ArtPalletConveyorWithStoppers::doLogic() //на переменную flags 
 
 	case ST_1_POS:
 	{
-		if (!Pos1Sens && ArtIOClass::ExtSens(1))//ArtIOClass::ExtSens(1) - эта функция возвращает значение датчика на 1 входе на A38 барде(M24 внизу)
+		if (!Pos1Sens && ArtIOClass::ExtSens(1)) //ArtIOClass::ExtSens(1) - эта функция возвращает значение датчика на 1 входе на A38 барде(M24 внизу)
 		{
 			StopperPos1->ARTCylinderOpen();
 			if (ArtIOClass::ExtDevReady() && ((StopperPos1->getCylState() == ArtCylinder::ARTCYL_ST_OPEN)))
@@ -1624,13 +1624,15 @@ void ArtPalletConveyorWithStoppers::doLogic() //на переменную flags 
 
 				if (Conv1Free && !(ActPoint->ARTDriverGetFWD()))
 				{
-					//поднимаем мини-конвейер и передаем паллету пикпоинту 1
-					//даем сигнал готовности
+					//поднимаем мини-конвейер и передаем паллету пикпоинту 1  ConvReadySignal->SensignalFromPrevBarda
+					StopperPos1->ARTCylinderClose();
+					ArtIOClass::DevReady(1);
 				}
 
 				if (!Conv1Free && !(ActPoint->ARTDriverGetFWD()))
 				{
 					conveyorState = ST_2_POS;
+					ArtIOClass::DevReady(0);
 				}
 			}
 		}
@@ -1639,7 +1641,7 @@ void ArtPalletConveyorWithStoppers::doLogic() //на переменную flags 
 
 	case ST_2_POS:
 	{
-		if (!Pos2Sens && ArtIOClass::ExtSens(3))//ArtIOClass::ExtSens(3) - эта функция возвращает значение датчика на 3 входе на A38 барде(M25 внизу)
+		if (!Pos2Sens && ArtIOClass::ExtSens(3)) //ArtIOClass::ExtSens(3) - эта функция возвращает значение датчика на 3 входе на A38 барде(M25 внизу)
 		{
 			StopperPos2->ARTCylinderOpen();
 			if (!Pos1Sens)
@@ -1667,12 +1669,14 @@ void ArtPalletConveyorWithStoppers::doLogic() //на переменную flags 
 				if (Conv2Free && !(ActPoint->ARTDriverGetFWD()))
 				{
 					StopperPos2->ARTCylinderClose();
+					ArtIOClass::DevReady(2);
 					//поднимаем мини-конвейер и передаем паллету пикпоинту 2
 				}
 
 				if (!Conv2Free && !(ActPoint->ARTDriverGetFWD()))
 				{
 					conveyorState = ST_3_POS;
+					ArtIOClass::DevReady(0);
 				}
 			}
 		}
@@ -1681,7 +1685,7 @@ void ArtPalletConveyorWithStoppers::doLogic() //на переменную flags 
 
 	case ST_3_POS:
 	{
-		if (!Pos3Sens && ArtIOClass::ExtSens(5))//ArtIOClass::ExtSens(5) - эта функция возвращает значение датчика на 5 входе на A38 барде (M26 внизу)
+		if (!Pos3Sens && ArtIOClass::ExtSens(5)) //ArtIOClass::ExtSens(5) - эта функция возвращает значение датчика на 5 входе на A38 барде (M26 внизу)
 		{
 			StopperPos3->ARTCylinderOpen();
 			if (!Pos2Sens)
@@ -1718,12 +1722,14 @@ void ArtPalletConveyorWithStoppers::doLogic() //на переменную flags 
 				if (Conv3Free && !(ActPoint->ARTDriverGetFWD()))
 				{
 					StopperPos3->ARTCylinderClose();
+					ArtIOClass::DevReady(3);
 					//поднимаем мини-конвейер и передаем паллету пикпоинту 2
 				}
 
 				if (!Conv2Free && !(ActPoint->ARTDriverGetFWD()))
 				{
 					conveyorState = ST_4_POS;
+					ArtIOClass::DevReady(0);
 				}
 			}
 		}
@@ -1732,7 +1738,7 @@ void ArtPalletConveyorWithStoppers::doLogic() //на переменную flags 
 
 	case ST_4_POS:
 	{
-		if (!Pos4Sens && ArtIOClass::ExtSens(7))//ArtIOClass::ExtSens(7) - эта функция возвращает значение датчика на 7 входе на A38 барде (M27 внизу)
+		if (!Pos4Sens && ArtIOClass::ExtSens(7)) //ArtIOClass::ExtSens(7) - эта функция возвращает значение датчика на 7 входе на A38 барде (M27 внизу)
 		{
 			StopperPos4->ARTCylinderOpen();
 			if (!Pos3Sens)
@@ -1778,12 +1784,14 @@ void ArtPalletConveyorWithStoppers::doLogic() //на переменную flags 
 				if (Conv4Free && !(ActPoint->ARTDriverGetFWD()))
 				{
 					StopperPos4->ARTCylinderClose();
+					ArtIOClass::DevReady(4);
 					//поднимаем мини-конвейер и передаем паллету пикпоинту 2
 				}
 
 				if (!Conv2Free && !(ActPoint->ARTDriverGetFWD()))
 				{
 					conveyorState = ST_1_POS;
+					ArtIOClass::DevReady(0);
 				}
 			}
 		}

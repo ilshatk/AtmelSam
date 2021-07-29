@@ -38,7 +38,7 @@ ArtSensor::ArtSensor(int id, const char name[], int SensorInput, SensorType type
 	flag = false;
 }
 
-ArtSensor::ArtSensor(int id, const char name[], int SensorInput, SensorType type, int delayRe = 0, int delayFe = 0, bool SensorExternal = false, int boardnum) : ArtSensor(id, name) //Задаем параметры(Конструктор)
+ArtSensor::ArtSensor(int id, const char name[], int SensorInput, SensorType type, int delayRe = 0, int delayFe = 0, bool SensorExternal = false, int boardnum = 0) : ArtSensor(id, name) //Задаем параметры(Конструктор)
 {
 	sensorType = type;
 	ArtSensor::SensorExternal = SensorExternal;

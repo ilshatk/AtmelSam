@@ -273,6 +273,20 @@ bool ArtIOClass::ExtDevReady() // для приема сигнала готов 
     }
 }
 
+bool ArtIOClass::ExtDevReady(int posnum) // для приема сигнала готов с диспенсера на следующий конвейер
+{
+    if (m_ptrEasyCat->BufferOut.Cust.SensSignalFromPrevBarda == posnum)
+    {
+        // ArtIOClass::setOutputState(16, true);
+        return (true);
+    }
+    else
+    {
+        // ArtIOClass::setOutputState(16, false);
+        return (false);
+    }
+}
+
 void ArtIOClass::DevReady(bool ready) // для передачи сигнала готов с диспенсера на следующий конвейер
 {
     if (ready)
@@ -287,7 +301,7 @@ void ArtIOClass::DevReady(bool ready) // для передачи сигнала 
 
 void ArtIOClass::DevReady(int posnum) // для передачи сигнала какая позиция готова передать с цепного конвейера на следующий конвейер
 {
-    m_ptrEasyCat->BufferIn.Cust.DevReady | posnum;
+    m_ptrEasyCat->BufferIn.Cust.DevReady &posnum;
 }
 
 void ArtIOClass::OnPosition(uint8_t pos)

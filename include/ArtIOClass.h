@@ -62,7 +62,8 @@ public:
     static void DevReady(bool ready);
     static void DevReady(int posnum);
     static bool ExtDevReady();
-    bool static CHK_ACTIVE_NTIME(bool sens_in, int *timer_in, int delta_time);
+    static bool ExtDevReady(int posnum);
+    static bool CHK_ACTIVE_NTIME(bool sens_in, int *timer_in, int delta_time);
 
 protected:
     ArtIOClass();
