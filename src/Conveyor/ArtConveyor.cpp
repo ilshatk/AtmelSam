@@ -1403,12 +1403,12 @@ void ArtConveyor1TypeNextExtDev::doLogic()
 				conveyorState = ST_CONVEYOR_FREE;
 			}
 		}
-
 		break;
 	}
+
 	case ST_CONVEYOR_FREE:
 	{
-		if ((ArtIOClass::getInputState(ExtDevReady) != true) && (productExitSensConvey))
+		if ((ArtIOClass::getInputState(ExtDevReady) != true) && (productExitSensConvey))// для барды A38 оставить только (productExitSensConvey)
 		{
 			conveyorState = ST_CONVEYOR_BUSY;
 		}
@@ -1606,7 +1606,7 @@ void ArtPalletConveyorWithStoppers::doLogic() //на переменную flags 
 
 	case ST_1_POS:
 	{
-		if (!Pos1Sens && /*сигнал о том что мини-конвейеры не вверху и не крутятся*/ )
+		if (!Pos1Sens && ArtIOClass::ExtSens(1))//ArtIOClass::ExtSens(1) - эта функция возвращает значение датчика на 1 входе на A38 барде(M24 внизу)
 		{
 			StopperPos1->ARTCylinderOpen();
 			if (ArtIOClass::ExtDevReady() && ((StopperPos1->getCylState() == ArtCylinder::ARTCYL_ST_OPEN)))
@@ -1639,7 +1639,7 @@ void ArtPalletConveyorWithStoppers::doLogic() //на переменную flags 
 
 	case ST_2_POS:
 	{
-		if (!Pos2Sens && /*сигнал о том что мини-конвейеры не вверху и не крутятся*/)
+		if (!Pos2Sens && ArtIOClass::ExtSens(3))//ArtIOClass::ExtSens(3) - эта функция возвращает значение датчика на 3 входе на A38 барде(M25 внизу)
 		{
 			StopperPos2->ARTCylinderOpen();
 			if (!Pos1Sens)
@@ -1681,7 +1681,7 @@ void ArtPalletConveyorWithStoppers::doLogic() //на переменную flags 
 
 	case ST_3_POS:
 	{
-		if (!Pos3Sens && /*сигнал о том что мини-конвейеры не вверху и не крутятся*/)
+		if (!Pos3Sens && ArtIOClass::ExtSens(5))//ArtIOClass::ExtSens(5) - эта функция возвращает значение датчика на 5 входе на A38 барде (M26 внизу)
 		{
 			StopperPos3->ARTCylinderOpen();
 			if (!Pos2Sens)
@@ -1732,7 +1732,7 @@ void ArtPalletConveyorWithStoppers::doLogic() //на переменную flags 
 
 	case ST_4_POS:
 	{
-		if (!Pos4Sens && /*сигнал о том что мини-конвейеры не вверху и не крутятся*/)
+		if (!Pos4Sens && ArtIOClass::ExtSens(7))//ArtIOClass::ExtSens(7) - эта функция возвращает значение датчика на 7 входе на A38 барде (M27 внизу)
 		{
 			StopperPos4->ARTCylinderOpen();
 			if (!Pos3Sens)

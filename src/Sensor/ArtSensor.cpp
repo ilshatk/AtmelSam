@@ -14,6 +14,39 @@ ArtSensor::ArtSensor(int id, const char name[], int SensorInput, SensorType type
 	isRE = false;
 	isFE = false;
 	ArtSensor::SensorInput = SensorInput;
+	ArtSensor::boardnum = 0;
+	if (delayRe > 0) //Передний фронт
+	{
+		sensorDelayRE = delayRe;
+	}
+	else
+	{
+		sensorDelayRE = 0;
+	}
+
+	if (delayFe > 0) //Задний фронт
+	{
+		sensorDelayFE = delayFe;
+	}
+	else
+	{
+		sensorDelayFE = 0;
+	}
+	valueON = false;
+	valueOFF = true;
+	lastSensorState = false;
+	flag = false;
+}
+
+ArtSensor::ArtSensor(int id, const char name[], int SensorInput, SensorType type, int delayRe = 0, int delayFe = 0, bool SensorExternal = false, int boardnum) : ArtSensor(id, name) //Задаем параметры(Конструктор)
+{
+	sensorType = type;
+	ArtSensor::SensorExternal = SensorExternal;
+	m_id = id;
+	isRE = false;
+	isFE = false;
+	ArtSensor::SensorInput = SensorInput;
+	ArtSensor::boardnum = boardnum;
 	if (delayRe > 0) //Передний фронт
 	{
 		sensorDelayRE = delayRe;
@@ -66,7 +99,7 @@ bool ArtSensor::update()
 bool ArtSensor::SensorState()
 {
 	bool state;
-	if (SensorExternal == false)
+	if (!SensorExternal)
 	{
 		state = update(); /*ArtIOClass::getInputState(SensorInput)*/ // на первый вход enter sensor
 		if ((sensorType & 0x1) != 0)								 //0x1 это инверсный тип датчика
@@ -80,13 +113,27 @@ bool ArtSensor::SensorState()
 	}
 	else
 	{
-		if (ArtIOClass::ExtSens(SensorInput) == true)
+		if (boardnum > 0)
 		{
-			return (true);
+			if (ArtIOClass::ExtSens(SensorInput, boardnum) == true)
+			{
+				return (true);
+			}
+			else
+			{
+				return (false);
+			}
 		}
 		else
 		{
-			return (false);
+			if (ArtIOClass::ExtSens(SensorInput) == true)
+			{
+				return (true);
+			}
+			else
+			{
+				return (false);
+			}
 		}
 	}
 }

@@ -214,7 +214,13 @@ ArtPalletConveyorWithStoppers ConvM23(20, ("ConvM23"), ArtConveyor1Type::CONVEYO
 
 //----setup for A37----------------------------------------------------------------------------------------
 */
+/*
   //----setup for A38----------------------------------------------------------------------------------------
+  ArtSensor M28Pall(54, ("B56"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true, 1); // М28 датчик на конце следующего конвейера на следующей барде
+  ArtSensor M29Pall(55, ("B67"), 8, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true, 1); // М29 датчик на конце следующего конвейера на следующей барде
+  ArtSensor M30Pall(56, ("B78"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true, 2); // М30 датчик на конце следующего конвейера на следующей барде
+  ArtSensor M31Pall(57, ("B89"), 8, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true, 2); // М31 датчик на конце следующего конвейера на следующей барде
+
   ArtSensor M24DOWN(1, ("B54"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false); // М24 внизу (B54) (тип геркон)
   ArtSensor M24UP(2, ("B55"), 2, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);   // М24 наверху (B55) (тип геркон)
   ArtSensor M25DOWN(3, ("B65"), 3, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false); //  М25 внизу (B66) (тип геркон)
@@ -224,13 +230,24 @@ ArtPalletConveyorWithStoppers ConvM23(20, ("ConvM23"), ArtConveyor1Type::CONVEYO
   ArtSensor M27DOWN(7, ("B87"), 7, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false); // М27 внизу (B87) (тип геркон)
   ArtSensor M27UP(8, ("B88"), 8, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);   // М27 наверху (B88) (тип геркон)
 
-  ArtDriver M24DRV(9, ("M24DRV"), ArtDriver::DRIVER_TYPE_1, 13, 9, 6, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M24
+  ArtDriver M24DRV(9, ("M24DRV"), ArtDriver::DRIVER_TYPE_1, 13, 9, 6, true, 0, 2, 0, 2, 0, 0, 0);   //Драйвер на M24
   ArtDriver M25DRV(10, ("M25DRV"), ArtDriver::DRIVER_TYPE_1, 14, 11, 6, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M25
   ArtDriver M26DRV(11, ("M26DRV"), ArtDriver::DRIVER_TYPE_1, 15, 13, 6, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M26
   ArtDriver M27DRV(12, ("M27DRV"), ArtDriver::DRIVER_TYPE_1, 16, 15, 6, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M27
 
-  ArtC
+  ArtConveyor1TypeNextExtDev ConvM24(15, ("ConvM24"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M24DRV, &M24UP, &M28Pall, 5000, 0, 0); // если конвейер наверху он крутиться 5 секунд
+  ArtConveyor1TypeNextExtDev ConvM25(15, ("ConvM25"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M25DRV, &M25UP, &M29Pall, 5000, 0, 0); // если конвейер наверху он крутиться 5 секунд
+  ArtConveyor1TypeNextExtDev ConvM26(15, ("ConvM26"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M26DRV, &M26UP, &M30Pall, 5000, 0, 0); // если конвейер наверху он крутиться 5 секунд
+  ArtConveyor1TypeNextExtDev ConvM27(15, ("ConvM27"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M27DRV, &M27UP, &M31Pall, 5000, 0, 0); // если конвейер наверху он крутиться 5 секунд
+  //для этой прошивки поменять в case Free
   //----setup for A38----------------------------------------------------------------------------------------
+*/
+  //----setup for A39----------------------------------------------------------------------------------------
+
+
+  //----setup for A39----------------------------------------------------------------------------------------
+
+
 
   /*
   //----setup for A41--Shuttle-------------------------------------------------------------------------------------

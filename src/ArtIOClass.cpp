@@ -157,6 +157,33 @@ bool ArtIOClass::ExtSens(uint16_t sensinput)
     }
 }
 
+bool ArtIOClass::ExtSens(uint16_t sensinput, int boardnum)
+{
+    if (boardnum == 1)
+    {
+        if (m_ptrEasyCat->BufferOut.Cust.NextConvReadySignal1 == (1 << (sensinput - 1)))
+        {
+            return (true);
+        }
+        else
+        {
+            return (false);
+        }
+    }
+
+    if (boardnum == 2)
+    {
+        if (m_ptrEasyCat->BufferOut.Cust.NextConvReadySignal2 == (1 << (sensinput - 1)))
+        {
+            return (true);
+        }
+        else
+        {
+            return (false);
+        }
+    }
+}
+
 bool ArtIOClass::TookProd()
 {
     if (m_ptrEasyCat->BufferOut.Cust.TookProduct == 1)
@@ -260,7 +287,7 @@ void ArtIOClass::DevReady(bool ready) // для передачи сигнала 
 
 void ArtIOClass::DevReady(int posnum) // для передачи сигнала какая позиция готова передать с цепного конвейера на следующий конвейер
 {
-    m_ptrEasyCat->BufferIn.Cust.DevReady | posnum ;
+    m_ptrEasyCat->BufferIn.Cust.DevReady | posnum;
 }
 
 void ArtIOClass::OnPosition(uint8_t pos)
@@ -353,45 +380,44 @@ void ArtIOClass::setOutputState(uint16_t nOutputCommonState)
     DigitalOut(m_nCurrentOutputState);
 }
 
-
 bool ArtIOClass::CHK_ACTIVE_NTIME(bool sens_in, int *timer_in, int delta_time) //sensor,timer for check, active time before return true
 {
-   int curTime, deltaTime;
+    int curTime, deltaTime;
 
-   if (!sens_in)
-   {
-      (*timer_in) = 0;
-   }
-   else
-   {
-      if ((*timer_in) == 0)
-      {
-         (*timer_in) = millis();
-      }
+    if (!sens_in)
+    {
+        (*timer_in) = 0;
+    }
+    else
+    {
+        if ((*timer_in) == 0)
+        {
+            (*timer_in) = millis();
+        }
 
-      curTime = millis();
+        curTime = millis();
 
-      if ((*timer_in) < curTime)
-      {
-         deltaTime = curTime - (*timer_in);
-         return (deltaTime > delta_time);
-      }
-      else //exceptions check
-      {
-         if ((*timer_in) == curTime)
-         {
-            return (false);
-         }
-         else
-         {
-            if ((*timer_in) > curTime)
+        if ((*timer_in) < curTime)
+        {
+            deltaTime = curTime - (*timer_in);
+            return (deltaTime > delta_time);
+        }
+        else //exceptions check
+        {
+            if ((*timer_in) == curTime)
             {
-               timer_in = timer_in - 2147483647;
-               deltaTime = curTime - (*timer_in);
-               return (deltaTime > delta_time);
+                return (false);
             }
-         }
-      }
-   }
-   return (false);
+            else
+            {
+                if ((*timer_in) > curTime)
+                {
+                    timer_in = timer_in - 2147483647;
+                    deltaTime = curTime - (*timer_in);
+                    return (deltaTime > delta_time);
+                }
+            }
+        }
+    }
+    return (false);
 }

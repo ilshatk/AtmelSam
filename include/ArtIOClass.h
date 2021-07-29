@@ -48,6 +48,7 @@ public:
     static void doIOLogic();
     static uint16_t getCommonOutputState();
     static bool ExtSens(uint16_t sensinput);
+    static bool ExtSens(uint16_t sensinput, int boardnum);
     static void Error(uint8_t error);
     static bool readySignalFromNext();
     static bool readySignalFromNext(int convnum, int boardnum);
