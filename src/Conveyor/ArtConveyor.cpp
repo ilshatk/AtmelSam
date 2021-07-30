@@ -1118,19 +1118,21 @@ ArtConveyorShuttleType::ArtConveyorShuttleType(int id, const char name[])
 }
 
 ArtConveyorShuttleType::ArtConveyorShuttleType(int id, const char name[], ArtDriver *ShuttlePtr, ArtDriver *OverShuttlePtr, ArtAnalogSensor *PositionSens,
-											   ArtSensor *PalletOnConv, ArtBasicConveyor *NextConvPtr, bool readySignalFromNextBarda, int PassTimeOverShuttle, int PassTimeShuttle,
+											   ArtSensor *PalletOnConv, ArtSensor *SensOnIN, ArtSensor *SensOnOUT, ArtBasicConveyor *NextConvPtr, bool readySignalFromNextBarda, int BrakeOUT, int PassTimeOverShuttle, int PassTimeShuttle,
 											   int ConveyorRunTimerShuttle, int ConveyorRunTimerOverShuttle) : ArtConveyorShuttleType(id, name)
 {
-	ArtConveyorShuttleType::ShuttlePtr = ShuttlePtr;		 //указатель на драйвер шатла
-	ArtConveyorShuttleType::OverShuttlePtr = OverShuttlePtr; //указатель на драйвер конвейера над шатлом
-	ArtConveyorShuttleType::PositionSens = PositionSens;	 //указатель на аналоговый датчик
-	ArtConveyorShuttleType::PalletOnConv = PalletOnConv;	 //указатель на датчик паллеты
-	ArtConveyorShuttleType::NextConvPtr = NextConvPtr;		 //указатель на следующий конвейер
-	ArtConveyorShuttleType::productPassOverShuttle = PassTimeOverShuttle;
-	ArtConveyorShuttleType::PassTimeShuttle = PassTimeShuttle;
+	ArtConveyorShuttleType::ShuttlePtr = ShuttlePtr;					  //указатель на драйвер шаттла
+	ArtConveyorShuttleType::OverShuttlePtr = OverShuttlePtr;			  //указатель на драйвер конвейера над шаттлом
+	ArtConveyorShuttleType::PositionSens = PositionSens;				  //указатель на аналоговый датчик
+	ArtConveyorShuttleType::SensOnIN = SensOnIN;						  //указатель на датчик на входе шаттла
+	ArtConveyorShuttleType::SensOnOUT = SensOnOUT;						  //указатель на датчик на выходе шаттла
+	ArtConveyorShuttleType::PalletOnConv = PalletOnConv;				  //указатель на датчик паллеты
+	ArtConveyorShuttleType::NextConvPtr = NextConvPtr;					  //указатель на следующий конвейер
+	ArtConveyorShuttleType::productPassOverShuttle = PassTimeOverShuttle; //таймер для верхнего конвейера
+	ArtConveyorShuttleType::PassTimeShuttle = PassTimeShuttle;			  //таймер для шаттла
+	ArtConveyorShuttleType::BrakeOUT = BrakeOUT;						  //выход на тормоз
 	conveyorState = ST_CONVEYOR_UNKNOWN;
-	CalcedNumProdInConveyor = 0;
-	ArtConveyorShuttleType::CurPos = PositionSens->SensorState();
+	ArtConveyorShuttleType::CurPos = PositionSens->SensorState(); //Текущее местоположение
 	On_Position = false;
 	ArtConveyorShuttleType::ConveyorRunTimerShuttle = ConveyorRunTimerShuttle;
 	ArtConveyorShuttleType::ConveyorRunTimerOverShuttle = ConveyorRunTimerOverShuttle;
@@ -1138,10 +1140,8 @@ ArtConveyorShuttleType::ArtConveyorShuttleType(int id, const char name[], ArtDri
 
 void ArtConveyorShuttleType::doLogic()
 {
-	ReqPos = ArtIOClass::ReqPos();
-	//CurPos = expRunningAverage(findMedianN_optim(((31  * CurPos + PositionSens->SensorState()) >> 5)));
-	CurPos = expRunningAverage(((31 * CurPos + PositionSens->SensorState()) >> 5));
-	//CurPos = ((31  * CurPos + PositionSens->SensorState()) >> 5);
+	ReqPos = ArtIOClass::ReqPos();													// необходимая позиция приходит с робота приходит по EtherCAT
+	CurPos = expRunningAverage(((31 * CurPos + PositionSens->SensorState()) >> 5)); //текущее положение пропущенное через 2 фильтра
 	if (ActuatorsGet(GET_CONV_ACTUATOR_READY, ShuttlePtr) == 1)
 	{
 	}
@@ -1166,7 +1166,6 @@ void ArtConveyorShuttleType::doLogic()
 				{
 					if (conveyorRunTimer == 0)
 					{
-						//ActuatorsSet(SET_CONV_ACTUATOR_FWD, ActPoint); //!*! Change to actual function
 						conveyorState = ST_CONVEYOR_RUN;
 					}
 				}
@@ -1200,17 +1199,12 @@ void ArtConveyorShuttleType::doLogic()
 	{
 		On_Position = false;
 
-		/*if (productEnterSensConvey)
-		{
-			conveyorRunTimer = ArtIOClass::ARTTimerGetTime()();
-			ActuatorsSet(SET_CONV_ACTUATOR_FWD, ShuttlePtr); //!*! Change to actual function
-		}*/
 		if ((CurPos - ReqPos) > 40 || (CurPos - ReqPos) < (-40))
 		{
 			ConveyorRunTimerShuttle = ArtIOClass::ARTTimerGetTime();
+			ArtIOClass::setOutputState(BrakeOUT, true);
 			if ((CurPos - ReqPos) < (-40))
 			{
-
 				if ((CurPos - ReqPos) <= (-10000))
 				{
 					ActuatorsSet(SET_CONV_ACTUATOR_FWD, ShuttlePtr);
@@ -1279,6 +1273,7 @@ void ArtConveyorShuttleType::doLogic()
 	{
 		if ((CurPos - ReqPos) < 40 && (CurPos - ReqPos) > (-40))
 		{
+			ArtIOClass::setOutputState(BrakeOUT, false);//сжать тормоз
 			ArtIOClass::OnPosition(1);
 			if (ArtIOClass::LoaUnloadind() == true && PalletOnConv->SensorState() == false) // true - загрузка, false - выгрузка
 			{
@@ -1313,8 +1308,15 @@ void ArtConveyorShuttleType::doLogic()
 		}
 		else
 		{
+			if(!(SensOnIN->SensorState() || SensOnOUT->SensorState()))
+			{
 			ArtIOClass::OnPosition(0);
 			conveyorState = ST_CONVEYOR_RUN;
+			}
+			else
+			{
+				conveyorState = ST_CONVEYOR_ERROR;
+			}
 		}
 		break;
 	}
@@ -1322,10 +1324,9 @@ void ArtConveyorShuttleType::doLogic()
 	case ST_CONVEYOR_ERROR:
 	{
 		ActuatorsSet(SET_CONV_ACTUATOR_STOP, ActPoint);
-
+		ArtIOClass::setOutputState(BrakeOUT, false);
 		if (DigitalIn() & 8)
 		{
-			CalcedNumProdInConveyor = 0;
 			conveyorState = ST_CONVEYOR_UNKNOWN;
 		}
 		break;
@@ -1408,7 +1409,7 @@ void ArtConveyor1TypeNextExtDev::doLogic()
 
 	case ST_CONVEYOR_FREE:
 	{
-		if ((ArtIOClass::getInputState(ExtDevReady) != true) && (productExitSensConvey)) // для барды A38 оставить только (productExitSensConvey)
+		if (/*(ArtIOClass::getInputState(ExtDevReady) != true) &&*/ (productExitSensConvey)) // для барды A38 оставить только (productExitSensConvey)
 		{
 			conveyorState = ST_CONVEYOR_BUSY;
 		}
@@ -1564,7 +1565,7 @@ void ArtPalletConveyorWithStoppers::doLogic() //на переменную flags 
 		conveyorState = ST_CONVEYOR_ERROR;
 		ArtIOClass::Error(m_id);
 	}
-	 
+
 	Pos1Sens = Pos1Ptr->SensorState();
 	Pos2Sens = Pos2Ptr->SensorState();
 	Pos3Sens = Pos3Ptr->SensorState();

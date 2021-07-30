@@ -186,7 +186,7 @@ void setup()
   ArtPusher Pusher(18,("SV4"),&OnPusherM20,&ConvM20,&ConvM21,&PusherSV4);
   //----setup for A36---------------------------------------------------------------------------------------
   */
-/*
+  /*
   //----setup for A37---------------------------------------------------------------------------------------
   ArtSensor PalletOnM24(1, ("B51"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false); // Фотодатчик паллеты на М24 (B51) (тип BGS G10) подобрать delayFE
   ArtSensor PalletOnM25(2, ("B62"), 2, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false); // Фотодатчик паллеты на М25 (B62) (тип BGS G10) подобрать delayFE
@@ -214,7 +214,7 @@ void setup()
 
   //----setup for A37----------------------------------------------------------------------------------------
 */
-  
+
   //----setup for A38----------------------------------------------------------------------------------------
   ArtSensor M28Pall(54, ("B56"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true, 1); // М28 датчик на конце следующего конвейера на следующей барде
   ArtSensor M29Pall(55, ("B67"), 8, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true, 1); // М29 датчик на конце следующего конвейера на следующей барде
@@ -235,18 +235,28 @@ void setup()
   ArtDriver M26DRV(11, ("M26DRV"), ArtDriver::DRIVER_TYPE_1, 15, 13, 6, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M26
   ArtDriver M27DRV(12, ("M27DRV"), ArtDriver::DRIVER_TYPE_1, 16, 15, 6, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M27
 
+  ArtCylinder Lift1(13, ("Lift1"), 10, false, true, ArtCylinder::MONO_STABLE, 2, &M24UP, &M24DOWN, 2000, 2000); //Пушер SV1
+  ArtCylinder Lift2(14, ("Lift2"), 10, false, true, ArtCylinder::MONO_STABLE, 2, &M25UP, &M25DOWN, 2000, 2000); //Пушер SV1
+  ArtCylinder Lift3(15, ("Lift3"), 10, false, true, ArtCylinder::MONO_STABLE, 2, &M26UP, &M26DOWN, 2000, 2000); //Пушер SV1
+  ArtCylinder Lift4(16, ("Lift4"), 10, false, true, ArtCylinder::MONO_STABLE, 2, &M27UP, &M27DOWN, 2000, 2000); //Пушер SV1
 
+  ArtLift M24Lift(17, ("Lift1"), &Lift1, 1);
+  ArtLift M25Lift(18, ("Lift2"), &Lift2, 2);
+  ArtLift M26Lift(19, ("Lift3"), &Lift3, 3);
+  ArtLift M27Lift(20, ("Lift4"), &Lift4, 4);
 
-  ArtConveyor1TypeNextExtDev ConvM24(15, ("ConvM24"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M24DRV, &M24UP, &M28Pall, 5000, 0, 0); // если конвейер наверху он крутиться 5 секунд
-  ArtConveyor1TypeNextExtDev ConvM25(15, ("ConvM25"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M25DRV, &M25UP, &M29Pall, 5000, 0, 0); // если конвейер наверху он крутиться 5 секунд
-  ArtConveyor1TypeNextExtDev ConvM26(15, ("ConvM26"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M26DRV, &M26UP, &M30Pall, 5000, 0, 0); // если конвейер наверху он крутиться 5 секунд
-  ArtConveyor1TypeNextExtDev ConvM27(15, ("ConvM27"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M27DRV, &M27UP, &M31Pall, 5000, 0, 0); // если конвейер наверху он крутиться 5 секунд
+  ArtConveyor1TypeNextExtDev ConvM24(21, ("ConvM24"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M24DRV, &M24UP, &M28Pall, 5000, 0, 0); // если конвейер наверху он крутиться 5 секунд
+  ArtConveyor1TypeNextExtDev ConvM25(22, ("ConvM25"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M25DRV, &M25UP, &M29Pall, 5000, 0, 0); // если конвейер наверху он крутиться 5 секунд
+  ArtConveyor1TypeNextExtDev ConvM26(23, ("ConvM26"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M26DRV, &M26UP, &M30Pall, 5000, 0, 0); // если конвейер наверху он крутиться 5 секунд
+  ArtConveyor1TypeNextExtDev ConvM27(24, ("ConvM27"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M27DRV, &M27UP, &M31Pall, 5000, 0, 0); // если конвейер наверху он крутиться 5 секунд
   //для этой прошивки поменять в case Free
   //входы с A39 и A38 передать сюда
   //----setup for A38----------------------------------------------------------------------------------------
 
-/*
+  /*
   //----setup for A39----------------------------------------------------------------------------------------
+//
+  
   ArtSensor M24DOWN(1, ("B54"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false); // М24 внизу (B54) (тип геркон)
   ArtSensor M24UP(2, ("B55"), 2, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);   // М24 наверху (B55) (тип геркон)
   ArtSensor M25DOWN(3, ("B65"), 3, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false); //  М25 внизу (B66) (тип геркон)
@@ -282,7 +292,7 @@ void setup()
   ArtConveyor1TypeNextExtDev ConvM29(15, ("ConvM29"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M29DRV, &M25UP, &M29Pall, 5000, 0, 0);
   //----setup for A39----------------------------------------------------------------------------------------
 */
-/*
+  /*
   //----setup for A40----------------------------------------------------------------------------------------
   ArtSensor M26DOWN(5, ("B76"), 5, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true); // М26 внизу (B76) (тип геркон)
   ArtSensor M26UP(6, ("B77"), 6, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true);   // М26 наверху (B77) (тип геркон)
@@ -415,8 +425,7 @@ void setup()
     if (EASYCAT.MainTask() == ESM_OP) // execute the EasyCAT task
     {
       int16_t AdcResult;
-
-      //Helper.doLogic();
+      Helper.doLogic();
       AdcResult = ReadAdc(AnaInChannel);
       ArtIOClass::doIOLogic();
       switch (AnaInChannel) // we read one channel each round

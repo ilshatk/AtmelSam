@@ -248,7 +248,7 @@ bool ArtIOClass::readySignalFromNext(int convnum, int boardnum) //сигнал �
 
     if (boardnum == 2)
     {
-        if (m_ptrEasyCat->BufferOut.Cust.NextConvReadySignal1 & convnum == 1)
+        if (m_ptrEasyCat->BufferOut.Cust.NextConvReadySignal2 & convnum == 1)
         {
             return (true);
         }
@@ -273,16 +273,16 @@ bool ArtIOClass::ExtDevReady() // для приема сигнала готов 
     }
 }
 
-bool ArtIOClass::ExtDevReady(int posnum) // для приема сигнала готов с диспенсера на следующий конвейер
+bool ArtIOClass::ExtDevReady(int posnum) // для приема сигнала готов с цепного конвейера
 {
     if (m_ptrEasyCat->BufferOut.Cust.SensSignalFromPrevBarda == posnum)
     {
-        // ArtIOClass::setOutputState(16, true);
+        ArtIOClass::setOutputState(16, true);
         return (true);
     }
     else
     {
-        // ArtIOClass::setOutputState(16, false);
+        ArtIOClass::setOutputState(16, false);
         return (false);
     }
 }

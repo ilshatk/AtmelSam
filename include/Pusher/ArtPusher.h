@@ -96,7 +96,7 @@ protected:
 
 public:
     ArtLift(int id, const char name[]);
-    ArtLift(int id, const char name[], ArtCylinder *LiftCylPtr);
+    ArtLift(int id, const char name[], ArtCylinder *LiftCylPtr,int posnum);
     void doLogic();
     void update();
     int getName();

@@ -178,16 +178,18 @@ ArtLift::ArtLift(int id, const char name[])
     m_id = id;
 }
 
-ArtLift::ArtLift(int id, const char name[], ArtCylinder *LiftCylPtr) : ArtLift(id, name)
+ArtLift::ArtLift(int id, const char name[], ArtCylinder *LiftCylPtr,int posnum) : ArtLift(id, name)
 {
     ArtLift::LiftCylPtr = LiftCylPtr;
+    ArtLift::posnum = posnum;
     if (LiftCylPtr->getCylState() == ArtCylinder::ARTCYL_ST_CLOSED)
     {
-        LiftState == DOWN;
+        LiftState = DOWN;
     }
     else
     {
         LiftCylPtr->ARTCylinderClose();
+        LiftState = DOWN;
     }
 }
 
@@ -196,13 +198,22 @@ void ArtLift::doLogic()
     switch (LiftState)
     {
     case UP:
-    {// доделать
-
+    {                                        // доделать
+        if (ArtIOClass::ExtDevReady(posnum) != 1) //сигнал приходит с цепного конвейера
+        {
+            LiftCylPtr->ARTCylinderClose();
+            while (!LiftCylPtr->getCylState() == ArtCylinder::ARTCYL_ST_CLOSED)
+            {
+                break;
+            }
+            LiftState = DOWN;
+        }
+        break;
     }
 
     case DOWN:
     {
-        if (ArtIOClass::ExtDevReady(posnum))
+        if (ArtIOClass::ExtDevReady(posnum)) //сигнал приходит с цепного конвейера
         {
             LiftCylPtr->ARTCylinderOpen();
             while (!LiftCylPtr->getCylState() == ArtCylinder::ARTCYL_ST_OPEN)
