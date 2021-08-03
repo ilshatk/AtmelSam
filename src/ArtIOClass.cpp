@@ -394,6 +394,18 @@ void ArtIOClass::setOutputState(uint16_t nOutputCommonState)
     DigitalOut(m_nCurrentOutputState);
 }
 
+bool ArtIOClass::ResetDrv(int ResOut)
+{
+    if (m_ptrEasyCat->BufferOut.Cust.DrvRst == ResOut)
+    {
+        return (true);
+    }
+    else
+    {
+        return (false);
+    }
+}
+
 bool ArtIOClass::CHK_ACTIVE_NTIME(bool sens_in, int *timer_in, int delta_time) //sensor,timer for check, active time before return true
 {
     int curTime, deltaTime;

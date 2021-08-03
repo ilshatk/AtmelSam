@@ -79,7 +79,9 @@ public:
 		ST_1_POS,
 		ST_2_POS,
 		ST_3_POS,
-		ST_4_POS
+		ST_4_POS,
+		ST_SHUTTLE_CONVEYOR_ERROR,
+		ST_OVERSHUTTLE_CONVEYOR_ERROR
 	};
 
 	enum GetDriverState
@@ -190,12 +192,13 @@ public:
 	ArtSensor *PalletOnConv;
 	ArtSensor *SensOnIN;
 	ArtSensor *SensOnOUT;
+	ArtSensor *ShuttleEdge;
 
 	ArtBasicConveyor *NextConvPtr; //указатель на приниммающий конвейер
 
 	ArtConveyorShuttleType(int id, const char name[]);
 	ArtConveyorShuttleType(int id, const char name[], ArtDriver *ShuttlePtr, ArtDriver *OverShuttlePtr, ArtAnalogSensor *PositionSens, ArtSensor *PalletOnConv,
-						   ArtSensor *SensOnIN, ArtSensor *SensOnOUT, ArtBasicConveyor *NextConvPtr, bool readySignalFromNextBarda,int BrakeOUT, int PassTimeOverShuttle, int PassTimeShuttle, int RunTimer, int ConveyorRunTimerOverShuttle);
+						   ArtSensor *SensOnIN, ArtSensor *SensOnOUT, ArtBasicConveyor *NextConvPtr,ArtSensor *ShuttleEdge, bool readySignalFromNextBarda,int BrakeOUT, int PassTimeOverShuttle, int PassTimeShuttle, int RunTimer, int ConveyorRunTimerOverShuttle);
 	void doLogic();
 	int expRunningAverage(int newVal);
 	int findMedianN_optim(int newVal);

@@ -214,7 +214,7 @@ void setup()
 
   //----setup for A37----------------------------------------------------------------------------------------
 */
-
+  
   //----setup for A38----------------------------------------------------------------------------------------
   ArtSensor M28Pall(54, ("B56"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true, 1); // М28 датчик на конце следующего конвейера на следующей барде
   ArtSensor M29Pall(55, ("B67"), 8, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true, 1); // М29 датчик на конце следующего конвейера на следующей барде
@@ -249,14 +249,14 @@ void setup()
   ArtConveyor1TypeNextExtDev ConvM25(22, ("ConvM25"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M25DRV, &M25UP, &M29Pall, 5000, 0, 0); // если конвейер наверху он крутиться 5 секунд
   ArtConveyor1TypeNextExtDev ConvM26(23, ("ConvM26"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M26DRV, &M26UP, &M30Pall, 5000, 0, 0); // если конвейер наверху он крутиться 5 секунд
   ArtConveyor1TypeNextExtDev ConvM27(24, ("ConvM27"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M27DRV, &M27UP, &M31Pall, 5000, 0, 0); // если конвейер наверху он крутиться 5 секунд
-  //для этой прошивки поменять в case Free
-  //входы с A39 и A38 передать сюда
-  //----setup for A38----------------------------------------------------------------------------------------
+                                                                                                                                 //для этой прошивки поменять в case Free
+                                                                                                                                 //входы с A39 и A38 передать сюда
+//----setup for A38----------------------------------------------------------------------------------------
+*/
 
-  /*
   //----setup for A39----------------------------------------------------------------------------------------
-//
-  
+  //
+
   ArtSensor M24DOWN(1, ("B54"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false); // М24 внизу (B54) (тип геркон)
   ArtSensor M24UP(2, ("B55"), 2, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);   // М24 наверху (B55) (тип геркон)
   ArtSensor M25DOWN(3, ("B65"), 3, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false); //  М25 внизу (B66) (тип геркон)
@@ -285,14 +285,13 @@ void setup()
   ArtCylinder Stopper2(15, ("Stopper2"), 10, false, true, ArtCylinder::MONO_STABLE, 4, &Podzhim2NOHOME, &Podzhim2HOME, 2000, 2000); //Пушер SV1
   ArtPodzhim M29Stopper(16, ("Stopper2"), &M25UP, &Stopper2);
 
-  ArtDriver M28DRV(14, ("M28DRV"), ArtDriver::DRIVER_TYPE_1, 15, 13, 6, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M28
-  ArtDriver M29DRV(15, ("M29DRV"), ArtDriver::DRIVER_TYPE_1, 16, 15, 6, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M29
+  ArtDriver M28DRV(14, ("M28DRV"), ArtDriver::DRIVER_TYPE_1, 15, 14, 13, 6, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M28
+  ArtDriver M29DRV(15, ("M29DRV"), ArtDriver::DRIVER_TYPE_1, 16, 16, 15, 6, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M29
 
   ArtConveyor1TypeNextExtDev ConvM28(15, ("ConvM28"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M28DRV, &M24UP, &M28Pall, 5000, 0, 0);
   ArtConveyor1TypeNextExtDev ConvM29(15, ("ConvM29"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M29DRV, &M25UP, &M29Pall, 5000, 0, 0);
   //----setup for A39----------------------------------------------------------------------------------------
-*/
-  /*
+
   //----setup for A40----------------------------------------------------------------------------------------
   ArtSensor M26DOWN(5, ("B76"), 5, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true); // М26 внизу (B76) (тип геркон)
   ArtSensor M26UP(6, ("B77"), 6, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true);   // М26 наверху (B77) (тип геркон)
@@ -322,27 +321,36 @@ void setup()
   ArtCylinder Stopper4(15, ("Stopper2"), 10, false, true, ArtCylinder::MONO_STABLE, 4, &Podzhim2NOHOME, &Podzhim2HOME, 2000, 2000); //Пушер SV1
   ArtPodzhim M29Stopper(16, ("Stopper2"), &M27UP, &Stopper4);
 
-  ArtDriver M28DRV(14, ("M28DRV"), ArtDriver::DRIVER_TYPE_1, 15, 13, 6, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M28
-  ArtDriver M29DRV(15, ("M29DRV"), ArtDriver::DRIVER_TYPE_1, 16, 15, 6, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M29
+  ArtDriver M30DRV(14, ("M30DRV"), ArtDriver::DRIVER_TYPE_1, 15, 14, 13, 6, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M30
+  ArtDriver M31DRV(15, ("M31DRV"), ArtDriver::DRIVER_TYPE_1, 16, 16, 15, 6, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M31
 
-  ArtConveyor1TypeNextExtDev ConvM28(15, ("ConvM28"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M28DRV, &M26UP, &M28Pall, 5000, 0, 0);
-  ArtConveyor1TypeNextExtDev ConvM29(15, ("ConvM29"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M29DRV, &M27UP, &M29Pall, 5000, 0, 0);
+  ArtConveyor1TypeNextExtDev ConvM30(15, ("ConvM30"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M30DRV, &M26UP, &M28Pall, 5000, 0, 0);
+  ArtConveyor1TypeNextExtDev ConvM31(15, ("ConvM31"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M31DRV, &M27UP, &M29Pall, 5000, 0, 0);
   //----setup for A40----------------------------------------------------------------------------------------
-*/
+
   /*
+  //----setup for A41--Shuttle and -------------------------------------------------------------------------------------
+  ArtSensor EnterShuttle(1, ("B95"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);          // Фотодатчик наличия паллеты на входе шаттла (B95) (тип R)
+  ArtSensor RangeFinderDiscrete(2, ("B96"), 2, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);   // Фотодатчик дальномер шаттла (B96) (тип лазер BGS) (дискр выход)
+  ArtSensor PalletOnConvM32(3, ("B97"), 3, ArtSensor::SENSOR_TYPE_BASIC, 1000, 2000, false); // Фотодатчик паллеты на М32 (B97) (тип R)
+  ArtSensor EdgeOnShuttle(4, ("B98"), 4, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);   // Датчик крайних положений шаттла (B98) (тип Мех)
+  ArtSensor ExitShuttle(5, ("B99"), 5, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);           // Фотодатчик наличия паллеты на выходе шаттла (B99) (тип R)
+  ArtSensor PalletOnConvM34(6, ("B100"), 6, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);      // Датчик паллеты на М34 (B100) (тип Инд)
+  ArtAnalogSensor RangeFinderAnalog(7, ("ConvM16"), 1);                                      //Фотодатчик дальномер шаттла (B96) (тип лазер BGS) (аналог выход)
+
+  ArtDriver ShuttleDrv(8, ("M33DRV"), ArtDriver::DRIVER_TYPE_1, 15, 13, 11, 12, true, 2, 2, 2, 2, 2, 2, 2);   //Драйвер на M33
+  ArtDriver OverShuttleDrv(9, ("M32DRV"), ArtDriver::DRIVER_TYPE_1, 14, 10, 9, 5, true, 2, 2, 2, 2, 2, 2, 2); //Драйвер на M32
+  ArtDriver BeforWinding(10, ("M34DRV"), ArtDriver::DRIVER_TYPE_1, 16, 16, 15, 5, true, 2, 2, 2, 0, 2, 2, 2); //Драйвер на M34
+
+  ArtConveyor1TypeNextExtDev BeforWin(11, ("ConvM34"), ArtBasicConveyor::CONVEYOR_TYPE_1, &BeforWinding, &ExitShuttle, &PalletOnConvM34, 4000, 0, 8);
+  ArtConveyorShuttleType Shuttle(12, ("ConvM32&33"), &ShuttleDrv, &OverShuttleDrv, &RangeFinderAnalog, &PalletOnConvM32, &EnterShuttle, &ExitShuttle, &BeforWin,
+                                 &EdgeOnShuttle,false, 1, 400000, 100000, 0, 0);
   //----setup for A41--Shuttle-------------------------------------------------------------------------------------
-  ArtDriver ShuttleDrv(1, ("M21DRV"), ArtDriver::DRIVER_TYPE_1, 9, 5, 6, true, 2, 2, 2, 2, 2, 2, 2);     //Драйвер на M21
-  ArtDriver OverShuttleDrv(2, ("M21DRV"), ArtDriver::DRIVER_TYPE_1, 7, 8, 5, true, 1, 2, 2, 2, 2, 2, 2); //Драйвер на M21
-  ArtDriver BeforWind(3, ("M21DRV"), ArtDriver::DRIVER_TYPE_1, 11, 9, 10, true, 1, 2, 2, 0, 0, 0, 0);    //Драйвер на M21
-  ArtAnalogSensor AnSens(4, ("ConvM16"), 1);
-  ArtSensor PalletOnConv(5, ("B49"), 1, ArtSensor::SENSOR_TYPE_BASIC, 1000, 2000, false); // Фотодатчик на конце М21 пикпойнт (B49) (тип BGS)
-  ArtSensor EnterSens(6, ("B49"), 2, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);    // Фотодатчик на конце М21 пикпойнт (B49) (тип BGS)
-  ArtSensor ExitSens(7, ("B49"), 3, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);     // Фотодатчик на конце М21 пикпойнт (B49) (тип BGS)
-  ArtConveyor1TypeNextExtDev BeforWin(8, ("B49"), ArtBasicConveyor::CONVEYOR_TYPE_1, &BeforWind, &EnterSens, &ExitSens, 1000, 0, 8);
-  ArtConveyorShuttleType Shuttle(9, ("ConvM16"), &ShuttleDrv, &OverShuttleDrv, &AnSens, &PalletOnConv, &BeforWin,
-                                 true, 40000, 100000, 0, 0);
-  //----setup for A41--Shuttle-------------------------------------------------------------------------------------
-   */
+*/
+  //----setup for A42----------------------------------------------------------------------------------------
+
+  //----setup for A42----------------------------------------------------------------------------------------
+
   /*
  
 

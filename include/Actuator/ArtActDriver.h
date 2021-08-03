@@ -8,7 +8,7 @@
 
 class ArtDriver : public IHasCycleLogic
 {
-protected:
+private:
     int m_id,
         nDriverType,
         nDriverState,
@@ -27,7 +27,7 @@ protected:
     char name[256], m_name[256];
 
 public:
-    int nDriverReadySignalIN;
+    int nDriverReadySignalIN,ResetSignalOut;
 
     bool bDriverDirection,
         bDriverRUN;
@@ -50,7 +50,7 @@ public:
     };
 
     ArtDriver(int id, const char name[]);
-    ArtDriver(int id, const char name[], DriverType Driver_Type, int ReadySignalIN,int FwdOut,int RevOut, bool Direction, int CurrentSpeed, int FWDSpeed, int value, int inout1, int inout2, int inout3, int inout4);
+    ArtDriver(int id, const char name[], DriverType Driver_Type, int ReadySignalIN,int ResetSignalOut, int FwdOut,int RevOut, bool Direction, int CurrentSpeed, int FWDSpeed, int value, int inout1, int inout2, int inout3, int inout4);
     //ArtDriver(int id, const char name[], DriverType Driver_Type, int ReadySignalIN,int FwdOut,int RevOut, bool Direction,
     //            int CurrentSpeed, int FWDSpeed, int value, int inout1, int inout2, int inout3, int inout4, int pos1, int pos2, int pos3, int pos4);
     void doLogic();

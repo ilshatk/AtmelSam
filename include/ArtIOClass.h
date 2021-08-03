@@ -64,6 +64,7 @@ public:
     static bool ExtDevReady();
     static bool ExtDevReady(int posnum);
     static bool CHK_ACTIVE_NTIME(bool sens_in, int *timer_in, int delta_time);
+    static bool ResetDrv(int ResOut);
 
 protected:
     ArtIOClass();

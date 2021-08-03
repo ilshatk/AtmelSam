@@ -2,30 +2,17 @@
 
 ArtDriver::ArtDriver(int id, const char name[])
 {
-    //IHasCycleLogicHelper::addDevice(this);
+    IHasCycleLogicHelper::addDevice(this);
     memset(nDriverFWDSpeed, 0, sizeof(nDriverFWDSpeed));
     memset(nDriverREVSpeed, 0, sizeof(nDriverREVSpeed));
     //memset(OutState, 0, sizeof(OutState));
     //memcpy(m_name,name,sizeof(name));
 }
 
-int ArtDriver::getName()
-{
-    return (0);
-}
-
-int ArtDriver::getID()
-{
-    return (0);
-}
-
-void ArtDriver::update()
-{
-}
-
-ArtDriver::ArtDriver(int id, const char name[], DriverType Driver_Type, int ReadySignalIN, int FwdOut, int RevOut, bool Direction, int CurrentSpeed, int FWDSpeed, int value, int inout1, int inout2, int inout3, int inout4) : ArtDriver(id, name)
+ArtDriver::ArtDriver(int id, const char name[], DriverType Driver_Type, int ReadySignalIN, int ResetSignalOut, int FwdOut, int RevOut, bool Direction, int CurrentSpeed, int FWDSpeed, int value, int inout1, int inout2, int inout3, int inout4) : ArtDriver(id, name)
 {
     nDriverType = Driver_Type;
+    ArtDriver::ResetSignalOut = ResetSignalOut;
     nDriverReadySignalIN = ReadySignalIN;
     bDriverDirection = Direction;
     nDriverCurrentSpeed = CurrentSpeed;
@@ -52,7 +39,7 @@ void ArtDriver::doLogic()
     {
     case ST_DRIVER_UNKNOWN:
     {
-        if ((DigitalIn() & int(pow(2, nDriverReadySignalIN))) == pow(2, nDriverReadySignalIN))
+        if (ArtIOClass::getInputState(nDriverReadySignalIN))
         {
             if (bDriverManualMode)
             {
@@ -106,7 +93,7 @@ void ArtDriver::doLogic()
     }
     case ST_DRIVER_STOP:
     {
-        if ((DigitalIn() & int(pow(2, nDriverReadySignalIN))) == pow(2, nDriverReadySignalIN)) //; TODO change to $IN
+        if (ArtIOClass::getInputState(nDriverReadySignalIN)) //; TODO change to $IN
         {
             ConveySetSTOP();
             if (bDriverManualMode)
@@ -129,7 +116,7 @@ void ArtDriver::doLogic()
     }
     case ST_DRIVER_RUN:
     {
-        if ((DigitalIn() & int(pow(2, nDriverReadySignalIN))) == pow(2, nDriverReadySignalIN)) // THEN; TODO change to $IN
+        if (ArtIOClass::getInputState(nDriverReadySignalIN)) // THEN; TODO change to $IN
         {
             ConveySetRun();
             if (bDriverManualMode)
@@ -161,7 +148,16 @@ void ArtDriver::doLogic()
 
     case ST_DRIVER_ERROR:
     {
-        if ((DigitalIn() & int(pow(2, nDriverReadySignalIN))) == pow(2, nDriverReadySignalIN)) //; TODO change to $IN
+        if (ArtIOClass::ResetDrv(ResetSignalOut))
+        {
+            ArtIOClass::setOutputState(ResetSignalOut, true);
+        }
+        else
+        {
+            ArtIOClass::setOutputState(ResetSignalOut, false);
+        }
+
+        if (ArtIOClass::getInputState(nDriverReadySignalIN)) //; TODO change to $IN
         {
             nDriverState = ST_DRIVER_UNKNOWN;
         }
@@ -545,4 +541,17 @@ int ArtDriver::ARTDriverSetSTOP()
     ConveySetSTOP();
     bDriverRUN = false;
     return (0);
+}
+int ArtDriver::getName()
+{
+    return (0);
+}
+
+int ArtDriver::getID()
+{
+    return (0);
+}
+
+void ArtDriver::update()
+{
 }
