@@ -1631,7 +1631,7 @@ void ArtPalletConveyorWithStoppers::doLogic() //на переменную flags 
 			StopperPos1->ARTCylinderOpen();
 			if (ArtIOClass::ExtDevReady() && ((StopperPos1->getCylState() == ArtCylinder::ARTCYL_ST_OPEN)))
 			{
-				ActPoint->ConveySetDriverFWD(true); // запуск цепного конвейера
+				ActPoint->ConveySetDriverFWD(true); //запуск цепного конвейера
 				DispDrvPtr->ConveySetDriverFWD(true);
 			}
 		}
@@ -1824,6 +1824,149 @@ void ArtPalletConveyorWithStoppers::doLogic() //на переменную flags 
 }
 
 //---------------------------------ArtConveyor1TypeNextExtDev--------------------------------------------------
+//---------------------------------ArtConveyorPLPType--------------------------------------------------
+ArtConveyorPLPType::ArtConveyorPLPType(int id, const char name[])
+{
+	IHasCycleLogicHelper::addDevice(this);
+	m_id = id;
+}
+
+ArtConveyorPLPType::ArtConveyorPLPType(int id, const char name[], ConveyorType type, ArtDriver *ActPoint, ArtSensor *EnterSensPoint, ArtSensor *ExitSensPoint, ArtSensor *PallOnPosition, int PassTime, int RunTimer) : ArtConveyorPLPType(id, name)
+{
+	ArtConveyorPLPType::conveyorType = type;
+	ArtConveyorPLPType::ActPoint = ActPoint;			 //указатель на драйвер
+	ArtConveyorPLPType::EnterSensPoint = EnterSensPoint; //указатель на входной сенсор
+	ArtConveyorPLPType::ExitSensPoint = ExitSensPoint;	 //указатель на выходной сенсор
+	ArtConveyorPLPType::PallOnPosition = PallOnPosition;
+	ArtConveyorPLPType::productPassTime = PassTime;
+	ArtConveyorPLPType::conveyorRunTimer = RunTimer;
+	productEnterSensConvey = false;
+	productExitSensConvey = false;
+	PalletOnPosition = false;
+	productFctEnterConveyor = false;
+	conveyorState = ST_CONVEYOR_UNKNOWN;
+}
+
+void ArtConveyorPLPType::doLogic()
+{
+	if (ActuatorsGet(GET_CONV_ACTUATOR_READY, ActPoint) == 1)
+	{
+		ArtIOClass::Error(0);
+	}
+	else
+	{
+		conveyorState = ST_CONVEYOR_ERROR;
+		ArtIOClass::Error(m_id);
+	}
+
+	if (productFctEnterConveyor)
+	{
+		productEnterSensConvey = true;
+		productFctEnterConveyor = false;
+	}
+	else
+	{
+		productEnterSensConvey = EnterSensPoint->SensorState();
+	}
+	PalletOnPosition = PallOnPosition->SensorState();
+	productExitSensConvey = ExitSensPoint->SensorState();
+
+	switch (conveyorState)
+	{
+	case ST_CONVEYOR_UNKNOWN:
+	{
+		if (ConveyorGetReadyReceive() == 1)
+		{
+			conveyorState = ST_CONVEYOR_FREE;
+		}
+		else
+		{
+			if (PalletOnPosition)
+			{
+				conveyorState = ST_CONVEYOR_BUSY;
+			}
+			else
+			{
+				conveyorState = ST_CONVEYOR_FREE;
+			}
+		}
+
+		break;
+	}
+	case ST_CONVEYOR_FREE:
+	{
+		if ((!SignalOnMoveOut) && PalletOnPosition)
+		{
+			conveyorState = ST_CONVEYOR_BUSY;
+		}
+
+		if (productEnterSensConvey && !PalletOnPosition)
+		{
+			conveyorState = ST_CONVEYOR_PROD_FWD;
+		}
+		break;
+	}
+
+	case ST_CONVEYOR_PROD_FWD:
+	{
+		if (conveyorRunTimer == 0)
+		{
+			conveyorRunTimer = ArtIOClass::ARTTimerGetTime();
+			ActuatorsSet(SET_CONV_ACTUATOR_FWD, ActPoint); //!* !Change to actual function
+		}
+		
+		if (PalletOnPosition)
+		{
+			ActuatorsSet(SET_CONV_ACTUATOR_STOP, ActPoint);
+		}
+
+		if (ARTTimerIsTimePassed(conveyorRunTimer, productPassTime, 99000))
+		{
+			ActuatorsSet(SET_CONV_ACTUATOR_STOP, ActPoint); //!* !Change to actual function
+			conveyorRunTimer = 0;
+			conveyorState = ST_CONVEYOR_FREE;
+		}
+		else
+		{
+			if ((NextConvPoint->ConveyorGetReadyReceive() != 1) && productExitSensConvey)
+			{
+				ActuatorsSet(SET_CONV_ACTUATOR_STOP, ActPoint); //!* !Change to actual function
+				conveyorRunTimer = 0;
+				conveyorState = ST_CONVEYOR_BUSY;
+			}
+		}
+		break;
+	}
+	case ST_CONVEYOR_BUSY:
+	{
+		if (NextConvPoint->ConveyorGetReadyReceive() == 1)
+		{
+			ConveyorSetProdEntering();
+			conveyorState = ST_CONVEYOR_PROD_FWD;
+			conveyorRunTimer = 0;
+		}
+		else
+		{
+			ActuatorsSet(SET_CONV_ACTUATOR_STOP, ActPoint); //!* !Change to actual function
+			conveyorRunTimer = 0;
+		}
+		break;
+	}
+	case ST_CONVEYOR_ERROR:
+	{
+		if (ActuatorsGet(GET_CONV_ACTUATOR_READY, ActPoint) == 1) //; !* !Change ARTActuatorsGet to actual function
+		{
+
+			conveyorState = ST_CONVEYOR_UNKNOWN;
+		}
+		break;
+	}
+	default:
+		break;
+	}
+}
+
+//---------------------------------ArtConveyorPLPType--------------------------------------------------
 
 //---------------------------------ArtConveyor--------------------------------------------------
 

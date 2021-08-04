@@ -2,6 +2,8 @@
 
 
 
+
+
 void ArtPLP::doLogic()
 {
     switch (PLPState)
@@ -36,11 +38,7 @@ void ArtPLP::doLogic()
             }   
             case PLP_ST_NEEDPALLET:
             {
-               IF APIFlags[nItemCounter].bPalletPlaced THEN
-                  APIFlags[nItemCounter].bPalletPlaced = FALSE
-                  APITimer[nItemCounter].nTimerPusherAction = 0 ;
-                  SetState(#PLP_ST_PALLET_PLACED, nItemCounter)     
-               ENDIF
+               if ()
             }   
             case PLP_ST_PALLET_PLACED: //align pallet with pusher 
             {

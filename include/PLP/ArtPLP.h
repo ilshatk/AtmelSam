@@ -8,8 +8,10 @@
 class ArtPLP : public IHasCycleLogic
 {
 private:
+    int PLPState;
+
 public:
-    enum PLPState
+    enum PLPStates
     {
         PLP_ST_UNKNOWN,
         PLP_ST_NEEDPALLET,
@@ -25,6 +27,8 @@ public:
         ST_ERROR
 
     };
+    ArtSensor *PallOnPlp;
+    ArtPLP(int id, const char name[], ArtSensor *PallOnPlp,ArtSensor *MoveIn,);
     int getName();
     int getID();
     void update();

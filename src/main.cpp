@@ -186,7 +186,7 @@ void setup()
   ArtPusher Pusher(18,("SV4"),&OnPusherM20,&ConvM20,&ConvM21,&PusherSV4);
   //----setup for A36---------------------------------------------------------------------------------------
   */
-  /*
+  
   //----setup for A37---------------------------------------------------------------------------------------
   ArtSensor PalletOnM24(1, ("B51"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false); // Фотодатчик паллеты на М24 (B51) (тип BGS G10) подобрать delayFE
   ArtSensor PalletOnM25(2, ("B62"), 2, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false); // Фотодатчик паллеты на М25 (B62) (тип BGS G10) подобрать delayFE
@@ -207,13 +207,13 @@ void setup()
   ArtCylinder Stopper5(16, ("SV4"), 10, false, true, ArtCylinder::MONO_STABLE, 11, &Stopper5UP, &Stopper5DOWN, 2000, 2000); //Пушер SV1
   ArtCylinder Stopper7(17, ("SV4"), 10, false, true, ArtCylinder::MONO_STABLE, 11, &Stopper7UP, &Stopper7DOWN, 2000, 2000); //Пушер SV1
 
-  ArtDriver M22DRV(18, ("M21DRV"), ArtDriver::DRIVER_TYPE_1, 15, 13, 6, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M22
-  ArtDriver M23DRV(19, ("M21DRV"), ArtDriver::DRIVER_TYPE_1, 16, 14, 6, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M23
+  ArtDriver M22DRV(18, ("M22DRV"), ArtDriver::DRIVER_TYPE_1, 15,15, 13, 6, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M22
+  ArtDriver M23DRV(19, ("M23DRV"), ArtDriver::DRIVER_TYPE_1, 16,16, 14, 6, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M23
 
   ArtPalletConveyorWithStoppers ConvM23(20, ("ConvM23"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M22DRV, &M23DRV, &PalletOnM24, &PalletOnM25, &PalletOnM26, &PalletOnM27, &Stopper1, &Stopper3, &Stopper5, &Stopper7, 20000, 0);
 
   //----setup for A37----------------------------------------------------------------------------------------
-*/
+
   
   //----setup for A38----------------------------------------------------------------------------------------
   ArtSensor M28Pall(54, ("B56"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true, 1); // М28 датчик на конце следующего конвейера на следующей барде
@@ -230,10 +230,10 @@ void setup()
   ArtSensor M27DOWN(7, ("B87"), 7, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false); // М27 внизу (B87) (тип геркон)
   ArtSensor M27UP(8, ("B88"), 8, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);   // М27 наверху (B88) (тип геркон)
 
-  ArtDriver M24DRV(9, ("M24DRV"), ArtDriver::DRIVER_TYPE_1, 13, 9, 6, true, 0, 2, 0, 2, 0, 0, 0);   //Драйвер на M24
-  ArtDriver M25DRV(10, ("M25DRV"), ArtDriver::DRIVER_TYPE_1, 14, 11, 6, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M25
-  ArtDriver M26DRV(11, ("M26DRV"), ArtDriver::DRIVER_TYPE_1, 15, 13, 6, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M26
-  ArtDriver M27DRV(12, ("M27DRV"), ArtDriver::DRIVER_TYPE_1, 16, 15, 6, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M27
+  ArtDriver M24DRV(9, ("M24DRV"), ArtDriver::DRIVER_TYPE_1, 13,10, 9, 6, true, 0, 2, 0, 2, 0, 0, 0);   //Драйвер на M24
+  ArtDriver M25DRV(10, ("M25DRV"), ArtDriver::DRIVER_TYPE_1, 14,12, 11, 6, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M25
+  ArtDriver M26DRV(11, ("M26DRV"), ArtDriver::DRIVER_TYPE_1, 15,14, 13, 6, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M26
+  ArtDriver M27DRV(12, ("M27DRV"), ArtDriver::DRIVER_TYPE_1, 16,16, 15, 6, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M27
 
   ArtCylinder Lift1(13, ("Lift1"), 10, false, true, ArtCylinder::MONO_STABLE, 2, &M24UP, &M24DOWN, 2000, 2000); //Пушер SV1
   ArtCylinder Lift2(14, ("Lift2"), 10, false, true, ArtCylinder::MONO_STABLE, 2, &M25UP, &M25DOWN, 2000, 2000); //Пушер SV1
@@ -252,7 +252,7 @@ void setup()
                                                                                                                                  //для этой прошивки поменять в case Free
                                                                                                                                  //входы с A39 и A38 передать сюда
 //----setup for A38----------------------------------------------------------------------------------------
-*/
+
 
   //----setup for A39----------------------------------------------------------------------------------------
   //
@@ -280,9 +280,9 @@ void setup()
   ArtCylinder Podzhim2(15, ("Podzhim2"), 10, false, true, ArtCylinder::MONO_STABLE, 4, &Podzhim2NOHOME, &Podzhim2HOME, 2000, 2000); //Пушер SV1
   ArtPodzhim M29Podzhim(16, ("Podzhim2"), &M29Pall, &Podzhim2);
 
-  ArtCylinder Stopper1(15, ("Stopper1"), 10, false, true, ArtCylinder::MONO_STABLE, 4, &Podzhim2NOHOME, &Podzhim2HOME, 2000, 2000); //Пушер SV1
+  ArtCylinder Stopper1(15, ("Stopper1"), 10, false, true, ArtCylinder::MONO_STABLE, 4, &Stopper2UP, &Stopper2DOWN, 2000, 2000); //Пушер SV1 переделать если не будет корректно работать
   ArtPodzhim M28Stopper(16, ("Stopper1"), &M24UP, &Stopper1);
-  ArtCylinder Stopper2(15, ("Stopper2"), 10, false, true, ArtCylinder::MONO_STABLE, 4, &Podzhim2NOHOME, &Podzhim2HOME, 2000, 2000); //Пушер SV1
+  ArtCylinder Stopper2(15, ("Stopper2"), 10, false, true, ArtCylinder::MONO_STABLE, 4, &Stopper4UP, &Stopper4DOWN, 2000, 2000); //Пушер SV1
   ArtPodzhim M29Stopper(16, ("Stopper2"), &M25UP, &Stopper2);
 
   ArtDriver M28DRV(14, ("M28DRV"), ArtDriver::DRIVER_TYPE_1, 15, 14, 13, 6, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M28
@@ -316,10 +316,10 @@ void setup()
   ArtCylinder Podzhim4(15, ("Podzhim4"), 10, false, true, ArtCylinder::MONO_STABLE, 4, &Podzhim4NOHOME, &Podzhim4HOME, 2000, 2000); //Пушер SV1
   ArtPodzhim M31Podzhim(16, ("Podzhim4"), &M31Pall, &Podzhim4);
 
-  ArtCylinder Stopper3(15, ("Stopper1"), 10, false, true, ArtCylinder::MONO_STABLE, 4, &Podzhim2NOHOME, &Podzhim2HOME, 2000, 2000); //Пушер SV1
-  ArtPodzhim M28Stopper(16, ("Stopper1"), &M26UP, &Stopper3);
-  ArtCylinder Stopper4(15, ("Stopper2"), 10, false, true, ArtCylinder::MONO_STABLE, 4, &Podzhim2NOHOME, &Podzhim2HOME, 2000, 2000); //Пушер SV1
-  ArtPodzhim M29Stopper(16, ("Stopper2"), &M27UP, &Stopper4);
+  ArtCylinder Stopper3(15, ("Stopper3"), 10, false, true, ArtCylinder::MONO_STABLE, 4, &Stopper6UP, &Stopper6DOWN, 2000, 2000); //Пушер SV1
+  ArtPodzhim M30Stopper(16, ("Stopper3"), &M26UP, &Stopper3);
+  ArtCylinder Stopper4(15, ("Stopper4"), 10, false, true, ArtCylinder::MONO_STABLE, 4, &Stopper8UP, &Stopper8DOWN, 2000, 2000); //Пушер SV1
+  ArtPodzhim M31Stopper(16, ("Stopper4"), &M27UP, &Stopper4);
 
   ArtDriver M30DRV(14, ("M30DRV"), ArtDriver::DRIVER_TYPE_1, 15, 14, 13, 6, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M30
   ArtDriver M31DRV(15, ("M31DRV"), ArtDriver::DRIVER_TYPE_1, 16, 16, 15, 6, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M31

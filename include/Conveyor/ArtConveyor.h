@@ -187,7 +187,7 @@ private:
 	ArtDriver *OverShuttlePtr;
 
 public:
-	int productPassOverShuttle, PassTimeShuttle, CurPos,BrakeOUT;
+	int productPassOverShuttle, PassTimeShuttle, CurPos, BrakeOUT;
 	ArtAnalogSensor *PositionSens; //указатель на аналоговый датчик
 	ArtSensor *PalletOnConv;
 	ArtSensor *SensOnIN;
@@ -198,7 +198,7 @@ public:
 
 	ArtConveyorShuttleType(int id, const char name[]);
 	ArtConveyorShuttleType(int id, const char name[], ArtDriver *ShuttlePtr, ArtDriver *OverShuttlePtr, ArtAnalogSensor *PositionSens, ArtSensor *PalletOnConv,
-						   ArtSensor *SensOnIN, ArtSensor *SensOnOUT, ArtBasicConveyor *NextConvPtr,ArtSensor *ShuttleEdge, bool readySignalFromNextBarda,int BrakeOUT, int PassTimeOverShuttle, int PassTimeShuttle, int RunTimer, int ConveyorRunTimerOverShuttle);
+						   ArtSensor *SensOnIN, ArtSensor *SensOnOUT, ArtBasicConveyor *NextConvPtr, ArtSensor *ShuttleEdge, bool readySignalFromNextBarda, int BrakeOUT, int PassTimeOverShuttle, int PassTimeShuttle, int RunTimer, int ConveyorRunTimerOverShuttle);
 	void doLogic();
 	int expRunningAverage(int newVal);
 	int findMedianN_optim(int newVal);
@@ -237,6 +237,19 @@ private:
 public:
 	ArtPalletConveyorWithStoppers(int id, const char name[]);
 	ArtPalletConveyorWithStoppers(int id, const char name[], ConveyorType type, ArtDriver *ActPoint, ArtDriver *DispDrvPtr, ArtSensor *Pos1Ptr, ArtSensor *Pos2Ptr, ArtSensor *Pos3Ptr, ArtSensor *Pos4Ptr, ArtCylinder *StopperPos1, ArtCylinder *StopperPos2, ArtCylinder *StopperPos3, ArtCylinder *StopperPos4, int PassTime, int RunTimer);
+	void doLogic();
+};
+
+class ArtConveyorPLPType : public ArtBasicConveyor
+{
+public:
+	int productPassTime;
+	bool SignalOnMoveOut, PalletOnPosition;
+	ArtSensor *EnterSensPoint; //указатель на входной сенсор
+	ArtSensor *ExitSensPoint;  //указатель на выходной сенсор
+	ArtSensor *PallOnPosition; //указатель на сенсор наличия паллеты
+	ArtConveyorPLPType(int id, const char name[]);
+	ArtConveyorPLPType(int id, const char name[], ConveyorType type, ArtDriver *ActPoint, ArtSensor *EnterSensPoint, ArtSensor *ExitSensPoint, ArtSensor *PallOnPosition, int PassTime, int RunTimer);
 	void doLogic();
 };
 

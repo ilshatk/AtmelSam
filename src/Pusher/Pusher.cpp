@@ -178,7 +178,7 @@ ArtLift::ArtLift(int id, const char name[])
     m_id = id;
 }
 
-ArtLift::ArtLift(int id, const char name[], ArtCylinder *LiftCylPtr,int posnum) : ArtLift(id, name)
+ArtLift::ArtLift(int id, const char name[], ArtCylinder *LiftCylPtr, int posnum) : ArtLift(id, name)
 {
     ArtLift::LiftCylPtr = LiftCylPtr;
     ArtLift::posnum = posnum;
@@ -198,7 +198,7 @@ void ArtLift::doLogic()
     switch (LiftState)
     {
     case UP:
-    {                                        // доделать
+    {                                             // доделать
         if (ArtIOClass::ExtDevReady(posnum) != 1) //сигнал приходит с цепного конвейера
         {
             LiftCylPtr->ARTCylinderClose();
