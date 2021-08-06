@@ -178,10 +178,11 @@ ArtLift::ArtLift(int id, const char name[])
     m_id = id;
 }
 
-ArtLift::ArtLift(int id, const char name[], ArtCylinder *LiftCylPtr, int posnum) : ArtLift(id, name)
+ArtLift::ArtLift(int id, const char name[], ArtCylinder *LiftCylPtr, int posnum,ArtSensor *PalletOnPosition) : ArtLift(id, name)
 {
     ArtLift::LiftCylPtr = LiftCylPtr;
     ArtLift::posnum = posnum;
+    ArtLift::PalletOnPosition = PalletOnPosition;
     if (LiftCylPtr->getCylState() == ArtCylinder::ARTCYL_ST_CLOSED)
     {
         LiftState = DOWN;
@@ -198,9 +199,13 @@ void ArtLift::doLogic()
     switch (LiftState)
     {
     case UP:
-    {                                             // доделать
+    {                                     
         if (ArtIOClass::ExtDevReady(posnum) != 1) //сигнал приходит с цепного конвейера
         {
+            while(!PalletOnPosition->SensorState())
+            {
+                break;
+            }
             LiftCylPtr->ARTCylinderClose();
             while (!LiftCylPtr->getCylState() == ArtCylinder::ARTCYL_ST_CLOSED)
             {

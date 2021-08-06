@@ -1,5 +1,6 @@
 #include "ArtIOClass.h"
 uint16_t ArtIOClass::m_nCurrentOutputState = 0;
+uint8_t ArtIOClass::m_CurrentPosition = 0;
 const uint8_t ArtIOClass::N_MIN_INPORT_NUM = 1;
 const uint8_t ArtIOClass::N_MAX_INPORT_NUM = 16;
 const uint8_t ArtIOClass::N_MIN_OUTPORT_NUM = 1;
@@ -259,7 +260,7 @@ bool ArtIOClass::readySignalFromNext(int convnum, int boardnum) //сигнал �
     }
 }
 
-bool ArtIOClass::ExtDevReady() // для приема сигнала готов с диспенсера на следующий конвейер
+bool ArtIOClass::ExtDevReady() // для приема сигнала готов с диспенсера на следующем конвейере
 {
     if (m_ptrEasyCat->BufferOut.Cust.Flags == 1)
     {
@@ -304,9 +305,30 @@ void ArtIOClass::DevReady(int posnum) // для передачи сигнала 
     m_ptrEasyCat->BufferIn.Cust.DevReady &posnum;
 }
 
-void ArtIOClass::OnPosition(uint8_t pos)
+void ArtIOClass::DevReady(int posnum, bool enable) // для передачи сигнала какой плейспоинт готов
 {
-    m_ptrEasyCat->BufferIn.Cust.OnPosition = pos;
+    std::bitset<8> Position;
+    if (enable)
+    {
+        Position.reset();
+        Position.set(posnum - 1, enable);
+        m_CurrentPosition |= Position.to_ulong();
+    }
+    else
+    {
+        Position.set();
+        Position.set(posnum - 1, enable);
+        m_CurrentPosition &= Position.to_ulong();
+    }
+    m_ptrEasyCat->BufferIn.Cust.DevReady = m_CurrentPosition;
+}
+
+bool ArtIOClass::PallFull(int PLPPos)
+{
+    if ((m_ptrEasyCat->BufferOut.Cust.PallFull & PLPPos) == PLPPos)
+    {
+
+    }
 }
 
 uint16_t ArtIOClass::ReqPos()

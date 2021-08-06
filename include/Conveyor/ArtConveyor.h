@@ -81,7 +81,14 @@ public:
 		ST_3_POS,
 		ST_4_POS,
 		ST_SHUTTLE_CONVEYOR_ERROR,
-		ST_OVERSHUTTLE_CONVEYOR_ERROR
+		ST_OVERSHUTTLE_CONVEYOR_ERROR,
+		ST_CONVEYOR_MOVE_OUT,
+		ST_CONVEYOR_MOVE_IN,
+		ST_CONVEYOR_PALL_FULL,
+		ST_CONVEYOR_PALL_PLACED,
+		ST_CONVEYOR_NEEDPALLET,
+		ST_CONVEYOR_UNFIXED,
+		ST_CONVEYOR_FIXED
 	};
 
 	enum GetDriverState
@@ -236,20 +243,27 @@ private:
 
 public:
 	ArtPalletConveyorWithStoppers(int id, const char name[]);
-	ArtPalletConveyorWithStoppers(int id, const char name[], ConveyorType type, ArtDriver *ActPoint, ArtDriver *DispDrvPtr, ArtSensor *Pos1Ptr, ArtSensor *Pos2Ptr, ArtSensor *Pos3Ptr, ArtSensor *Pos4Ptr, ArtCylinder *StopperPos1, ArtCylinder *StopperPos2, ArtCylinder *StopperPos3, ArtCylinder *StopperPos4, int PassTime, int RunTimer);
+	ArtPalletConveyorWithStoppers(int id, const char name[], ConveyorType type, ArtDriver *ActPoint, ArtDriver *DispDrvPtr,
+								  ArtSensor *Pos1Ptr, ArtSensor *Pos2Ptr, ArtSensor *Pos3Ptr, ArtSensor *Pos4Ptr, ArtCylinder *StopperPos1,
+								  ArtCylinder *StopperPos2, ArtCylinder *StopperPos3, ArtCylinder *StopperPos4, int PassTime, int RunTimer);
 	void doLogic();
 };
 
 class ArtConveyorPLPType : public ArtBasicConveyor
 {
 public:
-	int productPassTime;
-	bool SignalOnMoveOut, PalletOnPosition;
+	int productPassTime, SignalPalletFull, PLPNum;
+	bool PalletOnPosition;
 	ArtSensor *EnterSensPoint; //указатель на входной сенсор
 	ArtSensor *ExitSensPoint;  //указатель на выходной сенсор
 	ArtSensor *PallOnPosition; //указатель на сенсор наличия паллеты
+	ArtSensor *LayerSensor;	   //указатель на сенсор слоя
+	ArtCylinder *Stopper;
+	ArtCylinder *Podzhim;
 	ArtConveyorPLPType(int id, const char name[]);
-	ArtConveyorPLPType(int id, const char name[], ConveyorType type, ArtDriver *ActPoint, ArtSensor *EnterSensPoint, ArtSensor *ExitSensPoint, ArtSensor *PallOnPosition, int PassTime, int RunTimer);
+	ArtConveyorPLPType(int id, const char name[], ConveyorType type, ArtDriver *ActPoint, ArtSensor *EnterSensPoint,
+					   ArtSensor *ExitSensPoint, ArtSensor *PallOnPosition, ArtSensor *LayerSensor,
+					   ArtCylinder *Stopper,ArtCylinder *Podzhim, int PassTime, int RunTimer, int PLPNum);
 	void doLogic();
 };
 

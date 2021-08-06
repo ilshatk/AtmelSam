@@ -28,7 +28,7 @@ public:
 
     };
     ArtSensor *PallOnPlp;
-    ArtPLP(int id, const char name[], ArtSensor *PallOnPlp,ArtSensor *MoveIn,);
+    ArtPLP(int id, const char name[], ArtSensor *PallOnPlp,ArtSensor *MoveIn);
     int getName();
     int getID();
     void update();

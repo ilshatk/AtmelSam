@@ -7,7 +7,6 @@
 
 #undef min
 #undef max
-
 #include <vector>
 #include <bitset>
 
@@ -32,6 +31,7 @@ class ArtIOClass
 {
 protected:
     static uint16_t m_nCurrentOutputState;
+    static uint8_t m_CurrentPosition;
     static const uint8_t N_MIN_INPORT_NUM, N_MAX_INPORT_NUM;
     static const uint8_t N_MIN_OUTPORT_NUM, N_MAX_OUTPORT_NUM;
 
@@ -57,14 +57,15 @@ public:
     static void StackReady(bool ready);
     static uint16_t ReqPos();
     static bool LoaUnloadind();
-    static void OnPosition(uint8_t pos);
     static int ARTTimerGetTime();
     static void DevReady(bool ready);
     static void DevReady(int posnum);
+    static void DevReady(int posnum, bool enable);
     static bool ExtDevReady();
     static bool ExtDevReady(int posnum);
     static bool CHK_ACTIVE_NTIME(bool sens_in, int *timer_in, int delta_time);
     static bool ResetDrv(int ResOut);
+    static bool PallFull(int PLPPos);
 
 protected:
     ArtIOClass();

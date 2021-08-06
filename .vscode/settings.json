@@ -2,6 +2,7 @@
     "files.associations": {
         "cstring": "cpp",
         "cmath": "cpp",
-        "typeinfo": "cpp"
+        "typeinfo": "cpp",
+        "bitset": "cpp"
     }
 }

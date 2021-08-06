@@ -87,6 +87,7 @@ protected:
     int m_id, LiftState,posnum;
     char name[256], m_name[256];
     ArtCylinder *LiftCylPtr;
+    ArtSensor *PalletOnPosition;
 
     enum LiftStates
     {
@@ -96,7 +97,7 @@ protected:
 
 public:
     ArtLift(int id, const char name[]);
-    ArtLift(int id, const char name[], ArtCylinder *LiftCylPtr,int posnum);
+    ArtLift(int id, const char name[], ArtCylinder *LiftCylPtr,int posnum,ArtSensor *PalletOnPosition);
     void doLogic();
     void update();
     int getName();
