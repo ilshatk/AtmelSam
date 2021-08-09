@@ -334,12 +334,11 @@ void setup()
   ArtConveyor1TypeNextExtDev ConvM31(15, ("ConvM31"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M31DRV, &M27UP, &M29Pall, 5000, 0, 0);*/
   //----setup for A40----------------------------------------------------------------------------------------
 
-  /*
   //----setup for A41--Shuttle and -------------------------------------------------------------------------------------
   ArtSensor EnterShuttle(1, ("B95"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);          // Фотодатчик наличия паллеты на входе шаттла (B95) (тип R)
   ArtSensor RangeFinderDiscrete(2, ("B96"), 2, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);   // Фотодатчик дальномер шаттла (B96) (тип лазер BGS) (дискр выход)
   ArtSensor PalletOnConvM32(3, ("B97"), 3, ArtSensor::SENSOR_TYPE_BASIC, 1000, 2000, false); // Фотодатчик паллеты на М32 (B97) (тип R)
-  ArtSensor EdgeOnShuttle(4, ("B98"), 4, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);   // Датчик крайних положений шаттла (B98) (тип Мех)
+  ArtSensor EdgeOnShuttle(4, ("B98"), 4, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);         // Датчик крайних положений шаттла (B98) (тип Мех)
   ArtSensor ExitShuttle(5, ("B99"), 5, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);           // Фотодатчик наличия паллеты на выходе шаттла (B99) (тип R)
   ArtSensor PalletOnConvM34(6, ("B100"), 6, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);      // Датчик паллеты на М34 (B100) (тип Инд)
   ArtAnalogSensor RangeFinderAnalog(7, ("ConvM16"), 1);                                      //Фотодатчик дальномер шаттла (B96) (тип лазер BGS) (аналог выход)
@@ -350,9 +349,9 @@ void setup()
 
   ArtConveyor1TypeNextExtDev BeforWin(11, ("ConvM34"), ArtBasicConveyor::CONVEYOR_TYPE_1, &BeforWinding, &ExitShuttle, &PalletOnConvM34, 4000, 0, 8);
   ArtConveyorShuttleType Shuttle(12, ("ConvM32&33"), &ShuttleDrv, &OverShuttleDrv, &RangeFinderAnalog, &PalletOnConvM32, &EnterShuttle, &ExitShuttle, &BeforWin,
-                                 &EdgeOnShuttle,false, 1, 400000, 100000, 0, 0);// переделать
+                                 &EdgeOnShuttle, false, 1, 400000, 100000, 0, 0); // переделать
   //----setup for A41--Shuttle-------------------------------------------------------------------------------------
-*/
+
   //----setup for A42----------------------------------------------------------------------------------------
 
   //----setup for A42----------------------------------------------------------------------------------------
@@ -401,7 +400,6 @@ void setup()
 
       if (ArtIOClass::getOutputState(1) == false && flag == false)
       {
-
         ArtIOClass::setOutputState(1, true);
         ArtIOClass::setOutputState(2, false); //цилиндр1 открыт - внутренний захват
 
@@ -442,9 +440,9 @@ void setup()
     {
       int16_t AdcResult;
       Helper.doLogic();
+      int i;
       AdcResult = ReadAdc(AnaInChannel);
       ArtIOClass::doIOLogic();
-
 
       switch (AnaInChannel) // we read one channel each round
       {
@@ -471,7 +469,11 @@ void setup()
       {
         //Conv2.AccumConv(true);
       }
-
+      i = ArtIOClass::ReqPosition(1);
+      if(i>20)
+      {
+        ArtIOClass::setOutputState(1,true);
+      }
       AnaInChannel++;
       AnaInChannel &= 0x03;
 

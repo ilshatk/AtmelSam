@@ -10,9 +10,9 @@
 //-------------------------------------------------------------------//
 
 
-#define CUST_BYTE_NUM_OUT	23
+#define CUST_BYTE_NUM_OUT	25
 #define CUST_BYTE_NUM_IN	21
-#define TOT_BYTE_NUM_ROUND_OUT	24
+#define TOT_BYTE_NUM_ROUND_OUT	28
 #define TOT_BYTE_NUM_ROUND_IN	24
 
 
@@ -35,6 +35,8 @@ typedef union												//---- output buffer ----
 		uint8_t     DriversReset;
 		uint8_t     SensSignalFromPrevBarda;
 		uint8_t     PallFull;
+		uint8_t     DevReadyFromPrevBoard1;
+		uint8_t     DevReadyFromPrevBoard2;
 	}Cust;
 } PROCBUFFER_OUT;
 

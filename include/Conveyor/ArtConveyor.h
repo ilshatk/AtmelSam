@@ -189,12 +189,12 @@ class ArtConveyorShuttleType : public ArtBasicConveyor
 {
 private:
 	bool fproductCounted, productCountSensConvey, pp_stack_ready, readySignalFromNextBarda, On_Position;
-	int Pos1, Pos2, Pos3, Pos4, Pos5, ReqPos, ConveyorRunTimerShuttle, ConveyorRunTimerOverShuttle;
+	int ReqPos, ConveyorRunTimerShuttle, ConveyorRunTimerOverShuttle, PLPNum;
 	ArtDriver *ShuttlePtr;
 	ArtDriver *OverShuttlePtr;
 
 public:
-	int productPassOverShuttle, PassTimeShuttle, CurPos, BrakeOUT;
+	int productPassOverShuttle, PassTimeShuttle, CurPos, BrakeOUT, Position1, Position2, Position3, Position4, Position5;
 	ArtAnalogSensor *PositionSens; //указатель на аналоговый датчик
 	ArtSensor *PalletOnConv;
 	ArtSensor *SensOnIN;
@@ -205,7 +205,8 @@ public:
 
 	ArtConveyorShuttleType(int id, const char name[]);
 	ArtConveyorShuttleType(int id, const char name[], ArtDriver *ShuttlePtr, ArtDriver *OverShuttlePtr, ArtAnalogSensor *PositionSens, ArtSensor *PalletOnConv,
-						   ArtSensor *SensOnIN, ArtSensor *SensOnOUT, ArtBasicConveyor *NextConvPtr, ArtSensor *ShuttleEdge, bool readySignalFromNextBarda, int BrakeOUT, int PassTimeOverShuttle, int PassTimeShuttle, int RunTimer, int ConveyorRunTimerOverShuttle);
+						   ArtSensor *SensOnIN, ArtSensor *SensOnOUT, ArtBasicConveyor *NextConvPtr, ArtSensor *ShuttleEdge, bool readySignalFromNextBarda, int BrakeOUT, int PassTimeOverShuttle,
+						   int PassTimeShuttle, int RunTimer, int ConveyorRunTimerOverShuttle);
 	void doLogic();
 	int expRunningAverage(int newVal);
 	int findMedianN_optim(int newVal);
@@ -263,7 +264,7 @@ public:
 	ArtConveyorPLPType(int id, const char name[]);
 	ArtConveyorPLPType(int id, const char name[], ConveyorType type, ArtDriver *ActPoint, ArtSensor *EnterSensPoint,
 					   ArtSensor *ExitSensPoint, ArtSensor *PallOnPosition, ArtSensor *LayerSensor,
-					   ArtCylinder *Stopper,ArtCylinder *Podzhim, int PassTime, int RunTimer, int PLPNum);
+					   ArtCylinder *Stopper, ArtCylinder *Podzhim, int PassTime, int RunTimer, int PLPNum);
 	void doLogic();
 };
 
