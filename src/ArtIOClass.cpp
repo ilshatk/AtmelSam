@@ -5,11 +5,6 @@ const uint8_t ArtIOClass::N_MIN_INPORT_NUM = 1;
 const uint8_t ArtIOClass::N_MAX_INPORT_NUM = 16;
 const uint8_t ArtIOClass::N_MIN_OUTPORT_NUM = 1;
 const uint8_t ArtIOClass::N_MAX_OUTPORT_NUM = 16;
-int16_t ArtIOClass::Pos1;
-int16_t ArtIOClass::Pos2;
-int16_t ArtIOClass::Pos3;
-int16_t ArtIOClass::Pos4;
-int16_t ArtIOClass::Pos5;
 ArtIOClass::ArtIOClass()
 {
 }
@@ -237,27 +232,14 @@ bool ArtIOClass::readySignalFromNext()
     }
 }
 
-bool ArtIOClass::ReqPosition(int Pos)
+int ArtIOClass::ReqPosition(int PLPPosition)
 {
-
-    pgm_read_word(&Pos1);
-
-    if (Pos == 2)
+    for (int i = 0; i < 5; i++)
     {
-        pgm_read_word(&Pos2);
-    }
-    if (Pos == 3)
-    {
-        pgm_read_word(&Pos3);
-    }
-    if (Pos == 4)
-    {
-        pgm_read_word(&Pos4);
-    }
-
-    if (Pos == 5)
-    {
-        pgm_read_word(&Pos5);
+        if (PLPPosition == (i + 1))
+        {
+            return (Pos[i]);
+        }
     }
 }
 
@@ -265,7 +247,7 @@ bool ArtIOClass::readySignalFromNext(int convnum, int boardnum) //сигнал �
 {
     if (boardnum == 1)
     {
-        if (m_ptrEasyCat->BufferOut.Cust.NextConvReadySignal1 & convnum == 1)
+        if (m_ptrEasyCat->BufferOut.Cust.NextConvReadySignal1 & convnum == convnum)
         {
             return (true);
         }
@@ -277,7 +259,7 @@ bool ArtIOClass::readySignalFromNext(int convnum, int boardnum) //сигнал �
 
     if (boardnum == 2)
     {
-        if (m_ptrEasyCat->BufferOut.Cust.NextConvReadySignal2 & convnum == 1)
+        if (m_ptrEasyCat->BufferOut.Cust.NextConvReadySignal2 & convnum == convnum)
         {
             return (true);
         }
@@ -288,7 +270,19 @@ bool ArtIOClass::readySignalFromNext(int convnum, int boardnum) //сигнал �
     }
 }
 
-bool ArtIOClass::ExtDevReady() // для приема сигнала готов с диспенсера на следующем конвейере
+void ArtIOClass::ShuttlePosition(int Position, bool enable) //позиция шаттла 1,2,3,4,5
+{
+    if (enable)
+    {
+        m_ptrEasyCat->BufferIn.Cust.SensSignalOnNextBarda |= Position;
+    }
+    else
+    {
+        m_ptrEasyCat->BufferIn.Cust.SensSignalOnNextBarda &= Position;
+    }
+}
+
+bool ArtIOClass::ExtDevReady() // для приема сигнала готов с диспенсера
 {
     if (m_ptrEasyCat->BufferOut.Cust.Flags == 1)
     {
@@ -355,6 +349,11 @@ bool ArtIOClass::PallFull(int PLPPos)
 {
     if ((m_ptrEasyCat->BufferOut.Cust.PallFull & PLPPos) == PLPPos)
     {
+        return (true);
+    }
+    else
+    {
+        return (false);
     }
 }
 
@@ -385,18 +384,6 @@ bool ArtIOClass::PLPReady(int PLPPos, int boardnum)
     }
 }
 
-bool ArtIOClass::LoaUnloadind()
-{
-    if (m_ptrEasyCat->BufferOut.Cust.Flags & 1 == 1)
-    {
-        return (true);
-    }
-    else
-    {
-        return (false);
-    }
-}
-
 void ArtIOClass::Error(uint8_t error)
 {
     m_ptrEasyCat->BufferIn.Cust.OutFault = error;
@@ -410,7 +397,6 @@ int ArtIOClass::ARTTimerGetTime()
     {
         return (1);
     }
-
     return (curTime);
 }
 
@@ -420,34 +406,8 @@ void ArtIOClass::doIOLogic()
     {
         if (m_ptrEasyCat->MainTask() == ESM_OP)
         {
-            if ((m_ptrEasyCat->BufferOut.Cust.Flags & 1) == 1)
-            {
-                if ((m_ptrEasyCat->BufferOut.Cust.Flags & 3) == 3)
-                {
-                    Pos1 PROGMEM = m_ptrEasyCat->BufferOut.Cust.ReqPosition;
-                }
+            PosSet(); // задаем позиции шаттла
 
-                if ((m_ptrEasyCat->BufferOut.Cust.Flags & 5) == 5)
-                {
-                    Pos2 PROGMEM = m_ptrEasyCat->BufferOut.Cust.ReqPosition;
-                }
-
-                if ((m_ptrEasyCat->BufferOut.Cust.Flags & 9) == 9)
-                {
-                    Pos3 PROGMEM = m_ptrEasyCat->BufferOut.Cust.ReqPosition;
-                }
-
-                if ((m_ptrEasyCat->BufferOut.Cust.Flags & 17) == 17)
-                {
-                    Pos4 PROGMEM = m_ptrEasyCat->BufferOut.Cust.ReqPosition;
-                }
-
-                if ((m_ptrEasyCat->BufferOut.Cust.Flags & 33) == 33)
-                {
-                    Pos5 PROGMEM = m_ptrEasyCat->BufferOut.Cust.ReqPosition;
-                }
-            }
-            pgm_read_word(&Pos5);
             m_ptrEasyCat->BufferIn.Cust.OutState = ArtIOClass::getCommonOutputState();
             m_ptrEasyCat->BufferIn.Cust.DigiIn = DigitalIn();
             m_ptrEasyCat->BufferIn.Cust.SensSignalOnNextBarda = DigitalIn();
@@ -502,6 +462,32 @@ bool ArtIOClass::ResetDrv(int ResOut)
     else
     {
         return (false);
+    }
+}
+
+bool ArtIOClass::PosSetted()
+{
+    if (Pos[0] == 0 || Pos[1] == 0 || Pos[2] == 0 || Pos[3] == 0 || Pos[4] == 0)
+    {
+        m_ptrEasyCat->BufferIn.Cust.NeedPos = 1;
+        return (false);
+    }
+    else
+    {
+        m_ptrEasyCat->BufferIn.Cust.NeedPos = 0;
+        return (true);
+    }
+}
+
+void ArtIOClass::PosSet()
+{
+    if ((m_ptrEasyCat->BufferOut.Cust.Flags & 1) == 1)
+    {
+        Pos[0] = m_ptrEasyCat->BufferOut.Cust.Pos1;
+        Pos[1] = m_ptrEasyCat->BufferOut.Cust.Pos2;
+        Pos[2] = m_ptrEasyCat->BufferOut.Cust.Pos3;
+        Pos[3] = m_ptrEasyCat->BufferOut.Cust.Pos4;
+        Pos[4] = m_ptrEasyCat->BufferOut.Cust.Pos5;
     }
 }
 

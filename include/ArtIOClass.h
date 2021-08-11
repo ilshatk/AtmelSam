@@ -34,11 +34,8 @@ protected:
     static uint8_t m_CurrentPosition;
     static const uint8_t N_MIN_INPORT_NUM, N_MAX_INPORT_NUM;
     static const uint8_t N_MIN_OUTPORT_NUM, N_MAX_OUTPORT_NUM;
-    static int16_t Pos1;
-    static int16_t Pos2;
-    static int16_t Pos3;
-    static int16_t Pos4;
-    static int16_t Pos5;
+    static int16_t Pos[5];
+
 
 public:
     static void initializeBoard(EasyCAT *ptrEasyCat); //DONE code form main
@@ -60,7 +57,6 @@ public:
     static bool TookProd();
     static void GaveStack(bool gave);
     static void StackReady(bool ready);
-    static bool LoaUnloadind();
     static int ARTTimerGetTime();
     static void DevReady(bool ready);
     static void DevReady(int posnum);
@@ -71,10 +67,12 @@ public:
     static bool ResetDrv(int ResOut);
     static bool PallFull(int PLPPos);
     static bool PLPReady(int PLPPos, int boardnum);
-    static bool ReqPosition(int Pos);
+    static int ReqPosition(int Pos);
+    static bool PosSetted();
+    static void PosSet();
+    static void ShuttlePosition(int Position, bool enable);
 
-protected:
-    ArtIOClass();
+        protected : ArtIOClass();
     ~ArtIOClass();
 };
 

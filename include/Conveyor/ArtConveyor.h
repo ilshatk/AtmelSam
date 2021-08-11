@@ -88,7 +88,8 @@ public:
 		ST_CONVEYOR_PALL_PLACED,
 		ST_CONVEYOR_NEEDPALLET,
 		ST_CONVEYOR_UNFIXED,
-		ST_CONVEYOR_FIXED
+		ST_CONVEYOR_FIXED,
+		ST_CONVEYOR_POS_SELECT
 	};
 
 	enum GetDriverState
@@ -194,7 +195,7 @@ private:
 	ArtDriver *OverShuttlePtr;
 
 public:
-	int productPassOverShuttle, PassTimeShuttle, CurPos, BrakeOUT, Position1, Position2, Position3, Position4, Position5;
+	int productPassOverShuttle, PassTimeShuttle, CurPos, BrakeOUT;
 	ArtAnalogSensor *PositionSens; //указатель на аналоговый датчик
 	ArtSensor *PalletOnConv;
 	ArtSensor *SensOnIN;
