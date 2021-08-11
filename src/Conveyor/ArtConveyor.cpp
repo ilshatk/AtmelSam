@@ -443,11 +443,13 @@ void ArtConveyor2Type::doLogic()
 			conveyorRunTimer = ArtIOClass::ARTTimerGetTime();
 			ActuatorsSet(SET_CONV_ACTUATOR_FWD, ActPoint2); //!*! Change to actual function
 		}
+
 		if (ARTTimerIsTimePassed(conveyorRunTimer, 90000, 99000))
 		{
 			ActuatorsSet(SET_CONV_ACTUATOR_STOP, ActPoint2); //!*! Change to actual function
 			conveyorState = ST_CONVEYOR_ERROR;
 		}
+
 		if (CalcedNumProdInConveyor == SetedProdNumberCollect)
 		{
 			ArtIOClass::GaveStack(false);
@@ -507,7 +509,7 @@ void ArtConveyor2Type::doLogic()
 				CalcedNumProdInConveyor = 0;
 				ftook_product = false;
 				conveyorState = ST_CONVEYOR_FREE;
-				ArtIOClass::StackReady(false);
+				ArtIOClass::StackReady(false); // добавить переменную для стек реди
 				ArtIOClass::GaveStack(true);
 			}
 		}
@@ -805,6 +807,7 @@ ArtConveyor1AType::ArtConveyor1AType(int id, const char name[], ConveyorType typ
 
 void ArtConveyor1AType::doLogic()
 {
+	AccumConvOn = ArtIOClass::ExtDevReady(); // если 1 бит флага true значит конвейер накопительный
 	if (conveyorType == CONVEYOR_TYPE_1_EXTERNAL_BARDA)
 	{
 		readySignalFromNextBarda = ArtIOClass::readySignalFromNext();
@@ -1131,7 +1134,6 @@ void ArtConveyorShuttleType::doLogic()
 {
 	CurPos = expRunningAverage(((31 * CurPos + PositionSens->SensorState()) >> 5)); //текущее положение пропущенное через 2 фильтра
 
-
 	if (ActuatorsGet(GET_CONV_ACTUATOR_READY, ShuttlePtr) == 1)
 	{
 	}
@@ -1143,7 +1145,7 @@ void ArtConveyorShuttleType::doLogic()
 	{
 	case ST_CONVEYOR_UNKNOWN:
 	{
-		if(!ArtIOClass::PosSetted())
+		if (!ArtIOClass::PosSetted())
 		{
 			break;
 		}
@@ -1667,15 +1669,14 @@ void ArtPalletConveyorWithStoppers::doLogic() //на переменную flags 
 
 				if (Conv1Free && !(ActPoint->ARTDriverGetFWD()))
 				{
-					//поднимаем мини-конвейер и передаем паллету плейспоинту 1  ConvReadySignal->SensignalFromPrevBarda
 					StopperPos1->ARTCylinderClose();
-					ArtIOClass::DevReady(1); // передаем сигнал лифту на 1 позиции подняться
+					ArtIOClass::DevReady(1, true); // передаем сигнал лифту на 1 позиции подняться
 				}
 
 				if (!Conv1Free && !(ActPoint->ARTDriverGetFWD()))
 				{
 					conveyorState = ST_2_POS;
-					ArtIOClass::DevReady(0);
+					ArtIOClass::DevReady(1, false);
 				}
 			}
 		}
@@ -1712,14 +1713,14 @@ void ArtPalletConveyorWithStoppers::doLogic() //на переменную flags 
 				if (Conv2Free && !(ActPoint->ARTDriverGetFWD()))
 				{
 					StopperPos2->ARTCylinderClose();
-					ArtIOClass::DevReady(2);
+					ArtIOClass::DevReady(2, true);
 					//поднимаем мини-конвейер и передаем паллету плейспоинту 2
 				}
 
 				if (!Conv2Free && !(ActPoint->ARTDriverGetFWD()))
 				{
 					conveyorState = ST_3_POS;
-					ArtIOClass::DevReady(0);
+					ArtIOClass::DevReady(2, false);
 				}
 			}
 		}
@@ -1765,14 +1766,14 @@ void ArtPalletConveyorWithStoppers::doLogic() //на переменную flags 
 				if (Conv3Free && !(ActPoint->ARTDriverGetFWD()))
 				{
 					StopperPos3->ARTCylinderClose();
-					ArtIOClass::DevReady(3);
+					ArtIOClass::DevReady(3, true);
 					//поднимаем мини-конвейер и передаем паллету пикпоинту 2
 				}
 
 				if (!Conv2Free && !(ActPoint->ARTDriverGetFWD()))
 				{
 					conveyorState = ST_4_POS;
-					ArtIOClass::DevReady(0);
+					ArtIOClass::DevReady(3, false);
 				}
 			}
 		}
@@ -1827,14 +1828,14 @@ void ArtPalletConveyorWithStoppers::doLogic() //на переменную flags 
 				if (Conv4Free && !(ActPoint->ARTDriverGetFWD()))
 				{
 					StopperPos4->ARTCylinderClose();
-					ArtIOClass::DevReady(4);
+					ArtIOClass::DevReady(4, true);
 					//поднимаем мини-конвейер и передаем паллету пикпоинту 2
 				}
 
 				if (!Conv2Free && !(ActPoint->ARTDriverGetFWD()))
 				{
 					conveyorState = ST_1_POS;
-					ArtIOClass::DevReady(0);
+					ArtIOClass::DevReady(4, false);
 				}
 			}
 		}

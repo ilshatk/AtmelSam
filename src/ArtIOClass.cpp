@@ -81,7 +81,7 @@ void ArtIOClass::initializeBoard(EasyCAT *ptrEasyCAT)
     PORT->Group[1].WRCONFIG.reg = PORT_WRCONFIG_WRPINCFG | PORT_WRCONFIG_INEN | 0x0000000C;
     PORT->Group[1].WRCONFIG.reg = PORT_WRCONFIG_HWSEL | PORT_WRCONFIG_WRPINCFG | PORT_WRCONFIG_INEN | 0x000000C0;
 
-    //-- ADC configuration --------------------------------------------
+    //-- ADC configuration ----------------------------------------------------------------------------
 
     ADC->CTRLA.bit.ENABLE = 1; // Enable ADC
 
@@ -145,7 +145,7 @@ bool ArtIOClass::isTimerPassed(int &nTimerId, int nTimeoutMs)
 
 bool ArtIOClass::ExtSens(uint16_t sensinput)
 {
-    if (m_ptrEasyCat->BufferOut.Cust.SensSignalFromPrevBarda == (1 << (sensinput - 1)))
+    if (m_ptrEasyCat->BufferOut.Cust.SensSignalFromPrevBarda &= sensinput)
     {
         // ArtIOClass::setOutputState(16, true);
         return (true);
@@ -200,11 +200,11 @@ void ArtIOClass::StackReady(bool ready)
 {
     if (ready)
     {
-        m_ptrEasyCat->BufferIn.Cust.GaveStack = 1;
+        m_ptrEasyCat->BufferIn.Cust.StackReady = 1;
     }
     else
     {
-        m_ptrEasyCat->BufferIn.Cust.GaveStack = 0;
+        m_ptrEasyCat->BufferIn.Cust.StackReady = 0;
     }
 }
 
@@ -300,12 +300,12 @@ bool ArtIOClass::ExtDevReady(int posnum) // для приема сигнала �
 {
     if (m_ptrEasyCat->BufferOut.Cust.SensSignalFromPrevBarda == posnum)
     {
-        ArtIOClass::setOutputState(16, true);
+        //ArtIOClass::setOutputState(16, true);
         return (true);
     }
     else
     {
-        ArtIOClass::setOutputState(16, false);
+        //ArtIOClass::setOutputState(16, false);
         return (false);
     }
 }

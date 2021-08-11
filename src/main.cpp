@@ -49,7 +49,7 @@ void setup()
   // DogTimer = millis();                      // load the watchdog timer
   PORT->Group[0].OUTSET.reg = WDOG; //этот выход включает пин OUT_EN на драйвере перифирии ISO8200B
 
-  /*/----setup for A31---------------------------------------------------------------------------------------
+  //----setup for A31---------------------------------------------------------------------------------------
   ArtSensor AfterSiat(1, ("B1"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false); // Фотодатчик после Сиата 1 (B1) (тип R)
   ArtSensor M1End(2, ("B2"), 2, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false); // Фотодатчик на конце М1 (B2) (тип R)
   ArtSensor M2End(3, ("B3"), 2, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false); // Фотодатчик на конце М2 (B3) (тип R)
@@ -62,15 +62,15 @@ void setup()
   ArtDriver M3DRV(11, ("M3DRV"), ArtDriver::DRIVER_TYPE_1, 11, 3, 3, true, 0, 2, 0, 2, 0, 0, 0);//Драйвер на M3
 
   ArtConveyor1AType ConvM3(12, ("ConvM3"), ArtConveyor1AType::CONVEYOR_TYPE_1_EXTERNAL_BARDA, &M3DRV, &M2End, &M3End, false, 4000, 4,4);
-  //ArtConveyor1Type ConvM2(13, ("ConvM2"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M4DRV, &B5, &B6, &ConvM6, 1000, 0);
-  //ArtConveyor1Type ConvM1(14, ("ConvM1"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M4DRV, &B5, &B6, &ConvM5, 1000,0);
+  ArtConveyor1Type ConvM2(13, ("ConvM2"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M4DRV, &B5, &B6, &ConvM6, 1000, 0);
+  ArtConveyor1Type ConvM1(14, ("ConvM1"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M4DRV, &B5, &B6, &ConvM5, 1000,0);
   //----setup for A31---------------------------------------------------------------------------------------
 */
-  /*
+
   //----setup for A32---------------------------------------------------------------------------------------
   //Эта A32 барда берет сигнал с датчика B5 с предыдущей барды поэтому в ArtIOClass распарсиваются входы 
   //с предыдущей, также там добавлен сброс ошибки драйвера
- 
+
   ArtSensor B5(1, ("B5"), 5, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,true); // Фотодатчик на конце М3 (B5) (тип R)
   ArtSensor B6(2, ("B6"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false); // Фотодатчик на пушере М4 (B6) (тип BGS)
   ArtSensor PushHome(3, ("B7"), 2, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false); // Датчик пушер 1 дома (B7) (тип геркон)
@@ -82,6 +82,7 @@ void setup()
   ArtSensor M6End(9, ("B13"), 8, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false); // Фотодатчик на конце М6 пикпойнт (B13) (тип BGS)
 
   ArtCylinder PusherSV1(16, ("SV1"), 10, false, true, ArtCylinder::MONO_STABLE, 7,  &PushNoHome, &PushHome); //Пушер SV1
+  //добавить пушер 
 
   ArtDriver M4DRV(10, ("M4DRV"), ArtDriver::DRIVER_TYPE_1, 9, 1, 1, true, 0, 2, 0, 2, 0, 0, 0);//Драйвер на M4
   ArtDriver M5DRV(11, ("M4DRV"), ArtDriver::DRIVER_TYPE_1, 10, 2, 2, true, 0, 2, 0, 2, 0, 0, 0);//Драйвер на M5
@@ -91,7 +92,7 @@ void setup()
   ArtConveyor1Type ConvM5(14, ("ConvM4"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M5DRV, &B5, &B6, &ConvM6, 1000, 0);
   ArtConveyor1Type ConvM4(15, ("ConvM4"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M4DRV, &B5, &B6, &ConvM5, 1000,0);
   //----setup for A32---------------------------------------------------------------------------------------
-  
+
   //----setup for A33---------------------------------------------------------------------------------------
   ArtSensor AfterSiatB14(1, ("B14"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false); // Фотодатчик после Сиата 2 (B14) (тип R)
   ArtSensor M7Perepoln(2, ("B15"), 2, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false); // Фотодатчик переполнения М7 (B15) (тип R)
@@ -144,7 +145,7 @@ void setup()
   ArtSensor M16Count(10, ("B37"), 10, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false); // Фотодатчик на начале М16 пикпойнт (B36) (тип BGS)
   ArtSensor M16End(11, ("B38"), 11, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false); // Фотодатчик на конце M16 пикпойнт (B37) (тип BGS)
 
-  ArtCylinder PusherSV3(16, ("SV3"), 10, false, true, ArtCylinder::MONO_STABLE, 9,  &PusherNOHomeB31, &PusherHomeB30); //Пушер SV3
+  ArtCylinder PusherSV3(16, ("SV3"), 10, false, true, ArtCylinder::MONO_STABLE, 9,  &PusherNOHomeB31, &PusherHomeB30,0,0); //Пушер SV3
 
   ArtDriver M13DRV(12, ("M13DRV"), ArtDriver::DRIVER_TYPE_1, 12, 1, 1, true, 0, 2, 0, 2, 0, 0, 0);//Драйвер на M13
   ArtDriver M14DRV(13, ("M14DRV"), ArtDriver::DRIVER_TYPE_1, 13, 2, 2, true, 0, 2, 0, 2, 0, 0, 0);//Драйвер на M14
@@ -213,7 +214,7 @@ void setup()
   ArtPalletConveyorWithStoppers ConvM23(20, ("ConvM23"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M22DRV, &M23DRV, &PalletOnM24, &PalletOnM25, &PalletOnM26, &PalletOnM27, &Stopper1, &Stopper3, &Stopper5, &Stopper7, 20000, 0);
 
   //----setup for A37 цепной конвейер после диспенсера----------------------------------------------------------------------------------------
-
+*/
 
   //----setup for A38 лифты паллет на цепном конвейере----------------------------------------------------------------------------------------
   ArtSensor M28Pall(54, ("B56"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true, 1); // М28 датчик на конце следующего конвейера на следующей барде
@@ -252,7 +253,7 @@ void setup()
 //для этой прошивки поменять в case Free
 //входы с A39, A40 и A37 передать сюда
 //----setup for A38 лифты паллет на цепном конвейере----------------------------------------------------------------------------------------
-*/
+/*
   //----setup for A39 PLP 1,2----------------------------------------------------------------------------------------
   //
   ArtSensor EnterShuttle(1, ("B95"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true); //с шаттла
@@ -468,10 +469,6 @@ void setup()
       /* EASYCAT.BufferIn.Cust.AnaIn_2 = Shuttle.PositionSens->SensorState();
       EASYCAT.BufferIn.Cust.AnaIn_3 = Shuttle.CurPos;*/
 
-      if (EASYCAT.BufferOut.Cust.Output1 == 1)
-      {
-        //Conv2.AccumConv(true);
-      }
       AnaInChannel++;
       AnaInChannel &= 0x03;
 
