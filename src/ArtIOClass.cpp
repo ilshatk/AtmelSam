@@ -232,6 +232,18 @@ bool ArtIOClass::readySignalFromNext()
     }
 }
 
+void ArtIOClass::ConvReady(int Ready)
+{
+    if(Ready)
+    {
+        m_ptrEasyCat->BufferIn.Cust.ConvReadySignal |= 1; // для передачи сигнала готовности предыдущему конвейеру
+    }
+    else
+    {
+        m_ptrEasyCat->BufferIn.Cust.ConvReadySignal &= 0;
+    }
+}
+
 int ArtIOClass::ReqPosition(int PLPPosition)
 {
     for (int i = 0; i < 5; i++)
@@ -345,6 +357,25 @@ void ArtIOClass::DevReady(int posnum, bool enable) // для передачи с
     m_ptrEasyCat->BufferIn.Cust.DevReady = m_CurrentPosition;
 }
 
+void ArtIOClass::NeedPal(int posnum, bool enable) // для передачи сигнала какой плейспоинт готов
+{
+    std::bitset<16> PLPNeedPall;
+    int buffer;
+    if (enable)
+    {
+        PLPNeedPall.reset();
+        PLPNeedPall.set(posnum - 1, enable);
+        buffer |= PLPNeedPall.to_ulong();
+    }
+    else
+    {
+        PLPNeedPall.set();
+        PLPNeedPall.set(posnum - 1, enable);
+        buffer &= PLPNeedPall.to_ulong();
+    }
+    m_ptrEasyCat->BufferIn.Cust.PalletNeed = buffer;
+}
+
 bool ArtIOClass::PallFull(int PLPPos)
 {
     if ((m_ptrEasyCat->BufferOut.Cust.PallFull & PLPPos) == PLPPos)
@@ -455,7 +486,7 @@ void ArtIOClass::setOutputState(uint16_t nOutputCommonState)
 
 bool ArtIOClass::ResetDrv(int ResOut)
 {
-    if (m_ptrEasyCat->BufferOut.Cust.DrvRst == ResOut)
+    if (m_ptrEasyCat->BufferOut.Cust.DrvRst & ResOut)
     {
         return (true);
     }

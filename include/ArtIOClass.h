@@ -36,7 +36,6 @@ protected:
     static const uint8_t N_MIN_OUTPORT_NUM, N_MAX_OUTPORT_NUM;
     static int16_t Pos[5];
 
-
 public:
     static void initializeBoard(EasyCAT *ptrEasyCat); //DONE code form main
 
@@ -71,6 +70,8 @@ public:
     static bool PosSetted();
     static void PosSet();
     static void ShuttlePosition(int Position, bool enable);
+    static void ConvReady(int Ready);
+    static void NeedPal(int posnum, bool enable);
 
         protected : ArtIOClass();
     ~ArtIOClass();

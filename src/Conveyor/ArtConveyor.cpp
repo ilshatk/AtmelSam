@@ -215,6 +215,14 @@ ArtConveyor1Type::ArtConveyor1Type(int id, const char name[], ConveyorType type,
 void ArtConveyor1Type::doLogic()
 {
 	//int retVal;
+	if((conveyorState == ST_CONVEYOR_FREE) || (conveyorState == ST_CONVEYOR_PROD_FWD))
+	{
+		ArtIOClass::ConvReady(1);
+	}
+	else
+	{
+		ArtIOClass::ConvReady(0);
+	}
 	if (ActuatorsGet(GET_CONV_ACTUATOR_READY, ActPoint) == 1)
 	{
 		ArtIOClass::Error(0);
@@ -1615,8 +1623,8 @@ void ArtPalletConveyorWithStoppers::doLogic() //на переменную flags 
 	Pos4Sens = Pos4Ptr->SensorState();
 	Conv1Free = ArtIOClass::readySignalFromNext(1, 1);
 	Conv2Free = ArtIOClass::readySignalFromNext(2, 1);
-	Conv3Free = ArtIOClass::readySignalFromNext(1, 2);
-	Conv4Free = ArtIOClass::readySignalFromNext(2, 2);
+	Conv3Free = ArtIOClass::readySignalFromNext(3, 2);
+	Conv4Free = ArtIOClass::readySignalFromNext(4, 2);
 
 	switch (conveyorState)
 	{
@@ -1926,6 +1934,14 @@ void ArtConveyorPLPType::doLogic()
 
 	case ST_CONVEYOR_NEEDPALLET:
 	{
+		if(!PalletOnPosition)
+		{
+			ArtIOClass::NeedPal(pow(2,PLPNum-1), true);
+		}
+		else
+		{
+			ArtIOClass::NeedPal(pow(2,PLPNum-1), false);
+		}
 		if (PalletOnPosition)
 		{
 			if (!LayerSensor->SensorState())

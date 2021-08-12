@@ -148,7 +148,7 @@ void ArtDriver::doLogic()
 
     case ST_DRIVER_ERROR:
     {
-        if (ArtIOClass::ResetDrv(ResetSignalOut))
+        if (ArtIOClass::ResetDrv(pow(2,ResetSignalOut-1)))
         {
             ArtIOClass::setOutputState(ResetSignalOut, true);
         }
