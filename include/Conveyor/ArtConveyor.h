@@ -89,7 +89,8 @@ public:
 		ST_CONVEYOR_NEEDPALLET,
 		ST_CONVEYOR_UNFIXED,
 		ST_CONVEYOR_FIXED,
-		ST_CONVEYOR_POS_SELECT
+		ST_CONVEYOR_POS_SELECT,
+		ST_CONVEYOR_LIFT
 	};
 
 	enum GetDriverState
@@ -113,7 +114,8 @@ public:
 		SET_CONV_DIRECTION_REV	//Parameter for set direction reverse
 	};
 	ArtDriver *pointer;
-
+	ArtSensor *EnterSensPoint; //указатель на входной сенсор
+	ArtSensor *ExitSensPoint;
 	ArtDriver *ActPoint;  //указатель на драйвер
 	ArtDriver *ActPoint2; //указатель на драйвер
 	ArtDriver *ActPoint3; //указатель на драйвер
@@ -144,8 +146,6 @@ class ArtConveyor1Type : public ArtBasicConveyor
 {
 public:
 	int productPassTime;
-	ArtSensor *EnterSensPoint; //указатель на входной сенсор
-	ArtSensor *ExitSensPoint;  //указатель на выходной сенсор
 	//указатель на следующий конвейер
 	ArtBasicConveyor *NextConvPoint;
 	ArtConveyor1Type(int id, const char name[]);
@@ -175,8 +175,6 @@ private:
 
 public:
 	int productPassTime;
-	ArtSensor *EnterSensPoint; //указатель на входной сенсор
-	ArtSensor *ExitSensPoint;  //указатель на выходной сенсор
 	//указатель на следующий конвейер
 	ArtBasicConveyor *NextConvPoint;
 	ArtConveyor1AType(int id, const char name[]);
@@ -201,7 +199,6 @@ public:
 	ArtSensor *SensOnIN;
 	ArtSensor *SensOnOUT;
 	ArtSensor *ShuttleEdge;
-
 	ArtBasicConveyor *NextConvPtr; //указатель на приниммающий конвейер
 
 	ArtConveyorShuttleType(int id, const char name[]);
@@ -218,8 +215,6 @@ public:
 class ArtConveyor1TypeNextExtDev : public ArtBasicConveyor
 {
 private:
-	ArtSensor *EnterSensPoint; //указатель на входной сенсор
-	ArtSensor *ExitSensPoint;  //указатель на выходной сенсор
 	int productPassTime, ExtDevReady;
 
 public:
@@ -256,8 +251,6 @@ class ArtConveyorPLPType : public ArtBasicConveyor
 public:
 	int productPassTime, SignalPalletFull, PLPNum;
 	bool PalletOnPosition;
-	ArtSensor *EnterSensPoint; //указатель на входной сенсор
-	ArtSensor *ExitSensPoint;  //указатель на выходной сенсор
 	ArtSensor *PallOnPosition; //указатель на сенсор наличия паллеты
 	ArtSensor *LayerSensor;	   //указатель на сенсор слоя
 	ArtCylinder *Stopper;
@@ -266,6 +259,20 @@ public:
 	ArtConveyorPLPType(int id, const char name[], ConveyorType type, ArtDriver *ActPoint, ArtSensor *EnterSensPoint,
 					   ArtSensor *ExitSensPoint, ArtSensor *PallOnPosition, ArtSensor *LayerSensor,
 					   ArtCylinder *Stopper, ArtCylinder *Podzhim, int PassTime, int RunTimer, int PLPNum);
+	void doLogic();
+};
+
+class ArtConveyorWithLift : public ArtBasicConveyor
+{
+public:
+	int productPassTime,LiftUpTime,conveyorLiftRunTimer;
+  //указатель на выходной сенсор
+	ArtDriver *LiftDrv;		   //указатель на драйвер лифта
+	ArtSensor *LiftUP;
+	ArtSensor *LiftDOWN;
+	ArtConveyorWithLift(int id, const char name[]);
+	ArtConveyorWithLift(int id, const char name[], ConveyorType type, ArtDriver *ActPoint, ArtDriver *LiftDrv, ArtSensor *EnterSensPoint,
+						ArtSensor *ExitSensPoint,ArtSensor *LiftUP,ArtSensor *LiftDOWN, int PassTime, int LiftUpTime, int RunTimer);
 	void doLogic();
 };
 

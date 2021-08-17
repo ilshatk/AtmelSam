@@ -215,7 +215,7 @@ ArtConveyor1Type::ArtConveyor1Type(int id, const char name[], ConveyorType type,
 void ArtConveyor1Type::doLogic()
 {
 	//int retVal;
-	if((conveyorState == ST_CONVEYOR_FREE) || (conveyorState == ST_CONVEYOR_PROD_FWD))
+	if ((conveyorState == ST_CONVEYOR_FREE) || (conveyorState == ST_CONVEYOR_PROD_FWD))
 	{
 		ArtIOClass::ConvReady(1);
 	}
@@ -1267,7 +1267,7 @@ void ArtConveyorShuttleType::doLogic()
 
 			if (PalletOnConv->SensorState() == true && (ReqPos == ArtIOClass::ReqPosition(1) || ReqPos == ArtIOClass::ReqPosition(2) || ReqPos == ArtIOClass::ReqPosition(3) || ReqPos == ArtIOClass::ReqPosition(4))) // загрузка
 			{
-				ActuatorsSet(SET_CONV_ACTUATOR_STOP, OverShuttlePtr);
+				ActuatorsSet(SET_CONV_ACTUATOR_STOP, OverShuttlePtr); // останавливаем конвейер над шатлом
 				ConveyorRunTimerOverShuttle = 0;
 				conveyorState = ST_CONVEYOR_POS_SELECT;
 
@@ -1484,26 +1484,30 @@ void ArtConveyor1TypeNextExtDev::doLogic()
 		{
 			if ((ArtIOClass::getInputState(ExtDevReady) != 1) && productExitSensConvey) //для барды A38 оставить только (productExitSensConvey)
 			{
-				ActuatorsSet(SET_CONV_ACTUATOR_STOP, ActPoint); //!* !Change to actual function
+				ActuatorsSet(SET_CONV_ACTUATOR_STOP, ActPoint);
 				conveyorRunTimer = 0;
 				conveyorState = ST_CONVEYOR_BUSY;
 			}
 		}
-
 		break;
 	}
 
 	case ST_CONVEYOR_BUSY:
 	{
+		if (!productExitSensConvey)
+		{
+			conveyorRunTimer = 0;
+			conveyorState = ST_CONVEYOR_FREE;
+		}
+
 		if (ArtIOClass::getInputState(ExtDevReady) == 1)
 		{
-			//ConveyorSetProdEntering();
 			conveyorState = ST_CONVEYOR_PROD_FWD;
 			conveyorRunTimer = 0;
 		}
 		else
 		{
-			ActuatorsSet(SET_CONV_ACTUATOR_STOP, ActPoint); //!* !Change to actual function
+			ActuatorsSet(SET_CONV_ACTUATOR_STOP, ActPoint);
 			conveyorRunTimer = 0;
 		}
 		break;
@@ -1934,13 +1938,13 @@ void ArtConveyorPLPType::doLogic()
 
 	case ST_CONVEYOR_NEEDPALLET:
 	{
-		if(!PalletOnPosition)
+		if (!PalletOnPosition)
 		{
-			ArtIOClass::NeedPal(pow(2,PLPNum-1), true);
+			ArtIOClass::NeedPal(pow(2, PLPNum - 1), true);
 		}
 		else
 		{
-			ArtIOClass::NeedPal(pow(2,PLPNum-1), false);
+			ArtIOClass::NeedPal(pow(2, PLPNum - 1), false);
 		}
 		if (PalletOnPosition)
 		{
@@ -2084,6 +2088,153 @@ void ArtConveyorPLPType::doLogic()
 }
 
 //---------------------------------ArtConveyorPLPType--------------------------------------------------
+
+//---------------------------------ArtConveyorWithLift--------------------------------------------------
+
+ArtConveyorWithLift::ArtConveyorWithLift(int id, const char name[])
+{
+	IHasCycleLogicHelper::addDevice(this);
+	m_id = id;
+}
+
+ArtConveyorWithLift::ArtConveyorWithLift(int id, const char name[], ConveyorType type, ArtDriver *ActPoint, ArtDriver *LiftDrv, ArtSensor *EnterSensPoint,
+										 ArtSensor *ExitSensPoint, ArtSensor *LiftUP, ArtSensor *LiftDOWN,
+										 int PassTime,int LiftUpTime, int RunTimer) : ArtConveyorWithLift(id, name)
+{
+	ArtConveyorWithLift::conveyorType = type;
+	ArtConveyorWithLift::ActPoint = ActPoint; //указатель на драйвер
+	ArtConveyorWithLift::LiftDrv = LiftDrv;	  //указатель на драйвер
+	ArtConveyorWithLift::LiftUP = LiftUP;
+	ArtConveyorWithLift::LiftUpTime = LiftUpTime;
+	ArtConveyorWithLift::LiftDOWN = LiftDOWN;
+	ArtConveyorWithLift::LiftDOWN = EnterSensPoint;		//указатель на входной сенсор
+	ArtConveyorWithLift::ExitSensPoint = ExitSensPoint; //указатель на выходной сенсор
+														//указатель на сенсор слоя
+	ArtConveyorWithLift::productPassTime = PassTime;
+	ArtConveyorWithLift::conveyorRunTimer = RunTimer;
+
+	productEnterSensConvey = false;
+	productExitSensConvey = false;
+	conveyorLiftRunTimer = 0;
+	productFctEnterConveyor = false;
+	conveyorState = ST_CONVEYOR_UNKNOWN;
+}
+
+void ArtConveyorWithLift::doLogic()
+{
+	if (ActuatorsGet(GET_CONV_ACTUATOR_READY, ActPoint) == 1)
+	{
+		ArtIOClass::Error(0);
+	}
+	else
+	{
+		conveyorState = ST_CONVEYOR_ERROR;
+		ArtIOClass::Error(m_id);
+	}
+
+	productEnterSensConvey = EnterSensPoint->SensorState();
+	productExitSensConvey = ExitSensPoint->SensorState();
+
+	switch (conveyorState)
+	{
+	case ST_CONVEYOR_UNKNOWN:
+	{
+		if (productEnterSensConvey)
+		{
+			conveyorState = ST_CONVEYOR_PROD_FWD;
+		}
+
+		if (productExitSensConvey)
+		{
+			conveyorState = ST_CONVEYOR_BUSY;
+		}
+		else
+		{
+			conveyorState = ST_CONVEYOR_FREE;
+		}
+		break;
+	}
+
+	case ST_CONVEYOR_FREE:
+	{
+		if (productEnterSensConvey)
+		{
+			conveyorState = ST_CONVEYOR_PROD_FWD;
+		}
+		break;
+	}
+
+	case ST_CONVEYOR_PROD_FWD:
+	{
+		if (conveyorRunTimer == 0)
+		{
+			conveyorRunTimer = ArtIOClass::ARTTimerGetTime();
+			ActuatorsSet(SET_CONV_ACTUATOR_FWD, ActPoint); //!* !Change to actual function
+		}
+
+		if (productExitSensConvey)
+		{
+			ActuatorsSet(SET_CONV_ACTUATOR_STOP, ActPoint);
+			conveyorRunTimer = 0;
+			conveyorState = ST_CONVEYOR_LIFT;
+		}
+
+		if (ARTTimerIsTimePassed(conveyorRunTimer, productPassTime, 99000)) // если крутится больше productPassTime то вырубай и в ошибку
+		{
+			ActuatorsSet(SET_CONV_ACTUATOR_STOP, ActPoint); //!* !Change to actual function
+			conveyorRunTimer = 0;
+			conveyorState = ST_CONVEYOR_ERROR;
+		}
+
+		break;
+	}
+
+	case ST_CONVEYOR_LIFT:
+	{
+		if (conveyorLiftRunTimer == 0)
+		{
+			conveyorRunTimer = ArtIOClass::ARTTimerGetTime();
+			ActuatorsSet(SET_CONV_ACTUATOR_FWD, LiftDrv);
+		}
+
+		if (ARTTimerIsTimePassed(conveyorLiftRunTimer, LiftUpTime, 99000)) // если крутится больше LiftUpTime то вырубай и в ошибку
+		{
+			ActuatorsSet(SET_CONV_ACTUATOR_STOP, LiftDrv); //!* !Change to actual function
+			conveyorLiftRunTimer = 0;
+			conveyorState = ST_CONVEYOR_ERROR;
+		}
+
+		if (LiftUP->SensorState() == true)
+		{
+			ActuatorsSet(SET_CONV_ACTUATOR_STOP, LiftDrv);
+			conveyorLiftRunTimer = 0;
+			conveyorState = ST_CONVEYOR_BUSY;
+		}
+		break;
+	}
+
+	case ST_CONVEYOR_BUSY:
+	{
+
+		break;
+	}
+
+	case ST_CONVEYOR_ERROR:
+	{
+		ArtIOClass::Error(m_id);
+		if (ArtIOClass::ResetDrv(ActPoint->ResetSignalOut)) //; !* !Change ARTActuatorsGet to actual function
+		{
+			conveyorState = ST_CONVEYOR_UNKNOWN;
+		}
+		break;
+	}
+
+	default:
+		break;
+	}
+}
+
+//---------------------------------ArtConveyorWithLift--------------------------------------------------
 
 //---------------------------------ArtConveyor--------------------------------------------------
 

@@ -193,8 +193,8 @@ void setup()
   ArtPusher Pusher(18, ("SV4"), &OnPusherM20, &ConvM20, &ConvM21, &PusherSV4);
   //----setup for A36---------------------------------------------------------------------------------------
   */
-
-  //----setup for A37 цепной конвейер после диспенсера---------------------------------------------------------------------------------------
+/*
+  //----setup for A37 цепной конвейер после диспенсера--_---------------------------------------------------
   ArtSensor PalletOnM24(1, ("B51"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false); // Фотодатчик паллеты на М24 (B51) (тип BGS G10) подобрать delayFE
   ArtSensor PalletOnM25(2, ("B62"), 2, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false); // Фотодатчик паллеты на М25 (B62) (тип BGS G10) подобрать delayFE
   ArtSensor PalletOnM26(3, ("B73"), 3, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false); // Фотодатчик паллеты на М26 (B73) (тип BGS G10) подобрать delayFE
@@ -217,7 +217,9 @@ void setup()
   ArtDriver M22DRV(18, ("M22DRV"), ArtDriver::DRIVER_TYPE_1, 15, 15, 13, 6, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M22
   ArtDriver M23DRV(19, ("M23DRV"), ArtDriver::DRIVER_TYPE_1, 16, 16, 14, 6, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M23
 
-  ArtPalletConveyorWithStoppers ConvM23(20, ("ConvM23"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M22DRV, &M23DRV, &PalletOnM24, &PalletOnM25, &PalletOnM26, &PalletOnM27, &Stopper1, &Stopper3, &Stopper5, &Stopper7, 20000, 0);
+  ArtPalletConveyorWithStoppers ConvM23(20, ("ConvM23"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M22DRV, &M23DRV,
+                                        &PalletOnM24, &PalletOnM25, &PalletOnM26, &PalletOnM27, &Stopper1,
+                                        &Stopper3, &Stopper5, &Stopper7, 20000, 0);
 
   //----setup for A37 цепной конвейер после диспенсера----------------------------------------------------------------------------------------
 
@@ -251,7 +253,7 @@ void setup()
   ArtLift M26Lift(19, ("Lift3"), &Lift3, 3, &M30Pall); //лифт опускается только после того как паллета дошла до конца плейспоинта
   ArtLift M27Lift(20, ("Lift4"), &Lift4, 4, &M31Pall); //лифт опускается только после того как паллета дошла до конца плейспоинта
 
-  ArtConveyor1TypeNextExtDev ConvM24(21, ("ConvM24"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M24DRV, &M24UP, &M28Pall, 5000, 0, 0); // если конвейер наверху он крутиться 5 секунд или до момента пока не дойдет до конца след конвейера
+  ArtConveyor1TypeNextExtDev ConvM24(21, ("ConvM24"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M24DRV, &M24UP, &M28Pall, 5000, 0, 0); // если конвейер наверху он крутиться 5 секунд или до момента пока паллета не дойдет до конца след конвейера
   ArtConveyor1TypeNextExtDev ConvM25(22, ("ConvM25"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M25DRV, &M25UP, &M29Pall, 5000, 0, 0); // также как предыдущий
   ArtConveyor1TypeNextExtDev ConvM26(23, ("ConvM26"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M26DRV, &M26UP, &M30Pall, 5000, 0, 0); // также как предыдущий
   ArtConveyor1TypeNextExtDev ConvM27(24, ("ConvM27"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M27DRV, &M27UP, &M31Pall, 5000, 0, 0); // также как предыдущий
@@ -259,14 +261,14 @@ void setup()
   //для этой прошивки поменять в case Free
   //входы с A39, A40 и A37 передать сюда
   //----setup for A38 лифты паллет на цепном конвейере----------------------------------------------------------------------------------------
-  /*
+
   //----setup for A39 PLP 1,2----------------------------------------------------------------------------------------
   //
-  ArtSensor EnterShuttle(1, ("B95"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true); //с шаттла
-  ArtSensor M24DOWN(1, ("B54"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);     // М24 внизу (B54) (тип геркон)
-  ArtSensor M24UP(2, ("B55"), 2, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);       // М24 наверху (B55) (тип геркон)
-  ArtSensor M25DOWN(3, ("B65"), 3, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);     //  М25 внизу (B66) (тип геркон)
-  ArtSensor M25UP(4, ("B66"), 4, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);       // М25 наверху (B67) (тип геркон)
+  ArtSensor EnterShuttle(1, ("B95"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true, 2); //с шаттла
+  ArtSensor M24DOWN(1, ("B54"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true, 1);      // М24 внизу (B54) (тип геркон)
+  ArtSensor M24UP(2, ("B55"), 2, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true, 1);        // М24 наверху (B55) (тип геркон)
+  ArtSensor M25DOWN(3, ("B65"), 3, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true, 1);      //  М25 внизу (B66) (тип геркон)
+  ArtSensor M25UP(4, ("B66"), 4, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true, 1);        // М25 наверху (B67) (тип геркон)
 
   ArtSensor M28Pall(1, ("B56"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);          // Датчик паллеты на М28 (B56) (тип Инд)
   ArtSensor M28Layer(2, ("B57"), 2, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);         // Фотодатчик слоя на М28 (B57) (тип R)
@@ -282,14 +284,16 @@ void setup()
   ArtSensor Podzhim2NOHOME(13, ("B72"), 13, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false); // Поджим 2 ОТКРЫТ (B72) (тип геркон)
 
   ArtCylinder Podzhim1(13, ("Podzhim1"), 10, false, true, ArtCylinder::MONO_STABLE, 2, &Podzhim1NOHOME, &Podzhim1HOME, 2000, 2000); //Пушер SV1
-//  ArtPodzhim M28Podzhim(14, ("Podzhim1"), &M28Pall, &Podzhim1);
   ArtCylinder Podzhim2(15, ("Podzhim2"), 10, false, true, ArtCylinder::MONO_STABLE, 4, &Podzhim2NOHOME, &Podzhim2HOME, 2000, 2000); //Пушер SV1
+
   //ArtPodzhim M29Podzhim(16, ("Podzhim2"), &M29Pall, &Podzhim2);
+  //ArtPodzhim M28Podzhim(14, ("Podzhim1"), &M28Pall, &Podzhim1);
 
   ArtCylinder Stopper1(15, ("Stopper1"), 10, false, true, ArtCylinder::MONO_STABLE, 4, &Stopper2UP, &Stopper2DOWN, 2000, 2000); //Пушер SV1 переделать если не будет корректно работать
- // ArtPodzhim M28Stopper(16, ("Stopper1"), &M24UP, &Stopper1);
   ArtCylinder Stopper2(15, ("Stopper2"), 10, false, true, ArtCylinder::MONO_STABLE, 4, &Stopper4UP, &Stopper4DOWN, 2000, 2000); //Пушер SV1
- // ArtPodzhim M29Stopper(16, ("Stopper2"), &M25UP, &Stopper2);
+
+  //ArtPodzhim M29Stopper(16, ("Stopper2"), &M25UP, &Stopper2);
+  //ArtPodzhim M28Stopper(16, ("Stopper1"), &M24UP, &Stopper1);
 
   ArtDriver M28DRV(17, ("M28DRV"), ArtDriver::DRIVER_TYPE_1, 15, 14, 13, 6, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M28
   ArtDriver M29DRV(18, ("M29DRV"), ArtDriver::DRIVER_TYPE_1, 16, 16, 15, 6, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M29
@@ -302,14 +306,14 @@ void setup()
   ArtConveyor1TypeNextExtDev ConvM28(15, ("ConvM28"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M28DRV, &M24UP, &M28Pall, 5000, 0, 0);
   ArtConveyor1TypeNextExtDev ConvM29(15, ("ConvM29"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M29DRV, &M25UP, &M29Pall, 5000, 0, 0);*/
   //----setup for A39----------------------------------------------------------------------------------------
-  /*
-  //----setup for A40 PLP 3,4----------------------------------------------------------------------------------------
 
-  ArtSensor EnterShuttle(26, ("B95"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true); //с шаттла
-  ArtSensor M26DOWN(27, ("B76"), 5, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true);      // М26 внизу (B76) (тип геркон)
-  ArtSensor M26UP(28, ("B77"), 6, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true);        // М26 наверху (B77) (тип геркон)
-  ArtSensor M27DOWN(29, ("B87"), 7, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true);      // М27 внизу (B87) (тип геркон)
-  ArtSensor M27UP(30, ("B88"), 8, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true);        // М27 наверху (B88) (тип геркон)
+  //----setup for A40 PLP 3,4----------------------------------------------------------------------------------------
+/*
+  ArtSensor EnterShuttle(26, ("B95"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true, 2); //с шаттла
+  ArtSensor M26DOWN(27, ("B76"), 5, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true, 1);      // М26 внизу (B76) (тип геркон)
+  ArtSensor M26UP(28, ("B77"), 6, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true, 1);        // М26 наверху (B77) (тип геркон)
+  ArtSensor M27DOWN(29, ("B87"), 7, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true, 1);      // М27 внизу (B87) (тип геркон)
+  ArtSensor M27UP(30, ("B88"), 8, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true, 1);        // М27 наверху (B88) (тип геркон)
 
   ArtSensor M30Pall(1, ("B78"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);          // Датчик паллеты на М30 (B78) (тип Инд)
   ArtSensor M30Layer(2, ("B79"), 2, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);         // Фотодатчик слоя на М30 (B79) (тип R)
@@ -332,7 +336,8 @@ void setup()
   ArtCylinder Stopper3(18, ("Stopper3"), 10, false, true, ArtCylinder::MONO_STABLE, 4, &Stopper6UP, &Stopper6DOWN, 2000, 2000); //Пушер SV1
   //ArtPodzhim M30Stopper(19, ("Stopper3"), &M26UP, &Stopper3);
   ArtCylinder Stopper4(20, ("Stopper4"), 10, false, true, ArtCylinder::MONO_STABLE, 4, &Stopper8UP, &Stopper8DOWN, 2000, 2000); //Пушер SV1
- // ArtPodzhim M31Stopper(21, ("Stopper4"), &M27UP, &Stopper4);
+
+  // ArtPodzhim M31Stopper(21, ("Stopper4"), &M27UP, &Stopper4);
 
   ArtDriver M30DRV(22, ("M30DRV"), ArtDriver::DRIVER_TYPE_1, 15, 14, 13, 6, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M30
   ArtDriver M31DRV(23, ("M31DRV"), ArtDriver::DRIVER_TYPE_1, 16, 16, 15, 6, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M31
@@ -343,8 +348,8 @@ void setup()
                              &Stopper4, &Podzhim4, 5000, 0, 4); //
   /*ArtConveyor1TypeNextExtDev ConvM30(15, ("ConvM30"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M30DRV, &M26UP, &M28Pall, 5000, 0, 0);
   ArtConveyor1TypeNextExtDev ConvM31(15, ("ConvM31"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M31DRV, &M27UP, &M29Pall, 5000, 0, 0);*/
-  //----setup for A40----------------------------------------------------------------------------------------
-  /*
+  //----setup for A40---------------------------------------------------------------------------------------------------
+
   //----setup for A41--Shuttle and -------------------------------------------------------------------------------------
   ArtSensor EnterShuttle(1, ("B95"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);          // Фотодатчик наличия паллеты на входе шаттла (B95) (тип R)
   ArtSensor RangeFinderDiscrete(2, ("B96"), 2, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);   // Фотодатчик дальномер шаттла (B96) (тип лазер BGS) (дискр выход)
@@ -359,16 +364,40 @@ void setup()
   ArtDriver BeforWinding(10, ("M34DRV"), ArtDriver::DRIVER_TYPE_1, 16, 16, 15, 5, true, 2, 2, 2, 0, 2, 2, 2); //Драйвер на M34
 
   ArtConveyor1TypeNextExtDev BeforWin(11, ("ConvM34"), ArtBasicConveyor::CONVEYOR_TYPE_1, &BeforWinding, &ExitShuttle, &PalletOnConvM34, 4000, 0, 8);
-  ArtConveyorShuttleType Shuttle(12, ("ConvM32&33"), &ShuttleDrv, &OverShuttleDrv, &RangeFinderAnalog, &PalletOnConvM32, &EnterShuttle, &ExitShuttle, &BeforWin,
-                                 &EdgeOnShuttle, false, 1, 400000, 100000, 0, 0); // переделать
+  ArtConveyorShuttleType Shuttle(12, ("ConvM32&33"), &ShuttleDrv, &OverShuttleDrv, &RangeFinderAnalog, &PalletOnConvM32, &EnterShuttle, &ExitShuttle,
+                                 &BeforWin, &EdgeOnShuttle, false, 1, 400000, 100000, 0, 0); // переделать
   //----setup for A41--Shuttle-------------------------------------------------------------------------------------
-*/
-  //----setup for A42----------------------------------------------------------------------------------------
 
-  //----setup for A42----------------------------------------------------------------------------------------
+  //----setup for A42 Lift-----------------------------------------------------------------------------------------
+  ArtSensor OMSEnd(1, ("B101"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);           // Фотодатчик наличия паллеты на выходе OMS (B101) (тип R)
+  ArtSensor M35End(2, ("B102"), 2, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);           // Датчик паллеты на конце М35 (B102) (тип Инд)
+  ArtSensor AtlantaOut(3, ("B103"), 3, ArtSensor::SENSOR_TYPE_BASIC, 1000, 2000, false); // Фотодатчик наличия паллеты на выходе Атланты (B103) (тип R)
+  ArtSensor M36End(4, ("B104"), 4, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);           // Фотодатчик паллеты на конце М36 (B104) (тип BGS G10)
+  ArtSensor M37DOWN(5, ("B105"), 5, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);          // Датчик положения М37 ВНИЗУ (B105) (тип Инд)
+  ArtSensor M37UP(6, ("B106"), 6, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);            // Датчик положения М37 НАВЕРХУ (B106) (тип Инд)
+
+  ArtDriver M35Drv(8, ("M33DRV"), ArtDriver::DRIVER_TYPE_1, 14, 10, 9, 8, true, 2, 2, 2, 2, 2, 2, 2);    //Драйвер на M35
+  ArtDriver M36Drv(9, ("M32DRV"), ArtDriver::DRIVER_TYPE_1, 15, 12, 11, 8, true, 2, 2, 2, 2, 2, 2, 2);   //Драйвер на M36
+  ArtDriver M37Drv(10, ("M34DRV"), ArtDriver::DRIVER_TYPE_1, 16, 15, 13, 14, true, 2, 2, 2, 2, 2, 2, 2); //Драйвер на M37
+  
+  //ArtConveyor1TypeNextExtDev BeforWin(11, ("ConvM34"), ArtBasicConveyor::CONVEYOR_TYPE_1, &BeforWinding, &ExitShuttle, &PalletOnConvM34, 4000, 0, 8);
+
+  //лифтовый конвейер 
+  //----setup for A42-Lift----------------------------------------------------------------------------------------
+
+  //----setup for A43----------------------------------------------------------------------------------------
+  ArtSensor M38End(1, ("B101"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);       // Фотодатчик паллеты на конце М38 (B107) (тип BGS)
+  ArtSensor M39End(2, ("B102"), 2, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);       // Фотодатчик паллеты на конце М39 (B108) (тип BGS)
+  ArtSensor M40End(3, ("B103"), 3, ArtSensor::SENSOR_TYPE_BASIC, 1000, 2000, false); // Фотодатчик паллеты на конце М40 (B109) (тип BGS)
+
+  ArtDriver M38Drv(8, ("M33DRV"), ArtDriver::DRIVER_TYPE_1, 14, 12, 11, 8, true, 2, 2, 2, 2, 2, 2, 2);  //Драйвер на M38
+  ArtDriver M39Drv(9, ("M32DRV"), ArtDriver::DRIVER_TYPE_1, 15, 14, 13, 8, true, 2, 2, 2, 2, 2, 2, 2);  //Драйвер на M39
+  ArtDriver M40Drv(10, ("M34DRV"), ArtDriver::DRIVER_TYPE_1, 16, 16, 15, 8, true, 2, 2, 2, 0, 2, 2, 2); //Драйвер на M40
+
+  //----setup for A43----------------------------------------------------------------------------------------
 
   /*
- 
+
 
 
 

@@ -202,12 +202,12 @@ void ArtLift::doLogic()
     {
         if (ArtIOClass::ExtDevReady(pow(2, posnum-1)) != true) //сигнал приходит с цепного конвейера
         {
-            while (!PalletOnPosition->SensorState())
+            while (!PalletOnPosition->SensorState()) // пока не доедет до конца PLP-шки будет return
             {
                 return;
             }
             LiftCylPtr->ARTCylinderClose();
-            while (!LiftCylPtr->getCylState() == ArtCylinder::ARTCYL_ST_CLOSED)
+            while ((!LiftCylPtr->getCylState() == ArtCylinder::ARTCYL_ST_CLOSED))
             {
                 return;
             }

@@ -1,6 +1,7 @@
 #include "ArtIOClass.h"
 uint16_t ArtIOClass::m_nCurrentOutputState = 0;
 uint8_t ArtIOClass::m_CurrentPosition = 0;
+int16_t ArtIOClass::Pos[];
 const uint8_t ArtIOClass::N_MIN_INPORT_NUM = 1;
 const uint8_t ArtIOClass::N_MAX_INPORT_NUM = 16;
 const uint8_t ArtIOClass::N_MIN_OUTPORT_NUM = 1;
@@ -339,7 +340,7 @@ void ArtIOClass::DevReady(int posnum) // для передачи сигнала 
     m_ptrEasyCat->BufferIn.Cust.DevReady &posnum;
 }
 
-void ArtIOClass::DevReady(int posnum, bool enable) // для передачи сигнала какой плейспоинт готов
+void ArtIOClass::DevReady(int posnum, bool enable) // для передачи сигнала какой плейспоинт готов и сигнала какая позиция готова с цепного конвейера на лифты
 {
     std::bitset<8> Position;
     if (enable)
