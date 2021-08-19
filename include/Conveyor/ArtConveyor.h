@@ -90,7 +90,8 @@ public:
 		ST_CONVEYOR_UNFIXED,
 		ST_CONVEYOR_FIXED,
 		ST_CONVEYOR_POS_SELECT,
-		ST_CONVEYOR_LIFT
+		ST_CONVEYOR_LIFT_UP,
+		ST_CONVEYOR_LIFT_DOWN
 	};
 
 	enum GetDriverState
@@ -215,11 +216,11 @@ public:
 class ArtConveyor1TypeNextExtDev : public ArtBasicConveyor
 {
 private:
-	int productPassTime, ExtDevReady;
+	int productPassTime, ExtDevReady, BitNum;
 
 public:
 	ArtConveyor1TypeNextExtDev(int id, const char name[]);
-	ArtConveyor1TypeNextExtDev(int id, const char name[], ConveyorType type, ArtDriver *ActPoint, ArtSensor *EnterSensPoint, ArtSensor *ExitSensPoint, int PassTime, int RunTimer, int ExtDevReady);
+	ArtConveyor1TypeNextExtDev(int id, const char name[], ConveyorType type, ArtDriver *ActPoint, ArtSensor *EnterSensPoint, ArtSensor *ExitSensPoint, int PassTime, int RunTimer, int BitNum);
 	void doLogic();
 };
 
@@ -265,14 +266,32 @@ public:
 class ArtConveyorWithLift : public ArtBasicConveyor
 {
 public:
-	int productPassTime,LiftUpTime,conveyorLiftRunTimer;
-  //указатель на выходной сенсор
-	ArtDriver *LiftDrv;		   //указатель на драйвер лифта
+	int productPassTime, LiftUpTime, LiftDOWNTime, conveyorLiftRunTimer;
+	//указатель на выходной сенсор
+	ArtDriver *LiftDrv; //указатель на драйвер лифта
 	ArtSensor *LiftUP;
 	ArtSensor *LiftDOWN;
+	ArtSensor *NextConvEnd;
 	ArtConveyorWithLift(int id, const char name[]);
 	ArtConveyorWithLift(int id, const char name[], ConveyorType type, ArtDriver *ActPoint, ArtDriver *LiftDrv, ArtSensor *EnterSensPoint,
-						ArtSensor *ExitSensPoint,ArtSensor *LiftUP,ArtSensor *LiftDOWN, int PassTime, int LiftUpTime, int RunTimer);
+						ArtSensor *ExitSensPoint, ArtSensor *LiftUP, ArtSensor *LiftDOWN, ArtSensor *NextConvEnd,
+						int PassTime, int LiftUpTime, int LiftDOWNTime, int RunTimer);
+	void doLogic();
+};
+
+class ArtConveyorWithLiftType1 : public ArtBasicConveyor
+{
+public:
+	int productPassTime, LiftUpTime, LiftDOWNTime, conveyorLiftRunTimer, ConvNum;
+	//указатель на выходной сенсор
+	ArtSensor *LiftUP;
+	ArtSensor *LiftDOWN;
+	ArtCylinder *Lift;
+	ArtSensor *NextConvEnd;
+	ArtConveyorWithLiftType1(int id, const char name[]);
+	ArtConveyorWithLiftType1(int id, const char name[], ConveyorType type, ArtDriver *ActPoint, ArtCylinder *Lift,
+							 ArtSensor *LiftUP, ArtSensor *LiftDOWN, ArtSensor *NextConvEnd,
+							 int PassTime, int LiftUpTime, int LiftDOWNTime, int RunTimer, int ConvNum);
 	void doLogic();
 };
 

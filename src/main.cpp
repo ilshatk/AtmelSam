@@ -193,7 +193,7 @@ void setup()
   ArtPusher Pusher(18, ("SV4"), &OnPusherM20, &ConvM20, &ConvM21, &PusherSV4);
   //----setup for A36---------------------------------------------------------------------------------------
   */
-/*
+                                    /*
   //----setup for A37 цепной конвейер после диспенсера--_---------------------------------------------------
   ArtSensor PalletOnM24(1, ("B51"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false); // Фотодатчик паллеты на М24 (B51) (тип BGS G10) подобрать delayFE
   ArtSensor PalletOnM25(2, ("B62"), 2, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false); // Фотодатчик паллеты на М25 (B62) (тип BGS G10) подобрать delayFE
@@ -222,7 +222,7 @@ void setup()
                                         &Stopper3, &Stopper5, &Stopper7, 20000, 0);
 
   //----setup for A37 цепной конвейер после диспенсера----------------------------------------------------------------------------------------
-
+*/
   //----setup for A38 лифты паллет на цепном конвейере----------------------------------------------------------------------------------------
   ArtSensor M28Pall(54, ("B56"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true, 1); // М28 датчик на конце следующего конвейера на следующей барде
   ArtSensor M29Pall(55, ("B67"), 8, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true, 1); // М29 датчик на конце следующего конвейера на следующей барде
@@ -247,21 +247,19 @@ void setup()
   ArtCylinder Lift2(14, ("Lift2"), 10, false, true, ArtCylinder::MONO_STABLE, 2, &M25UP, &M25DOWN, 2000, 2000); //Пушер SV1
   ArtCylinder Lift3(15, ("Lift3"), 10, false, true, ArtCylinder::MONO_STABLE, 2, &M26UP, &M26DOWN, 2000, 2000); //Пушер SV1
   ArtCylinder Lift4(16, ("Lift4"), 10, false, true, ArtCylinder::MONO_STABLE, 2, &M27UP, &M27DOWN, 2000, 2000); //Пушер SV1
-
+                                                                                                                /*
   ArtLift M24Lift(17, ("Lift1"), &Lift1, 1, &M28Pall); //лифт опускается только после того как паллета дошла до конца плейспоинта
   ArtLift M25Lift(18, ("Lift2"), &Lift2, 2, &M29Pall); //лифт опускается только после того как паллета дошла до конца плейспоинта
   ArtLift M26Lift(19, ("Lift3"), &Lift3, 3, &M30Pall); //лифт опускается только после того как паллета дошла до конца плейспоинта
   ArtLift M27Lift(20, ("Lift4"), &Lift4, 4, &M31Pall); //лифт опускается только после того как паллета дошла до конца плейспоинта
-
-  ArtConveyor1TypeNextExtDev ConvM24(21, ("ConvM24"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M24DRV, &M24UP, &M28Pall, 5000, 0, 0); // если конвейер наверху он крутиться 5 секунд или до момента пока паллета не дойдет до конца след конвейера
-  ArtConveyor1TypeNextExtDev ConvM25(22, ("ConvM25"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M25DRV, &M25UP, &M29Pall, 5000, 0, 0); // также как предыдущий
-  ArtConveyor1TypeNextExtDev ConvM26(23, ("ConvM26"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M26DRV, &M26UP, &M30Pall, 5000, 0, 0); // также как предыдущий
-  ArtConveyor1TypeNextExtDev ConvM27(24, ("ConvM27"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M27DRV, &M27UP, &M31Pall, 5000, 0, 0); // также как предыдущий
-
-  //для этой прошивки поменять в case Free
+*/
+  ArtConveyorWithLiftType1 ConvM24(21, ("ConvM24"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M24DRV, &Lift1, &M24UP, &M24DOWN, &M28Pall, 5000, 2000, 2000, 0, 1);
+  ArtConveyorWithLiftType1 ConvM25(21, ("ConvM24"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M25DRV, &Lift2, &M25UP, &M25DOWN, &M29Pall, 5000, 2000, 2000, 0, 2);
+  ArtConveyorWithLiftType1 ConvM26(21, ("ConvM24"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M26DRV, &Lift3, &M26UP, &M26DOWN, &M30Pall, 5000, 2000, 2000, 0, 3);
+  ArtConveyorWithLiftType1 ConvM27(21, ("ConvM24"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M27DRV, &Lift4, &M27UP, &M27DOWN, &M31Pall, 5000, 2000, 2000, 0, 4);
   //входы с A39, A40 и A37 передать сюда
   //----setup for A38 лифты паллет на цепном конвейере----------------------------------------------------------------------------------------
-
+  /*
   //----setup for A39 PLP 1,2----------------------------------------------------------------------------------------
   //
   ArtSensor EnterShuttle(1, ("B95"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true, 2); //с шаттла
@@ -307,8 +305,8 @@ void setup()
   ArtConveyor1TypeNextExtDev ConvM29(15, ("ConvM29"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M29DRV, &M25UP, &M29Pall, 5000, 0, 0);*/
   //----setup for A39----------------------------------------------------------------------------------------
 
-  //----setup for A40 PLP 3,4----------------------------------------------------------------------------------------
-/*
+  //----setup for A40 PLP 3,4--------------------------------------------------------------------------------
+  /*
   ArtSensor EnterShuttle(26, ("B95"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true, 2); //с шаттла
   ArtSensor M26DOWN(27, ("B76"), 5, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true, 1);      // М26 внизу (B76) (тип геркон)
   ArtSensor M26UP(28, ("B77"), 6, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true, 1);        // М26 наверху (B77) (тип геркон)
@@ -369,6 +367,7 @@ void setup()
   //----setup for A41--Shuttle-------------------------------------------------------------------------------------
 
   //----setup for A42 Lift-----------------------------------------------------------------------------------------
+  ArtSensor M38End(1, ("B107"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true);            // Фотодатчик паллеты на конце М38 (B107) (тип BGS)
   ArtSensor OMSEnd(1, ("B101"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);           // Фотодатчик наличия паллеты на выходе OMS (B101) (тип R)
   ArtSensor M35End(2, ("B102"), 2, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);           // Датчик паллеты на конце М35 (B102) (тип Инд)
   ArtSensor AtlantaOut(3, ("B103"), 3, ArtSensor::SENSOR_TYPE_BASIC, 1000, 2000, false); // Фотодатчик наличия паллеты на выходе Атланты (B103) (тип R)
@@ -379,16 +378,17 @@ void setup()
   ArtDriver M35Drv(8, ("M33DRV"), ArtDriver::DRIVER_TYPE_1, 14, 10, 9, 8, true, 2, 2, 2, 2, 2, 2, 2);    //Драйвер на M35
   ArtDriver M36Drv(9, ("M32DRV"), ArtDriver::DRIVER_TYPE_1, 15, 12, 11, 8, true, 2, 2, 2, 2, 2, 2, 2);   //Драйвер на M36
   ArtDriver M37Drv(10, ("M34DRV"), ArtDriver::DRIVER_TYPE_1, 16, 15, 13, 14, true, 2, 2, 2, 2, 2, 2, 2); //Драйвер на M37
-  
-  //ArtConveyor1TypeNextExtDev BeforWin(11, ("ConvM34"), ArtBasicConveyor::CONVEYOR_TYPE_1, &BeforWinding, &ExitShuttle, &PalletOnConvM34, 4000, 0, 8);
 
-  //лифтовый конвейер 
+  ArtConveyor1TypeNextExtDev M35(11, ("ConvM34"), ArtBasicConveyor::CONVEYOR_TYPE_1, &BeforWinding, &ExitShuttle, &PalletOnConvM34, 4000, 0, 1);
+  ArtConveyorWithLift LiftConv(11, ("ConvM34"), ArtBasicConveyor::CONVEYOR_TYPE_1, &M36Drv, &M37Drv, &AtlantaOut, &M36End, &M37UP, &M37DOWN,
+                               &M38End, 4000, 2000, 2000, 0);
+
   //----setup for A42-Lift----------------------------------------------------------------------------------------
-
+  /*
   //----setup for A43----------------------------------------------------------------------------------------
-  ArtSensor M38End(1, ("B101"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);       // Фотодатчик паллеты на конце М38 (B107) (тип BGS)
-  ArtSensor M39End(2, ("B102"), 2, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);       // Фотодатчик паллеты на конце М39 (B108) (тип BGS)
-  ArtSensor M40End(3, ("B103"), 3, ArtSensor::SENSOR_TYPE_BASIC, 1000, 2000, false); // Фотодатчик паллеты на конце М40 (B109) (тип BGS)
+  ArtSensor M38End(1, ("B107"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);       // Фотодатчик паллеты на конце М38 (B107) (тип BGS)
+  ArtSensor M39End(2, ("B108"), 2, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);       // Фотодатчик паллеты на конце М39 (B108) (тип BGS)
+  ArtSensor M40End(3, ("B109"), 3, ArtSensor::SENSOR_TYPE_BASIC, 1000, 2000, false); // Фотодатчик паллеты на конце М40 (B109) (тип BGS)
 
   ArtDriver M38Drv(8, ("M33DRV"), ArtDriver::DRIVER_TYPE_1, 14, 12, 11, 8, true, 2, 2, 2, 2, 2, 2, 2);  //Драйвер на M38
   ArtDriver M39Drv(9, ("M32DRV"), ArtDriver::DRIVER_TYPE_1, 15, 14, 13, 8, true, 2, 2, 2, 2, 2, 2, 2);  //Драйвер на M39
@@ -431,8 +431,9 @@ void setup()
                            &BOTCylinder, 12, &PallONConvey, &PalletsInStack, 11, 16);
 //----setup for Dispenser---------------------------------------------------------------------------------------
 */
+  /*
   bool flag;
-  flag = false;
+  flag = false;*/
   while (1)
   { /*
     if (ArtIOClass::getInputState(1) == true)

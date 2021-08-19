@@ -295,9 +295,9 @@ void ArtIOClass::ShuttlePosition(int Position, bool enable) //позиция ш�
     }
 }
 
-bool ArtIOClass::ExtDevReady() // для приема сигнала готов с диспенсера
+bool ArtIOClass::ExtDevReady(int bit) // для приема сигнала готов с диспенсера
 {
-    if (m_ptrEasyCat->BufferOut.Cust.Flags == 1)
+    if (m_ptrEasyCat->BufferOut.Cust.Flags & bit == bit)
     {
         // ArtIOClass::setOutputState(16, true);
         return (true);
