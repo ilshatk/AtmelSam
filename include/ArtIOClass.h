@@ -50,7 +50,7 @@ public:
     static uint16_t getCommonOutputState();
     static bool ExtSens(uint16_t sensinput);
     static bool ExtSens(uint16_t sensinput, int boardnum);
-    static void Error(uint8_t error);
+    static void Error(uint8_t error,bool flag);
     static bool readySignalFromNext();
     static bool readySignalFromNext(int convnum, int boardnum);
     static bool TookProd();

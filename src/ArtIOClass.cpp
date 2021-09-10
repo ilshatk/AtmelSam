@@ -235,7 +235,7 @@ bool ArtIOClass::readySignalFromNext()
 
 void ArtIOClass::ConvReady(int Ready)
 {
-    if(Ready)
+    if (Ready)
     {
         m_ptrEasyCat->BufferIn.Cust.ConvReadySignal |= 1; // для передачи сигнала готовности предыдущему конвейеру
     }
@@ -295,7 +295,7 @@ void ArtIOClass::ShuttlePosition(int Position, bool enable) //позиция ш�
     }
 }
 
-bool ArtIOClass::ExtDevReady(int bit) // для приема сигнала готов 
+bool ArtIOClass::ExtDevReady(int bit) // для приема сигнала готов
 {
     if (m_ptrEasyCat->BufferOut.Cust.Flags & bit == bit)
     {
@@ -416,9 +416,16 @@ bool ArtIOClass::PLPReady(int PLPPos, int boardnum)
     }
 }
 
-void ArtIOClass::Error(uint8_t error)
+void ArtIOClass::Error(uint8_t error, bool flag)
 {
-    m_ptrEasyCat->BufferIn.Cust.OutFault = error;
+    if (flag)
+    {
+        m_ptrEasyCat->BufferIn.Cust.OutFault | error;
+    }
+    else
+    {
+        m_ptrEasyCat->BufferIn.Cust.OutFault ^ error;
+    }
 }
 
 int ArtIOClass::ARTTimerGetTime()

@@ -225,14 +225,9 @@ void ArtConveyor1Type::doLogic()
 	{
 		ArtIOClass::ConvReady(0);
 	}
-	if (ActuatorsGet(GET_CONV_ACTUATOR_READY, ActPoint) == 1)
-	{
-		ArtIOClass::Error(0);
-	}
-	else
+	if (ActuatorsGet(GET_CONV_ACTUATOR_READY, ActPoint) != 1)
 	{
 		conveyorState = ST_CONVEYOR_ERROR;
-		ArtIOClass::Error(m_id);
 	}
 
 	if (productFctEnterConveyor)
@@ -370,6 +365,7 @@ ArtConveyor2Type::ArtConveyor2Type(int id, const char name[], ConveyorType type,
 	ftook_product = false;
 	CalcedNumProdInConveyor = 0;
 	ArtConveyor2Type::DevNum = DevNum;
+	ArtConveyor2Type::error = 0;
 }
 
 void ArtConveyor2Type::doLogic()
@@ -418,7 +414,8 @@ void ArtConveyor2Type::doLogic()
 	}
 	else
 	{
-		ArtIOClass::Error(m_id);
+		conveyorState = ST_CONVEYOR_ERROR;
+		error = 1;
 	}
 
 	switch (conveyorState)
@@ -463,6 +460,7 @@ void ArtConveyor2Type::doLogic()
 		{
 			ActuatorsSet(SET_CONV_ACTUATOR_STOP, ActPoint2); //!*! Change to actual function
 			conveyorState = ST_CONVEYOR_ERROR;
+			error = 8;
 		}
 
 		if (CalcedNumProdInConveyor == SetedProdNumberCollect)
@@ -502,11 +500,6 @@ void ArtConveyor2Type::doLogic()
 			conveyorState = ST_CONVEYOR_STACK_READY;
 			pp_stack_ready = false;
 		}
-
-		if (ARTTimerIsTimePassed(conveyorRunTimer, (int)(productPassTime * 1.2), 99000))
-		{
-			ActuatorsSet(SET_CONV_ACTUATOR_STOP, ActPoint2); //!*! Change to actual function
-		}
 		break;
 	}
 
@@ -518,6 +511,7 @@ void ArtConveyor2Type::doLogic()
 			if (productCountSensConvey || productExitSensConvey)
 			{
 				conveyorState = ST_CONVEYOR_ERROR;
+				error = 8;
 			}
 			else
 			{
@@ -538,16 +532,16 @@ void ArtConveyor2Type::doLogic()
 
 	case ST_CONVEYOR_ERROR:
 	{
-		ActuatorsSet(SET_CONV_ACTUATOR_STOP, ActPoint2);
+		ArtIOClass::Error(error << ((DevNum - 1) * 4), true); // смещаем влево на 4 бита
 
-		if (DigitalIn() & 8)
+		if (ArtIOClass::ResetDrv(ActPoint->ResetSignalOut)) //сброс ошибки
 		{
-			CalcedNumProdInConveyor = 0;
-
 			conveyorState = ST_CONVEYOR_UNKNOWN;
+			ArtIOClass::Error(error << ((DevNum - 1) * 4), false);
 		}
 		break;
 	}
+
 	default:
 		break;
 	}
@@ -591,6 +585,7 @@ ArtConveyor1EType::ArtConveyor1EType(int id, const char name[], ConveyorType typ
 	SetedProdNumberCollect = 0;
 	CalcedNumProdInConveyor = 0;
 	ArtConveyor1EType::DevNum = DevNum;
+	ArtConveyor1EType::error = 0;
 }
 
 void ArtConveyor1EType::doLogic()
@@ -728,9 +723,12 @@ void ArtConveyor1EType::doLogic()
 
 	case ST_CONVEYOR_ERROR:
 	{
-		if (ActuatorsGet(GET_CONV_ACTUATOR_READY, ActPoint3) == 1)
+		ArtIOClass::Error(error << ((DevNum - 1) * 4), true); // смещаем влево на 4 бита
+
+		if (ArtIOClass::ResetDrv(ActPoint->ResetSignalOut)) //сброс ошибки
 		{
 			conveyorState = ST_CONVEYOR_UNKNOWN;
+			ArtIOClass::Error(error << ((DevNum - 1) * 4), false);
 		}
 		break;
 	}
@@ -803,6 +801,7 @@ ArtConveyor1AType::ArtConveyor1AType(int id, const char name[], ConveyorType typ
 	ArtBasicConveyor::SetedProdNumberCollect = SetedProdNumberCollect;
 	CalcedNumProdInConveyor = 0;
 	ArtConveyor1AType::DevNum = DevNum;
+	ArtConveyor1AType::error = 0;
 }
 
 ArtConveyor1AType::ArtConveyor1AType(int id, const char name[], ConveyorType type, ArtDriver *point, ArtSensor *point2, ArtSensor *point3, bool readySignalFromNextBarda, int PassTime, int RunTimer, int SetedProdNumberCollect, int DevNum) : ArtConveyor1AType(id, name)
@@ -820,6 +819,7 @@ ArtConveyor1AType::ArtConveyor1AType(int id, const char name[], ConveyorType typ
 	conveyorState = ST_CONVEYOR_UNKNOWN;
 	ArtBasicConveyor::SetedProdNumberCollect = SetedProdNumberCollect;
 	CalcedNumProdInConveyor = 0;
+	ArtConveyor1AType::error = 0;
 }
 
 void ArtConveyor1AType::doLogic()
@@ -869,6 +869,7 @@ void ArtConveyor1AType::doLogic()
 				if (CalcedNumProdInConveyor > SetedProdNumberCollect)
 				{
 					conveyorState = ST_CONVEYOR_ERROR;
+					error = 10;
 				}
 			}
 		}
@@ -915,6 +916,7 @@ void ArtConveyor1AType::doLogic()
 			{
 				ActuatorsSet(SET_CONV_ACTUATOR_STOP, ActPoint); //!*! Change to actual function
 				conveyorState = ST_CONVEYOR_ERROR;
+				error = 1;
 			}
 
 			if (CalcedNumProdInConveyor == SetedProdNumberCollect)
@@ -995,13 +997,12 @@ void ArtConveyor1AType::doLogic()
 
 		case ST_CONVEYOR_ERROR:
 		{
-			ActuatorsSet(SET_CONV_ACTUATOR_STOP, ActPoint);
+			ArtIOClass::Error(error << ((DevNum - 1) * 4), true); // смещаем влево на 4 бита
 
-			if (DigitalIn() & 8)
+			if (ArtIOClass::ResetDrv(ActPoint->ResetSignalOut)) //сброс ошибки
 			{
-				CalcedNumProdInConveyor = 0;
-
 				conveyorState = ST_CONVEYOR_UNKNOWN;
+				ArtIOClass::Error(error << ((DevNum - 1) * 4), false);
 			}
 			break;
 		}
@@ -1106,9 +1107,12 @@ void ArtConveyor1AType::doLogic()
 		}
 		case ST_CONVEYOR_ERROR:
 		{
-			if (ActuatorsGet(GET_CONV_ACTUATOR_READY, ActPoint) == 1) //; !* !Change ARTActuatorsGet to actual function
+			ArtIOClass::Error(error << ((DevNum - 1) * 4), true); // смещаем влево на 4 бита
+
+			if (ArtIOClass::ResetDrv(ActPoint->ResetSignalOut)) //сброс ошибки
 			{
 				conveyorState = ST_CONVEYOR_UNKNOWN;
+				ArtIOClass::Error(error << ((DevNum - 1) * 4), false);
 			}
 			break;
 		}
@@ -1148,6 +1152,7 @@ ArtConveyorShuttleType::ArtConveyorShuttleType(int id, const char name[], ArtDri
 	ArtConveyorShuttleType::ConveyorRunTimerOverShuttle = ConveyorRunTimerOverShuttle; // таймер конвейера над шаттлом
 	ArtConveyorShuttleType::Range = Range;											   // диапазон позиционирования
 	ArtConveyorShuttleType::DevNum = DevNum;
+	ArtConveyorShuttleType::error = 0;
 }
 
 void ArtConveyorShuttleType::doLogic()
@@ -1232,6 +1237,7 @@ void ArtConveyorShuttleType::doLogic()
 					ActuatorsSet(SET_CONV_ACTUATOR_STOP, ShuttlePtr); //останавливаем конвейер
 					ArtIOClass::setOutputState(BrakeOUT, false);	  //зажимаем тормоз
 					conveyorState = ST_SHUTTLE_CONVEYOR_ERROR;
+					error = 12;
 				}
 			}
 			else
@@ -1310,18 +1316,20 @@ void ArtConveyorShuttleType::doLogic()
 				ActuatorsSet(SET_CONV_ACTUATOR_STOP, OverShuttlePtr); //!*! Change to actual function
 				conveyorRunTimer = 0;
 				conveyorState = ST_OVERSHUTTLE_CONVEYOR_ERROR;
+				error = 12;
 			}
 		}
 		else
 		{
-			if ((!SensOnIN->SensorState() && !SensOnOUT->SensorState())) //если паллета между шаттлом и конвейером
+			if ((!SensOnIN->SensorState() && !SensOnOUT->SensorState())) //если нет паллеты между шаттлом и конвейером
 			{
-				ActuatorsSet(SET_CONV_ACTUATOR_STOP, OverShuttlePtr);
-				conveyorState = ST_CONVEYOR_RUN;
+				ActuatorsSet(SET_CONV_ACTUATOR_STOP, OverShuttlePtr); // если паллета заехала на шаттл и все ок можно ехать на след. позицию
+				conveyorState = ST_CONVEYOR_RUN;					  //можно ехать на след. позицию
 			}
 			else
 			{
 				conveyorState = ST_OVERSHUTTLE_CONVEYOR_ERROR;
+				error = 13; // ошибка паллета между шаттлом и конвейером
 			}
 		}
 		break;
@@ -1369,11 +1377,16 @@ void ArtConveyorShuttleType::doLogic()
 
 	case ST_SHUTTLE_CONVEYOR_ERROR:
 	{
-		ActuatorsSet(SET_CONV_ACTUATOR_STOP, ShuttlePtr); // если ошибка то мы зажмем тормоз
+		ActuatorsSet(SET_CONV_ACTUATOR_STOP, OverShuttlePtr); // если ошибка то остановим конвейер и зажмем тормоз
+		ActuatorsSet(SET_CONV_ACTUATOR_STOP, ShuttlePtr);
 		ArtIOClass::setOutputState(BrakeOUT, false);
-		if (ArtIOClass::getInputState(8)) // если пришел сигнал на сброс то меняем состояние
+
+		ArtIOClass::Error(error << ((DevNum - 1) * 4), true); // смещаем влево на 4 бита
+
+		if (ArtIOClass::ResetDrv(ActPoint->ResetSignalOut)) //сброс ошибки
 		{
 			conveyorState = ST_CONVEYOR_UNKNOWN;
+			ArtIOClass::Error(error << ((DevNum - 1) * 4), false);
 		}
 		break;
 	}
@@ -1381,10 +1394,15 @@ void ArtConveyorShuttleType::doLogic()
 	case ST_OVERSHUTTLE_CONVEYOR_ERROR:
 	{
 		ActuatorsSet(SET_CONV_ACTUATOR_STOP, ShuttlePtr);
+		ActuatorsSet(SET_CONV_ACTUATOR_STOP, OverShuttlePtr);
 		ArtIOClass::setOutputState(BrakeOUT, false);
-		if (ArtIOClass::getInputState(8))
+
+		ArtIOClass::Error(error << ((DevNum - 1) * 4), true); // смещаем влево на 4 бита
+
+		if (ArtIOClass::ResetDrv(ActPoint->ResetSignalOut)) //сброс ошибки
 		{
 			conveyorState = ST_CONVEYOR_UNKNOWN;
+			ArtIOClass::Error(error << ((DevNum - 1) * 4), false); // перестаем передавать ошибку
 		}
 		break;
 	}
@@ -1423,12 +1441,11 @@ void ArtConveyor1TypeNextExtDev::doLogic()
 {
 	if (ActuatorsGet(GET_CONV_ACTUATOR_READY, ActPoint) == 1)
 	{
-		ArtIOClass::Error(0); // отправляет 0 роботы - это значит ошибок нет
 	}
 	else
 	{
 		conveyorState = ST_CONVEYOR_ERROR;
-		ArtIOClass::Error(m_id); // отправляет роботу код ошибки
+		error = 1;
 	}
 
 	if (productFctEnterConveyor)
@@ -1528,11 +1545,11 @@ void ArtConveyor1TypeNextExtDev::doLogic()
 
 	case ST_CONVEYOR_ERROR:
 	{
-		ArtIOClass::Error(m_id);
-		if (ArtIOClass::ResetDrv(ActPoint->ResetSignalOut)) // сброс ошибки если пришел сигнал сброса
+		ArtIOClass::Error(error << ((DevNum - 1) * 4), true); // смещаем влево на 4 бита
+		if (ArtIOClass::ResetDrv(ActPoint->ResetSignalOut))	  //сброс ошибки частотника
 		{
 			conveyorState = ST_CONVEYOR_UNKNOWN;
-			ArtIOClass::Error(0);
+			ArtIOClass::Error(error << ((DevNum - 1) * 4), false);
 		}
 		break;
 	}
@@ -1628,18 +1645,17 @@ ArtPalletConveyorWithStoppers::ArtPalletConveyorWithStoppers(int id, const char 
 	productFctEnterConveyor = false;
 	conveyorState = ST_CONVEYOR_UNKNOWN;
 	ArtPalletConveyorWithStoppers::DevNum = DevNum;
+	ArtPalletConveyorWithStoppers::error = 0;
 }
 
 void ArtPalletConveyorWithStoppers::doLogic() //на переменную flags приходит состояние диспенсера надо распарсить
 {
 	if (ActuatorsGet(GET_CONV_ACTUATOR_READY, ActPoint) == 1)
 	{
-		ArtIOClass::Error(0);
 	}
 	else
 	{
 		conveyorState = ST_CONVEYOR_ERROR;
-		ArtIOClass::Error(m_id);
 	}
 
 	Pos1Sens = Pos1Ptr->SensorState(); //сенсор первого стоппера
@@ -1875,6 +1891,17 @@ void ArtPalletConveyorWithStoppers::doLogic() //на переменную flags 
 		break;
 	}
 
+	case ST_CONVEYOR_ERROR:
+	{
+		ArtIOClass::Error(error << ((DevNum - 1) * 4), true); // смещаем влево на 4 бита
+		if (ArtIOClass::ResetDrv(ActPoint->ResetSignalOut))	  //сброс ошибки частотника
+		{
+			conveyorState = ST_CONVEYOR_UNKNOWN;
+			ArtIOClass::Error(error << ((DevNum - 1) * 4), false);
+		}
+		break;
+	}
+
 	default:
 		break;
 	}
@@ -1909,18 +1936,15 @@ ArtConveyorPLPType::ArtConveyorPLPType(int id, const char name[], ConveyorType t
 	productFctEnterConveyor = false;
 	conveyorState = ST_CONVEYOR_UNKNOWN;
 	ArtConveyorPLPType::DevNum = DevNum;
+	ArtConveyorPLPType::error = 0;
 }
 
 void ArtConveyorPLPType::doLogic()
 {
-	if (ActuatorsGet(GET_CONV_ACTUATOR_READY, ActPoint) == 1) //состояние драйвера
-	{
-		ArtIOClass::Error(0); // нет ошибок
-	}
-	else
+	if (ActuatorsGet(GET_CONV_ACTUATOR_READY, ActPoint) != 1) //состояние драйвера
 	{
 		conveyorState = ST_CONVEYOR_ERROR;
-		ArtIOClass::Error(m_id); //передаем ошибку
+		error = 1;
 	}
 
 	if (productFctEnterConveyor)
@@ -2052,8 +2076,8 @@ void ArtConveyorPLPType::doLogic()
 				}
 				else
 				{
-					error = 8;
 					conveyorState = ST_CONVEYOR_ERROR; // ошибка потому что паллета полная , а датчик слоя ничего не видит
+					error = 8;
 				}
 			}
 		}
@@ -2096,11 +2120,11 @@ void ArtConveyorPLPType::doLogic()
 
 	case ST_CONVEYOR_ERROR:
 	{
-		ArtIOClass::Error(error << ((DevNum - 1) * 4));		// смещаем влево на 8 бит
-		if (ArtIOClass::ResetDrv(ActPoint->ResetSignalOut)) //сброс ошибки частотника
+		ArtIOClass::Error(error << ((DevNum - 1) * 4), true); // смещаем влево на 4 бита
+		if (ArtIOClass::ResetDrv(ActPoint->ResetSignalOut))	  //сброс ошибки частотника
 		{
 			conveyorState = ST_CONVEYOR_UNKNOWN;
-			ArtIOClass::Error(0 << ((DevNum - 1) * 4));
+			ArtIOClass::Error(error << ((DevNum - 1) * 4), false);
 		}
 		break;
 	}
@@ -2148,11 +2172,7 @@ ArtConveyorWithLift::ArtConveyorWithLift(int id, const char name[], ConveyorType
 
 void ArtConveyorWithLift::doLogic()
 {
-	if (ActuatorsGet(GET_CONV_ACTUATOR_READY, ActPoint) == 1)
-	{
-		ArtIOClass::Error(0); //ошибок нет
-	}
-	else
+	if (ActuatorsGet(GET_CONV_ACTUATOR_READY, ActPoint) != 1)
 	{
 		conveyorState = ST_CONVEYOR_ERROR;
 		error = 1;
@@ -2287,11 +2307,11 @@ void ArtConveyorWithLift::doLogic()
 
 	case ST_CONVEYOR_ERROR:
 	{
-		ArtIOClass::Error(error << ((DevNum - 1) * 4));		// смещаем влево на 8 бит
-		if (ArtIOClass::ResetDrv(ActPoint->ResetSignalOut)) //сброс ошибки частотника
+		ArtIOClass::Error(error << ((DevNum - 1) * 4), true); // смещаем влево на 4 бита
+		if (ArtIOClass::ResetDrv(ActPoint->ResetSignalOut))	  //сброс ошибки частотника
 		{
 			conveyorState = ST_CONVEYOR_UNKNOWN;
-			ArtIOClass::Error(0 << ((DevNum - 1) * 4));
+			ArtIOClass::Error(error << ((DevNum - 1) * 4), false);
 		}
 		break;
 	}
@@ -2336,11 +2356,7 @@ ArtConveyorWithLiftType1::ArtConveyorWithLiftType1(int id, const char name[], Co
 
 void ArtConveyorWithLiftType1::doLogic()
 {
-	if (ActuatorsGet(GET_CONV_ACTUATOR_READY, ActPoint) == 1)
-	{
-		ArtIOClass::Error(0 << ((DevNum - 1) * 4)); //сбрасываем ошибку
-	}
-	else
+	if (ActuatorsGet(GET_CONV_ACTUATOR_READY, ActPoint) != 1)
 	{
 		conveyorState = ST_CONVEYOR_ERROR;
 		error = 1;
@@ -2388,8 +2404,8 @@ void ArtConveyorWithLiftType1::doLogic()
 		{
 			ActuatorsSet(SET_CONV_ACTUATOR_STOP, ActPoint); //!* !Change to actual function
 			conveyorRunTimer = 0;
-			error = 1;
 			conveyorState = ST_CONVEYOR_ERROR;
+			error = 1;
 		}
 
 		break;
@@ -2448,10 +2464,11 @@ void ArtConveyorWithLiftType1::doLogic()
 
 	case ST_CONVEYOR_ERROR:
 	{
-		ArtIOClass::Error(error << ((DevNum - 1) * 4));		// смещаем влево на 4 бита
-		if (ArtIOClass::ResetDrv(ActPoint->ResetSignalOut)) //сброс ошибки конвейера
+		ArtIOClass::Error(error << ((DevNum - 1) * 4), true); // смещаем влево на 4 бита
+		if (ArtIOClass::ResetDrv(ActPoint->ResetSignalOut))	  //сброс ошибки частотника
 		{
 			conveyorState = ST_CONVEYOR_UNKNOWN;
+			ArtIOClass::Error(error << ((DevNum - 1) * 4), false);
 		}
 		break;
 	}
@@ -2482,16 +2499,12 @@ ArtConveyorPalletPickPoint::ArtConveyorPalletPickPoint(int id, const char name[]
 	productExitSensConvey = false;
 	conveyorState = ST_CONVEYOR_UNKNOWN;
 	ArtConveyorPalletPickPoint::DevNum = DevNum;
-	ArtConveyorPalletPickPoint::error = error;
+	ArtConveyorPalletPickPoint::error = 0;
 }
 
 void ArtConveyorPalletPickPoint::doLogic()
 {
-	if (ActuatorsGet(GET_CONV_ACTUATOR_READY, ActPoint) == 1)
-	{
-		ArtIOClass::Error(0);
-	}
-	else
+	if (ActuatorsGet(GET_CONV_ACTUATOR_READY, ActPoint) != 1)
 	{
 		conveyorState = ST_CONVEYOR_ERROR;
 		error = 1;
@@ -2570,10 +2583,11 @@ void ArtConveyorPalletPickPoint::doLogic()
 
 	case ST_CONVEYOR_ERROR:
 	{
-		ArtIOClass::Error(error << ((DevNum - 1) * 4));		// смещаем влево на 4 бита
-		if (ArtIOClass::ResetDrv(ActPoint->ResetSignalOut)) //сброс ошибки частотника
+		ArtIOClass::Error(error << ((DevNum - 1) * 4), true); // смещаем влево на 4 бита
+		if (ArtIOClass::ResetDrv(ActPoint->ResetSignalOut))	  //сброс ошибки частотника
 		{
 			conveyorState = ST_CONVEYOR_UNKNOWN;
+			ArtIOClass::Error(error << ((DevNum - 1) * 4), false);
 		}
 		break;
 	}
