@@ -229,7 +229,7 @@ void setup()
   //----setup for A37 цепной конвейер после диспенсера----------------------------------------------------------------------------------------
 */
   //----setup for A38 лифты паллет на цепном конвейере----------------------------------------------------------------------------------------
-  ArtSensor M28Pall(54, ("B56"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true, 1); // М28 датчик на конце следующего конвейера на следующей барде
+ /* ArtSensor M28Pall(54, ("B56"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true, 1); // М28 датчик на конце следующего конвейера на следующей барде
   ArtSensor M29Pall(55, ("B67"), 8, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true, 1); // М29 датчик на конце следующего конвейера на следующей барде
   ArtSensor M30Pall(56, ("B78"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true, 2); // М30 датчик на конце следующего конвейера на следующей барде
   ArtSensor M31Pall(57, ("B89"), 8, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true, 2); // М31 датчик на конце следующего конвейера на следующей барде
@@ -259,7 +259,7 @@ void setup()
   ArtLift M27Lift(20, ("Lift4"), &Lift4, 4, &M31Pall); //лифт опускается только после того как паллета дошла до конца плейспоинта
 */
   
-  ArtConveyorWithLiftType1 ConvM24(21, ("ConvM24"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M24DRV, &Lift1, &M24UP, &M24DOWN, &M28Pall, 5000, 2000, 2000, 0, 1);
+ /* ArtConveyorWithLiftType1 ConvM24(21, ("ConvM24"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M24DRV, &Lift1, &M24UP, &M24DOWN, &M28Pall, 5000, 2000, 2000, 0, 1);
   ArtConveyorWithLiftType1 ConvM25(21, ("ConvM24"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M25DRV, &Lift2, &M25UP, &M25DOWN, &M29Pall, 5000, 2000, 2000, 0, 2);
   ArtConveyorWithLiftType1 ConvM26(21, ("ConvM24"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M26DRV, &Lift3, &M26UP, &M26DOWN, &M30Pall, 5000, 2000, 2000, 0, 3);
   ArtConveyorWithLiftType1 ConvM27(21, ("ConvM24"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M27DRV, &Lift4, &M27UP, &M27DOWN, &M31Pall, 5000, 2000, 2000, 0, 4);
@@ -313,7 +313,7 @@ void setup()
 
   //----setup for A40 PLP 3,4--------------------------------------------------------------------------------
 
-  ArtSensor EnterShuttle(26, ("B95"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true, 2); //с шаттла
+ /* ArtSensor EnterShuttle(26, ("B95"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true, 2); //с шаттла
   ArtSensor M26DOWN(27, ("B76"), 5, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true, 1);      // М26 внизу (B76) (тип геркон)
   ArtSensor M26UP(28, ("B77"), 6, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true, 1);        // М26 наверху (B77) (тип геркон)
   ArtSensor M27DOWN(29, ("B87"), 7, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true, 1);      // М27 внизу (B87) (тип геркон)
