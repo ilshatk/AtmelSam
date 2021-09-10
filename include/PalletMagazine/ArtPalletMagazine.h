@@ -50,7 +50,9 @@ protected:
         PallONConveyIn,
         MagazineState,
         isBOTandNOPALLPLAC_timer,
-        isBOTandNOPALLPLAC_TIME;
+        isBOTandNOPALLPLAC_TIME,
+        DEF_TIME_POS_SENS_DOWN,
+        timer;
 
     ArtCylinder *Clamp1;
     ArtCylinder *Clamp2;

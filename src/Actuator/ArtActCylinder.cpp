@@ -31,7 +31,7 @@ ArtCylinder::ArtCylinder(int id, const char name[], int CloseTime, int OpenTime,
    cylState = ACGetInitialState();
 }
 
-ArtCylinder::ArtCylinder(int id, const char name[], int OpenTime, bool TimeoutControl,bool CylinderSet, distType type, int cylOpenOut,ArtSensor *cylOpenIn, ArtSensor *cylCloseIn, int cylCloseDelay, int cylOpenDelay) : ArtCylinder(id, name)
+ArtCylinder::ArtCylinder(int id, const char name[], int OpenTime, bool TimeoutControl, bool CylinderSet, distType type, int cylOpenOut, ArtSensor *cylOpenIn, ArtSensor *cylCloseIn, int cylCloseDelay, int cylOpenDelay) : ArtCylinder(id, name)
 {
    cylOpenTimer = OpenTime;
    bCylTimeoutControl = TimeoutControl;
@@ -47,7 +47,7 @@ ArtCylinder::ArtCylinder(int id, const char name[], int OpenTime, bool TimeoutCo
 }
 
 void ArtCylinder::doLogic()
-{  
+{
    isCylinderActed = ArtIOClass::getOutputState(cylOpenOut);
    isCylinderOpened = cylOpenIn->SensorState();
    isCylinderClosed = cylCloseIn->SensorState();
@@ -59,98 +59,96 @@ void ArtCylinder::doLogic()
 
    switch (cylState)
    {
-      case ARTCYL_ST_OPEN:
+   case ARTCYL_ST_OPEN:
+   {
+      if (isCylinderClosed)
       {
-         if (isCylinderClosed)
-         {
-            /* ArtDebugMsg("RUNTIME ERROR: Suddenly has closed CYL %1", 
+         /* ArtDebugMsg("RUNTIME ERROR: Suddenly has closed CYL %1", 
             "ArtActCylinder", handle)
                   _NOP( _ON_ERR( _ERR( ERR_CYL_WRONG_POS ) ) )*/
-         }
-
-         if (isCylinderActed == cylCloseValue)
-         {
-            cylState = ARTCYL_ST_MOVING;
-            cylCloseTimer = ArtIOClass::ARTTimerGetTime();
-         }
-         break;
       }
 
-      case ARTCYL_ST_CLOSED:
+      if (isCylinderActed == cylCloseValue)
+      {
+         cylState = ARTCYL_ST_MOVING;
+         cylCloseTimer = ArtIOClass::ARTTimerGetTime();
+      }
+      break;
+   }
+
+   case ARTCYL_ST_CLOSED:
+   {
+      if (isCylinderOpened)
+      {
+         /*ArtDebugMsg("RUNTIME ERROR: Suddenly has opened CYL %1",
+            "ArtActCylinder", handle)
+                  _NOP( _ON_ERR( _ERR( ERR_CYL_WRONG_POS ) ) )*/
+      }
+
+      if (isCylinderActed == !cylCloseValue)
+      {
+         cylState = ARTCYL_ST_MOVING;
+         cylOpenTimer = ArtIOClass::ARTTimerGetTime();
+      }
+
+      break;
+   }
+
+   case ARTCYL_ST_MOVING:
+   {
+      if (isCylinderActed == !cylCloseValue)
       {
          if (isCylinderOpened)
          {
-            /*ArtDebugMsg("RUNTIME ERROR: Suddenly has opened CYL %1",
-            "ArtActCylinder", handle)
-                  _NOP( _ON_ERR( _ERR( ERR_CYL_WRONG_POS ) ) )*/
+            cylState = ARTCYL_ST_OPEN;
+            cylOpenTimer = 0;
          }
-
-         if (isCylinderActed == !cylCloseValue)
+         else
          {
-            cylState = ARTCYL_ST_MOVING;
-            cylOpenTimer = ArtIOClass::ARTTimerGetTime();
-         }
-
-         break;
-      }
-
-      case ARTCYL_ST_MOVING:
-      {
-         if (isCylinderActed == !cylCloseValue)
-         {
-            if (isCylinderOpened)
+            if (bCylTimeoutControl)
             {
-               cylState = ARTCYL_ST_OPEN;
-               cylOpenTimer = 0;
-            }
-            else
-            {
-               if (bCylTimeoutControl)
+               if (ArtIOClass::CHK_ACTIVE_NTIME(isCylinderActed == !cylCloseValue, &cylOpenTimer, cylOpenDelay))
                {
-                  if (ArtIOClass::CHK_ACTIVE_NTIME(isCylinderActed == !cylCloseValue, &cylOpenTimer, cylOpenDelay))
-                  {
-                     // ArtDebugMsg("RUNTIME ERROR: Opening timeout from %1 millisecs", "ArtActCylinder", cylOpenDelay[handle])
-                     cylOpenTimer = 0;
-                     cylState = ARTCYL_ST_ERROR;
-                     //_NOP( _ON_ERR( _ERR( ERR_CYL_OPEN_TIMEOUT ) ) )
-                  }
+                  // ArtDebugMsg("RUNTIME ERROR: Opening timeout from %1 millisecs", "ArtActCylinder", cylOpenDelay[handle])
+                  cylOpenTimer = 0;
+                  cylState = ARTCYL_ST_ERROR;
+                  //_NOP( _ON_ERR( _ERR( ERR_CYL_OPEN_TIMEOUT ) ) )
                }
             }
          }
-         else //;DEF_CLOSE_CYLINDER
+      }
+      else //;DEF_CLOSE_CYLINDER
+      {
+         if (isCylinderClosed)
          {
-            if (isCylinderClosed)
+            cylState = ARTCYL_ST_CLOSED;
+            cylCloseTimer = 0;
+         }
+         else
+         {
+            if (bCylTimeoutControl)
             {
-               cylState = ARTCYL_ST_CLOSED;
-               cylCloseTimer = 0;
-            }
-            else
-            {
-               if (bCylTimeoutControl)
+               if (!ArtIOClass::CHK_ACTIVE_NTIME(isCylinderActed == cylCloseValue, &cylCloseTimer, cylCloseDelay))
                {
-                  if (!ArtIOClass::CHK_ACTIVE_NTIME(isCylinderActed == cylCloseValue, &cylCloseTimer, cylCloseDelay))
-                  {
-                     cylCloseTimer = 0;
-                     //ArtDebugMsg("RUNTIME ERROR: Closing timeout from %1 millisecs", "ArtActCylinder", cylCloseDelay[handle])
-                     cylState = ARTCYL_ST_ERROR;
-                     //NOP( _ON_ERR( _ERR( ERR_CYL_OPEN_TIMEOUT )))
-                  }
+                  cylCloseTimer = 0;
+                  //ArtDebugMsg("RUNTIME ERROR: Closing timeout from %1 millisecs", "ArtActCylinder", cylCloseDelay[handle])
+                  cylState = ARTCYL_ST_ERROR;
+                  //NOP( _ON_ERR( _ERR( ERR_CYL_OPEN_TIMEOUT )))
                }
             }
          }
-         break;
       }
+      break;
+   }
 
-      case ARTCYL_ST_ERROR:
-      {
-         break;
-      }
-      default:
-         break;
+   case ARTCYL_ST_ERROR:
+   {
+      break;
+   }
+   default:
+      break;
    }
 }
-
-
 
 int ArtCylinder::ACGetInitialState()
 {
@@ -191,12 +189,12 @@ void ArtCylinder::ARTCylinderOpen()
 {
    if (distrType == BI_STABLE)
    {
-      ArtIOClass::setPulse(cylOpenOut, true, 30);
+      ArtIOClass::setOutputState(cylCloseOut, false);
+      ArtIOClass::setOutputState(cylOpenOut, true);
    }
    else
    {
-      //ArtIOClass::setOutputState(cylCloseOut, false);
-      ArtIOClass::setOutputState( cylOpenOut, true);
+      ArtIOClass::setOutputState(cylOpenOut, true);
    }
    isCylinderActed = !(cylCloseIn->SensorState());
 }
@@ -218,13 +216,24 @@ void ArtCylinder::ARTCylinderClose()
 
 void ArtCylinder::ARTCylinderOFF()
 {
-      ArtIOClass::setOutputState(cylOpenOut, false);
-      ArtIOClass::setOutputState(cylCloseOut, false);
+   ArtIOClass::setOutputState(cylOpenOut, false);
+   ArtIOClass::setOutputState(cylCloseOut, false);
 }
 
 int ArtCylinder::getCylState()
 {
-   return (cylState);
+   if (cylCloseIn->SensorState())
+   {
+      return (1);
+   }
+   else
+   {
+      if (cylOpenIn->SensorState())
+      {
+         return (0);
+      }
+   }
+   //return (cylState);
 }
 
 void ArtCylinder::update()

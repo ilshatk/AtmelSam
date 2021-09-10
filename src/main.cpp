@@ -48,7 +48,7 @@ void setup()
   }
   // DogTimer = millis();                      // load the watchdog timer
   PORT->Group[0].OUTSET.reg = WDOG; //этот выход включает пин OUT_EN на драйвере перифирии ISO8200B
-                                    /*
+
   //----setup for A31---------------------------------------------------------------------------------------
   ArtSensor AfterSiat(1, ("B1"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false); // Фотодатчик после Сиата 1 (B1) (тип R)
 
@@ -58,15 +58,15 @@ void setup()
   ArtSensor M3Perepoln(4, ("B4"), 4, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false); // Фотодатчик переполнения М3 (B4) (тип R)
   ArtSensor M3End(5, ("B5"), 5, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);      // Фотодатчик на конце М3 (B5) (тип R)
 
-  ArtDriver M1DRV(5, ("M1DRV"), ArtDriver::DRIVER_TYPE_1, 9, 4, 1, 1, true, 0, 2, 0, 2, 0, 0, 0);   //Драйвер на M1
-  ArtDriver M2DRV(10, ("M2DRV"), ArtDriver::DRIVER_TYPE_1, 10, 5, 2, 2, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M2
-  ArtDriver M3DRV(11, ("M3DRV"), ArtDriver::DRIVER_TYPE_1, 11, 6, 3, 3, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M3
+  ArtDriver M1DRV(5, ("M1DRV"), ArtDriver::DRIVER_TYPE_1, 6, 4, 1, 1, true, 0, 2, 0, 2, 0, 0, 0);  //Драйвер на M1
+  ArtDriver M2DRV(10, ("M2DRV"), ArtDriver::DRIVER_TYPE_1, 7, 5, 2, 2, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M2
+  ArtDriver M3DRV(11, ("M3DRV"), ArtDriver::DRIVER_TYPE_1, 8, 6, 3, 3, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M3
 
-  ArtConveyor1AType ConvM3(12, ("ConvM3"), ArtConveyor1AType::CONVEYOR_TYPE_1_EXTERNAL_BARDA, &M3DRV, &M2End, &M3End, false, 4000, 4, 4);
-  ArtConveyor1Type ConvM2(13, ("ConvM2"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M2DRV, &M1End, &M2End, &ConvM3, 1000, 0);
-  ArtConveyor1Type ConvM1(14, ("ConvM1"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M1DRV, &AfterSiat, &M1End, &ConvM2, 1000, 0);
+  ArtConveyor1AType ConvM3(12, ("ConvM3"), ArtConveyor1AType::CONVEYOR_TYPE_1_EXTERNAL_BARDA, &M3DRV, &M2End, &M3End, false, 10000, 0, 4, 3);
+  ArtConveyor1Type ConvM2(13, ("ConvM2"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M2DRV, &M1End, &M2End, &ConvM3, 1000, 0, 2);
+  ArtConveyor1Type ConvM1(14, ("ConvM1"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M1DRV, &AfterSiat, &M1End, &ConvM2, 1000, 0, 1);
   //----setup for A31---------------------------------------------------------------------------------------
-
+  /*
   //----setup for A32---------------------------------------------------------------------------------------
   //Эта A32 барда берет сигнал с датчика B5 с предыдущей барды поэтому в ArtIOClass распарсиваются входы
   //с предыдущей, также там добавлен сброс ошибки драйвера
@@ -192,9 +192,14 @@ void setup()
   ArtCylinder PusherSV4(17, ("SV4"), 10, false, true, ArtCylinder::MONO_STABLE, 11, &PusherNOHomeB46, &PusherHomeB45, 0, 0); //Пушер SV1
   ArtPusher Pusher(18, ("SV4"), &OnPusherM20, &ConvM20, &ConvM21, &PusherSV4);
   //----setup for A36---------------------------------------------------------------------------------------
-  */
-                                    /*
+
   //----setup for A37 цепной конвейер после диспенсера--_---------------------------------------------------
+  //принимаем input с 38 барды
+  ArtSensor M24DOWN(1, ("B54"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true); // М24 внизу (B54) (тип геркон)
+  ArtSensor M25DOWN(3, ("B65"), 3, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true); //  М25 внизу (B66) (тип геркон)
+  ArtSensor M26DOWN(5, ("B76"), 5, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true); // М26 внизу (B76) (тип геркон)
+  ArtSensor M27DOWN(7, ("B87"), 7, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true); // М27 внизу (B87) (тип геркон)
+
   ArtSensor PalletOnM24(1, ("B51"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false); // Фотодатчик паллеты на М24 (B51) (тип BGS G10) подобрать delayFE
   ArtSensor PalletOnM25(2, ("B62"), 2, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false); // Фотодатчик паллеты на М25 (B62) (тип BGS G10) подобрать delayFE
   ArtSensor PalletOnM26(3, ("B73"), 3, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false); // Фотодатчик паллеты на М26 (B73) (тип BGS G10) подобрать delayFE
@@ -219,7 +224,7 @@ void setup()
 
   ArtPalletConveyorWithStoppers ConvM23(20, ("ConvM23"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M22DRV, &M23DRV,
                                         &PalletOnM24, &PalletOnM25, &PalletOnM26, &PalletOnM27, &Stopper1,
-                                        &Stopper3, &Stopper5, &Stopper7, 20000, 0);
+                                        &Stopper3, &Stopper5, &Stopper7, 20000, &M24DOWN, &M25DOWN, &M26DOWN, &M27DOWN);
 
   //----setup for A37 цепной конвейер после диспенсера----------------------------------------------------------------------------------------
 */
@@ -253,13 +258,14 @@ void setup()
   ArtLift M26Lift(19, ("Lift3"), &Lift3, 3, &M30Pall); //лифт опускается только после того как паллета дошла до конца плейспоинта
   ArtLift M27Lift(20, ("Lift4"), &Lift4, 4, &M31Pall); //лифт опускается только после того как паллета дошла до конца плейспоинта
 */
+  
   ArtConveyorWithLiftType1 ConvM24(21, ("ConvM24"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M24DRV, &Lift1, &M24UP, &M24DOWN, &M28Pall, 5000, 2000, 2000, 0, 1);
   ArtConveyorWithLiftType1 ConvM25(21, ("ConvM24"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M25DRV, &Lift2, &M25UP, &M25DOWN, &M29Pall, 5000, 2000, 2000, 0, 2);
   ArtConveyorWithLiftType1 ConvM26(21, ("ConvM24"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M26DRV, &Lift3, &M26UP, &M26DOWN, &M30Pall, 5000, 2000, 2000, 0, 3);
   ArtConveyorWithLiftType1 ConvM27(21, ("ConvM24"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M27DRV, &Lift4, &M27UP, &M27DOWN, &M31Pall, 5000, 2000, 2000, 0, 4);
   //входы с A39, A40 и A37 передать сюда
   //----setup for A38 лифты паллет на цепном конвейере----------------------------------------------------------------------------------------
-  /*
+
   //----setup for A39 PLP 1,2----------------------------------------------------------------------------------------
   //
   ArtSensor EnterShuttle(1, ("B95"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true, 2); //с шаттла
@@ -281,32 +287,32 @@ void setup()
   ArtSensor Podzhim2HOME(12, ("B71"), 12, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);   // Поджим 2 ДОМА (B71) (тип геркон)
   ArtSensor Podzhim2NOHOME(13, ("B72"), 13, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false); // Поджим 2 ОТКРЫТ (B72) (тип геркон)
 
-  ArtCylinder Podzhim1(13, ("Podzhim1"), 10, false, true, ArtCylinder::MONO_STABLE, 2, &Podzhim1NOHOME, &Podzhim1HOME, 2000, 2000); //Пушер SV1
-  ArtCylinder Podzhim2(15, ("Podzhim2"), 10, false, true, ArtCylinder::MONO_STABLE, 4, &Podzhim2NOHOME, &Podzhim2HOME, 2000, 2000); //Пушер SV1
+  ArtCylinder Podzhim1(1, ("Podzhim1"), 10, false, true, ArtCylinder::MONO_STABLE, 2, &Podzhim1NOHOME, &Podzhim1HOME, 2000, 2000); //Пушер SV1
+  ArtCylinder Podzhim2(2, ("Podzhim2"), 10, false, true, ArtCylinder::MONO_STABLE, 4, &Podzhim2NOHOME, &Podzhim2HOME, 2000, 2000); //Пушер SV1
 
-  //ArtPodzhim M29Podzhim(16, ("Podzhim2"), &M29Pall, &Podzhim2);
-  //ArtPodzhim M28Podzhim(14, ("Podzhim1"), &M28Pall, &Podzhim1);
+  //ArtPodzhim M29Podzhim(3, ("Podzhim2"), &M29Pall, &Podzhim2);
+  //ArtPodzhim M28Podzhim(4, ("Podzhim1"), &M28Pall, &Podzhim1);
 
-  ArtCylinder Stopper1(15, ("Stopper1"), 10, false, true, ArtCylinder::MONO_STABLE, 4, &Stopper2UP, &Stopper2DOWN, 2000, 2000); //Пушер SV1 переделать если не будет корректно работать
-  ArtCylinder Stopper2(15, ("Stopper2"), 10, false, true, ArtCylinder::MONO_STABLE, 4, &Stopper4UP, &Stopper4DOWN, 2000, 2000); //Пушер SV1
+  ArtCylinder Stopper1(5, ("Stopper1"), 10, false, true, ArtCylinder::MONO_STABLE, 4, &Stopper2UP, &Stopper2DOWN, 2000, 2000); //Пушер SV1 переделать если не будет корректно работать
+  ArtCylinder Stopper2(6, ("Stopper2"), 10, false, true, ArtCylinder::MONO_STABLE, 4, &Stopper4UP, &Stopper4DOWN, 2000, 2000); //Пушер SV1
 
   //ArtPodzhim M29Stopper(16, ("Stopper2"), &M25UP, &Stopper2);
   //ArtPodzhim M28Stopper(16, ("Stopper1"), &M24UP, &Stopper1);
 
-  ArtDriver M28DRV(17, ("M28DRV"), ArtDriver::DRIVER_TYPE_1, 15, 14, 13, 6, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M28
-  ArtDriver M29DRV(18, ("M29DRV"), ArtDriver::DRIVER_TYPE_1, 16, 16, 15, 6, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M29
+  ArtDriver M28DRV(7, ("M28DRV"), ArtDriver::DRIVER_TYPE_1, 15, 14, 13, 6, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M28
+  ArtDriver M29DRV(8, ("M29DRV"), ArtDriver::DRIVER_TYPE_1, 16, 16, 15, 6, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M29
 
-  ArtConveyorPLPType ConvM28(19, ("ConvM30"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M28DRV, &M24UP, &EnterShuttle, &M28Pall, &M28Layer,
+  ArtConveyorPLPType ConvM28(9, ("ConvM30"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M28DRV, &M24UP, &EnterShuttle, &M28Pall, &M28Layer,
                              &Stopper1, &Podzhim1, 5000, 0, 1);
-  ArtConveyorPLPType ConvM29(20, ("ConvM31"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M29DRV, &M25UP, &EnterShuttle, &M29Pall, &M29Layer,
+  ArtConveyorPLPType ConvM29(10, ("ConvM31"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M29DRV, &M25UP, &EnterShuttle, &M29Pall, &M29Layer,
                              &Stopper2, &Podzhim2, 5000, 0, 2);
   /*
-  ArtConveyor1TypeNextExtDev ConvM28(15, ("ConvM28"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M28DRV, &M24UP, &M28Pall, 5000, 0, 0);
-  ArtConveyor1TypeNextExtDev ConvM29(15, ("ConvM29"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M29DRV, &M25UP, &M29Pall, 5000, 0, 0);*/
+  ArtConveyor1TypeNextExtDev ConvM28(11, ("ConvM28"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M28DRV, &M24UP, &M28Pall, 5000, 0, 0);
+  ArtConveyor1TypeNextExtDev ConvM29(12, ("ConvM29"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M29DRV, &M25UP, &M29Pall, 5000, 0, 0);*/
   //----setup for A39----------------------------------------------------------------------------------------
 
   //----setup for A40 PLP 3,4--------------------------------------------------------------------------------
-  /*
+
   ArtSensor EnterShuttle(26, ("B95"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true, 2); //с шаттла
   ArtSensor M26DOWN(27, ("B76"), 5, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true, 1);      // М26 внизу (B76) (тип геркон)
   ArtSensor M26UP(28, ("B77"), 6, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true, 1);        // М26 наверху (B77) (тип геркон)
@@ -341,13 +347,13 @@ void setup()
   ArtDriver M31DRV(23, ("M31DRV"), ArtDriver::DRIVER_TYPE_1, 16, 16, 15, 6, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M31
 
   ArtConveyorPLPType ConvM30(24, ("ConvM30"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M30DRV, &M26UP, &EnterShuttle, &M30Pall, &M30Layer,
-                             &Stopper3, &Podzhim3, 5000, 0, 3);
+                             &Stopper3, &Podzhim3, 5000, 0, 3, 1);
   ArtConveyorPLPType ConvM31(25, ("ConvM31"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M31DRV, &M27UP, &EnterShuttle, &M31Pall, &M31Layer,
-                             &Stopper4, &Podzhim4, 5000, 0, 4); //
+                             &Stopper4, &Podzhim4, 5000, 0, 4, 2); //
   /*ArtConveyor1TypeNextExtDev ConvM30(15, ("ConvM30"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M30DRV, &M26UP, &M28Pall, 5000, 0, 0);
   ArtConveyor1TypeNextExtDev ConvM31(15, ("ConvM31"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M31DRV, &M27UP, &M29Pall, 5000, 0, 0);*/
   //----setup for A40---------------------------------------------------------------------------------------------------
-
+  /*
   //----setup for A41--Shuttle and -------------------------------------------------------------------------------------
   ArtSensor EnterShuttle(1, ("B95"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);          // Фотодатчик наличия паллеты на входе шаттла (B95) (тип R)
   ArtSensor RangeFinderDiscrete(2, ("B96"), 2, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);   // Фотодатчик дальномер шаттла (B96) (тип лазер BGS) (дискр выход)
@@ -363,7 +369,7 @@ void setup()
 
   ArtConveyor1TypeNextExtDev BeforWin(11, ("ConvM34"), ArtBasicConveyor::CONVEYOR_TYPE_1, &BeforWinding, &ExitShuttle, &PalletOnConvM34, 4000, 0, 8);
   ArtConveyorShuttleType Shuttle(12, ("ConvM32&33"), &ShuttleDrv, &OverShuttleDrv, &RangeFinderAnalog, &PalletOnConvM32, &EnterShuttle, &ExitShuttle,
-                                 &BeforWin, &EdgeOnShuttle, false, 1, 400000, 100000, 0, 0); // переделать
+                                 &BeforWin, &EdgeOnShuttle, false, 1, 400000, 100000, 0, 0, 40); // переделать
   //----setup for A41--Shuttle-------------------------------------------------------------------------------------
 
   //----setup for A42 Lift-----------------------------------------------------------------------------------------
@@ -379,45 +385,46 @@ void setup()
   ArtDriver M36Drv(9, ("M32DRV"), ArtDriver::DRIVER_TYPE_1, 15, 12, 11, 8, true, 2, 2, 2, 2, 2, 2, 2);   //Драйвер на M36
   ArtDriver M37Drv(10, ("M34DRV"), ArtDriver::DRIVER_TYPE_1, 16, 15, 13, 14, true, 2, 2, 2, 2, 2, 2, 2); //Драйвер на M37
 
-  ArtConveyor1TypeNextExtDev M35(11, ("ConvM34"), ArtBasicConveyor::CONVEYOR_TYPE_1, &BeforWinding, &ExitShuttle, &PalletOnConvM34, 4000, 0, 1);
+  ArtConveyor1TypeNextExtDev M35(11, ("ConvM35"), ArtBasicConveyor::CONVEYOR_TYPE_1, &BeforWinding, &ExitShuttle, &PalletOnConvM34, 4000, 0, 1);
   ArtConveyorWithLift LiftConv(11, ("ConvM34"), ArtBasicConveyor::CONVEYOR_TYPE_1, &M36Drv, &M37Drv, &AtlantaOut, &M36End, &M37UP, &M37DOWN,
                                &M38End, 4000, 2000, 2000, 0);
 
   //----setup for A42-Lift----------------------------------------------------------------------------------------
-  /*
+
   //----setup for A43----------------------------------------------------------------------------------------
+
+  ArtSensor M37UP(6, ("B106"), 6, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true);         // Датчик положения М37 НАВЕРХУ (B106) (тип Инд)
   ArtSensor M38End(1, ("B107"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);       // Фотодатчик паллеты на конце М38 (B107) (тип BGS)
   ArtSensor M39End(2, ("B108"), 2, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);       // Фотодатчик паллеты на конце М39 (B108) (тип BGS)
   ArtSensor M40End(3, ("B109"), 3, ArtSensor::SENSOR_TYPE_BASIC, 1000, 2000, false); // Фотодатчик паллеты на конце М40 (B109) (тип BGS)
 
-  ArtDriver M38Drv(8, ("M33DRV"), ArtDriver::DRIVER_TYPE_1, 14, 12, 11, 8, true, 2, 2, 2, 2, 2, 2, 2);  //Драйвер на M38
-  ArtDriver M39Drv(9, ("M32DRV"), ArtDriver::DRIVER_TYPE_1, 15, 14, 13, 8, true, 2, 2, 2, 2, 2, 2, 2);  //Драйвер на M39
-  ArtDriver M40Drv(10, ("M34DRV"), ArtDriver::DRIVER_TYPE_1, 16, 16, 15, 8, true, 2, 2, 2, 0, 2, 2, 2); //Драйвер на M40
+  ArtDriver M38Drv(8, ("M38DRV"), ArtDriver::DRIVER_TYPE_1, 14, 12, 11, 8, true, 2, 2, 2, 2, 2, 2, 2);  //Драйвер на M38
+  ArtDriver M39Drv(9, ("M39DRV"), ArtDriver::DRIVER_TYPE_1, 15, 14, 13, 8, true, 2, 2, 2, 2, 2, 2, 2);  //Драйвер на M39
+  ArtDriver M40Drv(10, ("M40DRV"), ArtDriver::DRIVER_TYPE_1, 16, 16, 15, 8, true, 2, 2, 2, 0, 2, 2, 2); //Драйвер на M40
+
+  ArtConveyorPalletPickPoint ConvM40(13, ("ConvM40"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M39Drv, &M39End, &M40End, 8000, 0, 4);
+  ArtConveyor1Type ConvM39(12, ("ConvM39"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M39Drv, &M38End, &M39End, &ConvM40, 8000, 0);
+  ArtConveyor1Type ConvM38(11, ("ConvM38"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M38Drv, &M37UP, &M38End, &ConvM39, 8000);
 
   //----setup for A43----------------------------------------------------------------------------------------
-
-  /*
-
-
-
-
+/*
   //----setup for Dispenser---------------------------------------------------------------------------------------
-  ArtSensor PallONConvey(1, ("PallONConvey"), 10, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false);
-  ArtSensor PalletsInStack(2, ("PalletsInStack"), 9, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false);
-  ArtSensor Clamp1Open(3, ("Clamp1Open"), 4, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false);
-  ArtSensor Clamp1Close(4, ("Clamp1Close"), 2, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false);
-  ArtSensor Clamp2Open(5, ("Clamp2Open"), 3, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false);
-  ArtSensor Clamp2Close(6, ("Clamp2Close"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false);
-  ArtSensor TOPCylinderOpen(7, ("TOPCylinderOpen"), 7, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false);
-  ArtSensor TOPCylinderClose(8, ("TOPCylinderClose"), 8, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false);
-  ArtSensor BOTCylinderOpen(9, ("BOTCylinderOpen"), 5, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false);
-  ArtSensor BOTCylinderClose(10, ("BOTCylinderClose"), 6, ArtSensor::SENSOR_TYPE_BASIC, 0, 0,false);
+  ArtSensor PallONConvey(1, ("PallONConvey"), 10, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);
+  ArtSensor PalletsInStack(2, ("PalletsInStack"), 9, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);
+  ArtSensor Clamp1Open(3, ("Clamp1Open"), 7, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);
+  ArtSensor Clamp1Close(4, ("Clamp1Close"), 5, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);
+  ArtSensor Clamp2Open(5, ("Clamp2Open"), 6, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);
+  ArtSensor Clamp2Close(6, ("Clamp2Close"), 8, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);
+  ArtSensor TOPCylinderOpen(7, ("TOPCylinderOpen"), 2, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);
+  ArtSensor TOPCylinderClose(8, ("TOPCylinderClose"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);
+  ArtSensor BOTCylinderOpen(9, ("BOTCylinderOpen"), 4, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);
+  ArtSensor BOTCylinderClose(10, ("BOTCylinderClose"), 3, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);
 
   ArtCylinder Clamp1(11, ("Clamp1"), 10, 10, false, true, ArtCylinder::MONO_STABLE,
-                     16, 5, &Clamp1Open, &Clamp1Close);
+                     5, 5, &Clamp1Open, &Clamp1Close);
 
   ArtCylinder Clamp2(12, ("Clamp2"), 10, 10, false, true, ArtCylinder::MONO_STABLE,
-                     16, 5, &Clamp2Open, &Clamp2Close);
+                     5, 5, &Clamp2Open, &Clamp2Close);
 
   ArtCylinder TOPCylinder(13, ("TOPCylinder"), 10, 10, false, true,
                           ArtCylinder::BI_STABLE, 2, 1, &TOPCylinderOpen,
@@ -429,14 +436,24 @@ void setup()
 
   PalletMagazine Dispenser(15, ("Dispenser"), &Clamp1, &Clamp2, &TOPCylinder,
                            &BOTCylinder, 12, &PallONConvey, &PalletsInStack, 11, 16);
-//----setup for Dispenser---------------------------------------------------------------------------------------
+  //----setup for Dispenser---------------------------------------------------------------------------------------
+  /*
 */
   /*
   bool flag;
   flag = false;*/
   while (1)
-  { /*
-    if (ArtIOClass::getInputState(1) == true)
+  {
+    /*
+    delay(1000);
+    ArtIOClass::setOutputState(2, false);
+    delay(200);
+    ArtIOClass::setOutputState(1, true);
+    delay(1000);
+    ArtIOClass::setOutputState(1, false);
+    delay(200);
+    ArtIOClass::setOutputState(2, true);*/
+    /*if (ArtIOClass::getInputState(1) == true)
     {
 
       if (ArtIOClass::getOutputState(1) == false && flag == false)
@@ -504,7 +521,7 @@ void setup()
 
       /* EASYCAT.BufferIn.Cust.AnaIn_2 = Shuttle.PositionSens->SensorState();
       EASYCAT.BufferIn.Cust.AnaIn_3 = Shuttle.CurPos;*/
-
+    
       AnaInChannel++;
       AnaInChannel &= 0x03;
 

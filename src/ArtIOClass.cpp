@@ -295,7 +295,7 @@ void ArtIOClass::ShuttlePosition(int Position, bool enable) //позиция ш�
     }
 }
 
-bool ArtIOClass::ExtDevReady(int bit) // для приема сигнала готов с диспенсера
+bool ArtIOClass::ExtDevReady(int bit) // для приема сигнала готов 
 {
     if (m_ptrEasyCat->BufferOut.Cust.Flags & bit == bit)
     {
@@ -308,7 +308,7 @@ bool ArtIOClass::ExtDevReady(int bit) // для приема сигнала го
         return (false);
     }
 }
-
+/*
 bool ArtIOClass::ExtDevReady(int posnum) // для приема сигнала готов с цепного конвейера
 {
     if (m_ptrEasyCat->BufferOut.Cust.SensSignalFromPrevBarda == posnum)
@@ -322,7 +322,7 @@ bool ArtIOClass::ExtDevReady(int posnum) // для приема сигнала �
         return (false);
     }
 }
-
+*/
 void ArtIOClass::DevReady(bool ready) // для передачи сигнала готов с диспенсера на следующий конвейер
 {
     if (ready)
