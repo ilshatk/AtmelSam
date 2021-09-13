@@ -26,7 +26,7 @@ public:
 	void doLogic();
 };
 
-class ArtBasicConveyor : public ArtConveyor
+class ArtBasicConveyor : public ArtConveyor // базовый конвейер от него все наследуются
 {
 protected:
 	int prodTravelTime,
@@ -131,7 +131,7 @@ public:
 	int ConveyorGetState();
 };
 
-class ArtConveyor2Type : public ArtBasicConveyor
+class ArtConveyor2Type : public ArtBasicConveyor // накопительный конвейер
 {
 public:
 	bool productCountSensConvey, fproductCounted, pp_stack_ready, ftook_product;
@@ -142,12 +142,12 @@ public:
 	ArtSensor *CountSensPtr; //указатель на выходной сенсор
 	ArtConveyor2Type(int id, const char name[]);
 	ArtConveyor2Type(int id, const char name[], ConveyorType type, ArtDriver *ActPoint2, ArtSensor *EnterSensPtr,
-	 ArtSensor *CountSensPtr, ArtSensor *ExitSensPtr, int PassTime, int NumProdInConveyor, int InSensAllowTime, int DevNum);
+					 ArtSensor *CountSensPtr, ArtSensor *ExitSensPtr, int PassTime, int NumProdInConveyor, int InSensAllowTime, int DevNum);
 	void doLogic();
 	void ArtConveyorTookProduct();
 };
 //-----------------------------------------------------------------------
-class ArtConveyor1Type : public ArtBasicConveyor
+class ArtConveyor1Type : public ArtBasicConveyor // проходной конвейер
 {
 public:
 	int productPassTime;
@@ -155,11 +155,11 @@ public:
 	ArtBasicConveyor *NextConvPoint;
 	ArtConveyor1Type(int id, const char name[]);
 	ArtConveyor1Type(int id, const char name[], ConveyorType type, ArtDriver *ActPoint, ArtSensor *EnterSensPoint,
-	 ArtSensor *ExitSensPoint, ArtBasicConveyor *NextConvPoint, int PassTime, int RunTimer, int DevNum);
+					 ArtSensor *ExitSensPoint, ArtBasicConveyor *NextConvPoint, int PassTime, int RunTimer, int DevNum);
 	void doLogic();
 };
 //-------------------------------------------------------------------------
-class ArtConveyor1EType : public ArtBasicConveyor
+class ArtConveyor1EType : public ArtBasicConveyor //конвейер который управляется извне
 {
 public:
 	int productPassTime3;
@@ -169,13 +169,13 @@ public:
 	ArtBasicConveyor *NextConv1Point;
 	ArtConveyor1EType(int id, const char name[]);
 	ArtConveyor1EType(int id, const char name[], ConveyorType type, ArtDriver *Act3, ArtSensor *Sens3_Enter, ArtSensor *Sens3_Exit,
-	 ArtBasicConveyor *Next3_Conv, int PassTime, int RunTimer, int DevNum);
+					  ArtBasicConveyor *Next3_Conv, int PassTime, int RunTimer, int DevNum);
 	void ConvReturnStateAndTime();
 	void ConveyorSaveStateAndTime();
 	void doLogic();
 };
 
-class ArtConveyor1AType : public ArtBasicConveyor
+class ArtConveyor1AType : public ArtBasicConveyor // проходной конвейер который по сигналу может стать накопительным
 {
 private:
 	bool fproductCounted, productCountSensConvey, pp_stack_ready, readySignalFromNextBarda;
@@ -191,7 +191,7 @@ public:
 	void AccumConv(bool flag);
 };
 
-class ArtConveyorShuttleType : public ArtBasicConveyor
+class ArtConveyorShuttleType : public ArtBasicConveyor // Конвейер - шаттл
 {
 private:
 	bool fproductCounted, productCountSensConvey, pp_stack_ready, readySignalFromNextBarda, On_Position;
@@ -219,8 +219,8 @@ public:
 	int ABfilter(int newVal);
 };
 
-class ArtConveyor1TypeNextExtDev : public ArtBasicConveyor
-{
+class ArtConveyor1TypeNextExtDev : public ArtBasicConveyor //конвейер проходного типа который получает сигнал от
+{														   //следующего устройства по EtherCAT (например от обмотчика)
 private:
 	int productPassTime, ExtDevReady, BitNum;
 
@@ -230,7 +230,7 @@ public:
 	void doLogic();
 };
 
-class ArtPalletConveyorWithStoppers : public ArtBasicConveyor
+class ArtPalletConveyorWithStoppers : public ArtBasicConveyor // паллетный конвейер после диспенсера со стоперами и лифтами
 {
 private:
 	ArtSensor *Pos1Ptr;	  //указатель на сенсор 1 позиция
@@ -253,11 +253,13 @@ public:
 	ArtPalletConveyorWithStoppers(int id, const char name[]);
 	ArtPalletConveyorWithStoppers(int id, const char name[], ConveyorType type, ArtDriver *ActPoint, ArtDriver *DispDrvPtr,
 								  ArtSensor *Pos1Ptr, ArtSensor *Pos2Ptr, ArtSensor *Pos3Ptr, ArtSensor *Pos4Ptr, ArtCylinder *StopperPos1,
-								  ArtCylinder *StopperPos2, ArtCylinder *StopperPos3, ArtCylinder *StopperPos4, int PassTime, int RunTimer, ArtSensor *Lift1Down, ArtSensor *Lift2Down, ArtSensor *Lift3Down, ArtSensor *Lift4Down, int ConvNum);
+								  ArtCylinder *StopperPos2, ArtCylinder *StopperPos3, ArtCylinder *StopperPos4, int PassTime,
+								  int RunTimer, ArtSensor *Lift1Down, ArtSensor *Lift2Down, ArtSensor *Lift3Down, ArtSensor *Lift4Down,
+								  int DevNum);
 	void doLogic();
 };
 
-class ArtConveyorPLPType : public ArtBasicConveyor
+class ArtConveyorPLPType : public ArtBasicConveyor // конвейер - PLP
 {
 public:
 	int productPassTime, SignalPalletFull, PLPNum;
@@ -273,7 +275,7 @@ public:
 	void doLogic();
 };
 
-class ArtConveyorWithLift : public ArtBasicConveyor
+class ArtConveyorWithLift : public ArtBasicConveyor //конвейер лифтовый подъем осуществляется двигателем
 {
 public:
 	int productPassTime, LiftUpTime, LiftDOWNTime, conveyorLiftRunTimer;
@@ -289,7 +291,7 @@ public:
 	void doLogic();
 };
 
-class ArtConveyorWithLiftType1 : public ArtBasicConveyor
+class ArtConveyorWithLiftType1 : public ArtBasicConveyor //конвейер лифтовый подъем осуществляется цилиндром
 {
 public:
 	int productPassTime, LiftUpTime, LiftDOWNTime, conveyorLiftRunTimer, LiftNum;
@@ -305,7 +307,7 @@ public:
 	void doLogic();
 };
 
-class ArtConveyorPalletPickPoint : public ArtBasicConveyor
+class ArtConveyorPalletPickPoint : public ArtBasicConveyor // конвейер-пикпоинт
 {
 public:
 	int productPassTime, ButtonIn;

@@ -66,7 +66,7 @@ void setup()
   ArtConveyor1Type ConvM2(13, ("ConvM2"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M2DRV, &M1End, &M2End, &ConvM3, 1000, 0, 2);
   ArtConveyor1Type ConvM1(14, ("ConvM1"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M1DRV, &AfterSiat, &M1End, &ConvM2, 1000, 0, 1);
   //----setup for A31---------------------------------------------------------------------------------------
-  /*
+
   //----setup for A32---------------------------------------------------------------------------------------
   //Эта A32 барда берет сигнал с датчика B5 с предыдущей барды поэтому в ArtIOClass распарсиваются входы
   //с предыдущей, также там добавлен сброс ошибки драйвера
@@ -90,9 +90,9 @@ void setup()
   ArtDriver M5DRV(11, ("M4DRV"), ArtDriver::DRIVER_TYPE_1, 10, 5, 2, 2, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M5
   ArtDriver M6DRV(12, ("M4DRV"), ArtDriver::DRIVER_TYPE_1, 11, 6, 3, 3, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M6
 
-  ArtConveyor2Type ConvM6(13, ("Conveyor3"), ArtConveyor2Type::CONVEYOR_TYPE_2, &M6DRV, &M5End, &M6Start, &M6Start2, 4000, 4, 9000);
-  ArtConveyor1Type ConvM5(14, ("ConvM4"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M5DRV, &PushNoHome, &M5End, &ConvM6, 1000, 0);
-  ArtConveyor1Type ConvM4(15, ("ConvM4"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M4DRV, &B5, &B6, &ConvM5, 1000, 0);
+  ArtConveyor2Type ConvM6(13, ("Conveyor3"), ArtConveyor2Type::CONVEYOR_TYPE_2, &M6DRV, &M5End, &M6Start, &M6Start2, 4000, 4, 9000, 3);
+  ArtConveyor1Type ConvM5(14, ("ConvM4"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M5DRV, &PushNoHome, &M5End, &ConvM6, 1000, 0, 2);
+  ArtConveyor1Type ConvM4(15, ("ConvM4"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M4DRV, &B5, &B6, &ConvM5, 1000, 0, 1);
   ArtPusher PusherOnM4(16, ("Podzhim2"), &B6, &ConvM4, &ConvM5, &PusherSV1);
   //----setup for A32---------------------------------------------------------------------------------------
 
@@ -108,9 +108,9 @@ void setup()
   ArtDriver M8DRV(11, ("M4DRV"), ArtDriver::DRIVER_TYPE_1, 8, 5, 2, 2, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M5
   ArtDriver M9DRV(12, ("M4DRV"), ArtDriver::DRIVER_TYPE_1, 9, 6, 3, 3, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M6
 
-  ArtConveyor1AType ConvM9(13, ("ConvM9"), ArtConveyor1AType::CONVEYOR_TYPE_1_EXTERNAL_BARDA, &M9DRV, &M8End, &M9End, false, 4000, 4, 4);
-  ArtConveyor1Type ConvM8(14, ("ConvM4"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M8DRV, &M7End, &M8End, &ConvM9, 15000, 0);
-  ArtConveyor1Type ConvM7(15, ("ConvM4"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M7DRV, &AfterSiatB14, &M7End, &ConvM8, 8000, 0);
+  ArtConveyor1AType ConvM9(13, ("ConvM9"), ArtConveyor1AType::CONVEYOR_TYPE_1_EXTERNAL_BARDA, &M9DRV, &M8End, &M9End, false, 4000, 4, 4, 3);
+  ArtConveyor1Type ConvM8(14, ("ConvM4"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M8DRV, &M7End, &M8End, &ConvM9, 15000, 0, 2);
+  ArtConveyor1Type ConvM7(15, ("ConvM4"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M7DRV, &AfterSiatB14, &M7End, &ConvM8, 8000, 0, 1);
   //----setup for A33---------------------------------------------------------------------------------------
 
   //----setup for A34---------------------------------------------------------------------------------------
@@ -130,9 +130,9 @@ void setup()
   ArtDriver M11DRV(11, ("M11DRV"), ArtDriver::DRIVER_TYPE_1, 10, 5, 2, 2, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M11
   ArtDriver M12DRV(12, ("M12DRV"), ArtDriver::DRIVER_TYPE_1, 11, 6, 3, 3, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M12
 
-  ArtConveyor2Type ConvM12(13, ("ConvM12"), ArtConveyor2Type::CONVEYOR_TYPE_2, &M12DRV, &M12Start1, &M12Count, &M12End, 4000, 4, 4);
-  ArtConveyor1Type ConvM11(14, ("ConvM11"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M11DRV, &OnPusherM10, &M11End, &ConvM12, 15000, 0);
-  ArtConveyor1Type ConvM10(15, ("ConvM10"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M10DRV, &M9End, &OnPusherM10, &ConvM11, 8000, 0);
+  ArtConveyor2Type ConvM12(13, ("ConvM12"), ArtConveyor2Type::CONVEYOR_TYPE_2, &M12DRV, &M12Start1, &M12Count, &M12End, 4000, 4, 4, 3);
+  ArtConveyor1Type ConvM11(14, ("ConvM11"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M11DRV, &OnPusherM10, &M11End, &ConvM12, 15000, 0, 2);
+  ArtConveyor1Type ConvM10(15, ("ConvM10"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M10DRV, &M9End, &OnPusherM10, &ConvM11, 8000, 0, 1);
   //----setup for A34---------------------------------------------------------------------------------------
 
   //----setup for A35---------------------------------------------------------------------------------------
@@ -158,10 +158,10 @@ void setup()
   ArtDriver M15DRV(14, ("M15DRV"), ArtDriver::DRIVER_TYPE_1, 14, 7, 3, 3, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M15
   ArtDriver M16DRV(15, ("M16DRV"), ArtDriver::DRIVER_TYPE_1, 15, 8, 4, 3, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M16
 
-  ArtConveyor2Type ConvM16(13, ("ConvM16"), ArtConveyor2Type::CONVEYOR_TYPE_2, &M16DRV, &M16Start, &M16Count, &M16End, 4000, 4, 4);
-  ArtConveyor1Type ConvM15(14, ("ConvM15"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M15DRV, &M14End, &M15End, &ConvM16, 15000, 0);
-  ArtConveyor1Type ConvM14(15, ("ConvM14"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M14DRV, &OnPusherM13, &M14End, &ConvM15, 8000, 0);
-  ArtConveyor1Type ConvM13(15, ("ConvM13"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M13DRV, &AfterSiatB28, &OnPusherM13, &ConvM14, 8000, 0);
+  ArtConveyor2Type ConvM16(13, ("ConvM16"), ArtConveyor2Type::CONVEYOR_TYPE_2, &M16DRV, &M16Start, &M16Count, &M16End, 4000, 4, 4, 4);
+  ArtConveyor1Type ConvM15(14, ("ConvM15"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M15DRV, &M14End, &M15End, &ConvM16, 15000, 0, 3);
+  ArtConveyor1Type ConvM14(15, ("ConvM14"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M14DRV, &OnPusherM13, &M14End, &ConvM15, 8000, 0, 2);
+  ArtConveyor1Type ConvM13(15, ("ConvM13"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M13DRV, &AfterSiatB28, &OnPusherM13, &ConvM14, 8000, 0, 1);
   //----setup for A35---------------------------------------------------------------------------------------
 
   //----setup for A36---------------------------------------------------------------------------------------
@@ -183,11 +183,11 @@ void setup()
   ArtDriver M20DRV(15, ("M20DRV"), ArtDriver::DRIVER_TYPE_1, 15, 9, 4, 4, true, 0, 2, 0, 2, 0, 0, 0);  //Драйвер на M20
   ArtDriver M21DRV(16, ("M21DRV"), ArtDriver::DRIVER_TYPE_1, 16, 10, 5, 5, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M21
 
-  ArtConveyor2Type ConvM21(13, ("ConvM16"), ArtConveyor2Type::CONVEYOR_TYPE_2, &M21DRV, &M21Start, &M21Count, &M21End, 4000, 4, 4);
-  ArtConveyor1Type ConvM20(14, ("ConvM15"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M20DRV, &M19End, &OnPusherM20, &ConvM21, 15000, 0);
-  ArtConveyor1AType ConvM19(15, ("ConvM14"), ArtConveyor1Type::CONVEYOR_TYPE_1A, &M19DRV, &M18End, &M19End, &ConvM20, 8000, 0, 3);
-  ArtConveyor1Type ConvM18(15, ("ConvM13"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M18DRV, &M17End, &M18End, &ConvM19, 8000, 0);
-  ArtConveyor1Type ConvM17(15, ("ConvM13"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M17DRV, &AfterSiatB39, &M17End, &ConvM18, 8000, 0);
+  ArtConveyor2Type ConvM21(13, ("ConvM16"), ArtConveyor2Type::CONVEYOR_TYPE_2, &M21DRV, &M21Start, &M21Count, &M21End, 4000, 4, 4, 5);
+  ArtConveyor1Type ConvM20(14, ("ConvM15"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M20DRV, &M19End, &OnPusherM20, &ConvM21, 15000, 0, 4);
+  ArtConveyor1AType ConvM19(15, ("ConvM14"), ArtConveyor1Type::CONVEYOR_TYPE_1A, &M19DRV, &M18End, &M19End, &ConvM20, 8000, 0, 3, 3);
+  ArtConveyor1Type ConvM18(15, ("ConvM13"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M18DRV, &M17End, &M18End, &ConvM19, 8000, 0, 2);
+  ArtConveyor1Type ConvM17(15, ("ConvM13"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M17DRV, &AfterSiatB39, &M17End, &ConvM18, 8000, 0, 1);
 
   ArtCylinder PusherSV4(17, ("SV4"), 10, false, true, ArtCylinder::MONO_STABLE, 11, &PusherNOHomeB46, &PusherHomeB45, 0, 0); //Пушер SV1
   ArtPusher Pusher(18, ("SV4"), &OnPusherM20, &ConvM20, &ConvM21, &PusherSV4);
@@ -224,12 +224,12 @@ void setup()
 
   ArtPalletConveyorWithStoppers ConvM23(20, ("ConvM23"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M22DRV, &M23DRV,
                                         &PalletOnM24, &PalletOnM25, &PalletOnM26, &PalletOnM27, &Stopper1,
-                                        &Stopper3, &Stopper5, &Stopper7, 20000, &M24DOWN, &M25DOWN, &M26DOWN, &M27DOWN);
+                                        &Stopper3, &Stopper5, &Stopper7, 20000, 0, &M24DOWN, &M25DOWN, &M26DOWN, &M27DOWN, 1);
 
   //----setup for A37 цепной конвейер после диспенсера----------------------------------------------------------------------------------------
-*/
+
   //----setup for A38 лифты паллет на цепном конвейере----------------------------------------------------------------------------------------
- /* ArtSensor M28Pall(54, ("B56"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true, 1); // М28 датчик на конце следующего конвейера на следующей барде
+  ArtSensor M28Pall(54, ("B56"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true, 1); // М28 датчик на конце следующего конвейера на следующей барде
   ArtSensor M29Pall(55, ("B67"), 8, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true, 1); // М29 датчик на конце следующего конвейера на следующей барде
   ArtSensor M30Pall(56, ("B78"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true, 2); // М30 датчик на конце следующего конвейера на следующей барде
   ArtSensor M31Pall(57, ("B89"), 8, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true, 2); // М31 датчик на конце следующего конвейера на следующей барде
@@ -258,11 +258,11 @@ void setup()
   ArtLift M26Lift(19, ("Lift3"), &Lift3, 3, &M30Pall); //лифт опускается только после того как паллета дошла до конца плейспоинта
   ArtLift M27Lift(20, ("Lift4"), &Lift4, 4, &M31Pall); //лифт опускается только после того как паллета дошла до конца плейспоинта
 */
-  
- /* ArtConveyorWithLiftType1 ConvM24(21, ("ConvM24"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M24DRV, &Lift1, &M24UP, &M24DOWN, &M28Pall, 5000, 2000, 2000, 0, 1);
-  ArtConveyorWithLiftType1 ConvM25(21, ("ConvM24"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M25DRV, &Lift2, &M25UP, &M25DOWN, &M29Pall, 5000, 2000, 2000, 0, 2);
-  ArtConveyorWithLiftType1 ConvM26(21, ("ConvM24"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M26DRV, &Lift3, &M26UP, &M26DOWN, &M30Pall, 5000, 2000, 2000, 0, 3);
-  ArtConveyorWithLiftType1 ConvM27(21, ("ConvM24"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M27DRV, &Lift4, &M27UP, &M27DOWN, &M31Pall, 5000, 2000, 2000, 0, 4);
+
+  ArtConveyorWithLiftType1 ConvM24(21, ("ConvM24"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M24DRV, &Lift1, &M24UP, &M24DOWN, &M28Pall, 5000, 2000, 2000, 0, 1, 1);
+  ArtConveyorWithLiftType1 ConvM25(21, ("ConvM24"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M25DRV, &Lift2, &M25UP, &M25DOWN, &M29Pall, 5000, 2000, 2000, 0, 2, 2);
+  ArtConveyorWithLiftType1 ConvM26(21, ("ConvM24"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M26DRV, &Lift3, &M26UP, &M26DOWN, &M30Pall, 5000, 2000, 2000, 0, 3, 3);
+  ArtConveyorWithLiftType1 ConvM27(21, ("ConvM24"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M27DRV, &Lift4, &M27UP, &M27DOWN, &M31Pall, 5000, 2000, 2000, 0, 4, 4);
   //входы с A39, A40 и A37 передать сюда
   //----setup for A38 лифты паллет на цепном конвейере----------------------------------------------------------------------------------------
 
@@ -303,9 +303,9 @@ void setup()
   ArtDriver M29DRV(8, ("M29DRV"), ArtDriver::DRIVER_TYPE_1, 16, 16, 15, 6, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M29
 
   ArtConveyorPLPType ConvM28(9, ("ConvM30"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M28DRV, &M24UP, &EnterShuttle, &M28Pall, &M28Layer,
-                             &Stopper1, &Podzhim1, 5000, 0, 1);
+                             &Stopper1, &Podzhim1, 5000, 0, 1, 1);
   ArtConveyorPLPType ConvM29(10, ("ConvM31"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M29DRV, &M25UP, &EnterShuttle, &M29Pall, &M29Layer,
-                             &Stopper2, &Podzhim2, 5000, 0, 2);
+                             &Stopper2, &Podzhim2, 5000, 0, 2, 2);
   /*
   ArtConveyor1TypeNextExtDev ConvM28(11, ("ConvM28"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M28DRV, &M24UP, &M28Pall, 5000, 0, 0);
   ArtConveyor1TypeNextExtDev ConvM29(12, ("ConvM29"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M29DRV, &M25UP, &M29Pall, 5000, 0, 0);*/
@@ -313,7 +313,7 @@ void setup()
 
   //----setup for A40 PLP 3,4--------------------------------------------------------------------------------
 
- /* ArtSensor EnterShuttle(26, ("B95"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true, 2); //с шаттла
+  ArtSensor EnterShuttle(26, ("B95"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true, 2); //с шаттла
   ArtSensor M26DOWN(27, ("B76"), 5, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true, 1);      // М26 внизу (B76) (тип геркон)
   ArtSensor M26UP(28, ("B77"), 6, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true, 1);        // М26 наверху (B77) (тип геркон)
   ArtSensor M27DOWN(29, ("B87"), 7, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true, 1);      // М27 внизу (B87) (тип геркон)
@@ -353,7 +353,7 @@ void setup()
   /*ArtConveyor1TypeNextExtDev ConvM30(15, ("ConvM30"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M30DRV, &M26UP, &M28Pall, 5000, 0, 0);
   ArtConveyor1TypeNextExtDev ConvM31(15, ("ConvM31"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M31DRV, &M27UP, &M29Pall, 5000, 0, 0);*/
   //----setup for A40---------------------------------------------------------------------------------------------------
-  /*
+
   //----setup for A41--Shuttle and -------------------------------------------------------------------------------------
   ArtSensor EnterShuttle(1, ("B95"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);          // Фотодатчик наличия паллеты на входе шаттла (B95) (тип R)
   ArtSensor RangeFinderDiscrete(2, ("B96"), 2, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);   // Фотодатчик дальномер шаттла (B96) (тип лазер BGS) (дискр выход)
@@ -367,9 +367,9 @@ void setup()
   ArtDriver OverShuttleDrv(9, ("M32DRV"), ArtDriver::DRIVER_TYPE_1, 14, 10, 9, 5, true, 2, 2, 2, 2, 2, 2, 2); //Драйвер на M32
   ArtDriver BeforWinding(10, ("M34DRV"), ArtDriver::DRIVER_TYPE_1, 16, 16, 15, 5, true, 2, 2, 2, 0, 2, 2, 2); //Драйвер на M34
 
-  ArtConveyor1TypeNextExtDev BeforWin(11, ("ConvM34"), ArtBasicConveyor::CONVEYOR_TYPE_1, &BeforWinding, &ExitShuttle, &PalletOnConvM34, 4000, 0, 8);
+  ArtConveyor1TypeNextExtDev BeforWin(11, ("ConvM34"), ArtBasicConveyor::CONVEYOR_TYPE_1, &BeforWinding, &ExitShuttle, &PalletOnConvM34, 4000, 0, 8, 2);
   ArtConveyorShuttleType Shuttle(12, ("ConvM32&33"), &ShuttleDrv, &OverShuttleDrv, &RangeFinderAnalog, &PalletOnConvM32, &EnterShuttle, &ExitShuttle,
-                                 &BeforWin, &EdgeOnShuttle, false, 1, 400000, 100000, 0, 0, 40); // переделать
+                                 &BeforWin, &EdgeOnShuttle, false, 1, 400000, 100000, 0, 0, 40, 1); // переделать
   //----setup for A41--Shuttle-------------------------------------------------------------------------------------
 
   //----setup for A42 Lift-----------------------------------------------------------------------------------------
@@ -385,9 +385,9 @@ void setup()
   ArtDriver M36Drv(9, ("M32DRV"), ArtDriver::DRIVER_TYPE_1, 15, 12, 11, 8, true, 2, 2, 2, 2, 2, 2, 2);   //Драйвер на M36
   ArtDriver M37Drv(10, ("M34DRV"), ArtDriver::DRIVER_TYPE_1, 16, 15, 13, 14, true, 2, 2, 2, 2, 2, 2, 2); //Драйвер на M37
 
-  ArtConveyor1TypeNextExtDev M35(11, ("ConvM35"), ArtBasicConveyor::CONVEYOR_TYPE_1, &BeforWinding, &ExitShuttle, &PalletOnConvM34, 4000, 0, 1);
+  ArtConveyor1TypeNextExtDev M35(11, ("ConvM35"), ArtBasicConveyor::CONVEYOR_TYPE_1, &BeforWinding, &ExitShuttle, &PalletOnConvM34, 4000, 0, 1, 2);
   ArtConveyorWithLift LiftConv(11, ("ConvM34"), ArtBasicConveyor::CONVEYOR_TYPE_1, &M36Drv, &M37Drv, &AtlantaOut, &M36End, &M37UP, &M37DOWN,
-                               &M38End, 4000, 2000, 2000, 0);
+                               &M38End, 4000, 2000, 2000, 0, 1);
 
   //----setup for A42-Lift----------------------------------------------------------------------------------------
 
@@ -402,12 +402,12 @@ void setup()
   ArtDriver M39Drv(9, ("M39DRV"), ArtDriver::DRIVER_TYPE_1, 15, 14, 13, 8, true, 2, 2, 2, 2, 2, 2, 2);  //Драйвер на M39
   ArtDriver M40Drv(10, ("M40DRV"), ArtDriver::DRIVER_TYPE_1, 16, 16, 15, 8, true, 2, 2, 2, 0, 2, 2, 2); //Драйвер на M40
 
-  ArtConveyorPalletPickPoint ConvM40(13, ("ConvM40"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M39Drv, &M39End, &M40End, 8000, 0, 4);
-  ArtConveyor1Type ConvM39(12, ("ConvM39"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M39Drv, &M38End, &M39End, &ConvM40, 8000, 0);
-  ArtConveyor1Type ConvM38(11, ("ConvM38"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M38Drv, &M37UP, &M38End, &ConvM39, 8000);
+  ArtConveyorPalletPickPoint ConvM40(13, ("ConvM40"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M39Drv, &M39End, &M40End, 8000, 0, 4, 3);
+  ArtConveyor1Type ConvM39(12, ("ConvM39"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M39Drv, &M38End, &M39End, &ConvM40, 8000, 0, 2);
+  ArtConveyor1Type ConvM38(11, ("ConvM38"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M38Drv, &M37UP, &M38End, &ConvM39, 8000, 0, 1);
 
   //----setup for A43----------------------------------------------------------------------------------------
-/*
+  /*
   //----setup for Dispenser---------------------------------------------------------------------------------------
   ArtSensor PallONConvey(1, ("PallONConvey"), 10, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);
   ArtSensor PalletsInStack(2, ("PalletsInStack"), 9, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);
@@ -521,7 +521,7 @@ void setup()
 
       /* EASYCAT.BufferIn.Cust.AnaIn_2 = Shuttle.PositionSens->SensorState();
       EASYCAT.BufferIn.Cust.AnaIn_3 = Shuttle.CurPos;*/
-    
+
       AnaInChannel++;
       AnaInChannel &= 0x03;
 
