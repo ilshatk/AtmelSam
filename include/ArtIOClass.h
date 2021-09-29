@@ -51,7 +51,7 @@ public:
     static uint16_t getCommonOutputState();
     static bool ExtSens(uint16_t sensinput);
     static bool ExtSens(uint16_t sensinput, int boardnum);
-    static void Error(uint8_t error,bool flag);
+    static void Error(uint8_t error, bool flag);
     static bool readySignalFromNext();
     static bool readySignalFromNext(int convnum, int boardnum);
     static bool TookProd();
@@ -73,8 +73,10 @@ public:
     static void ShuttlePosition(int Position, bool enable);
     static void ConvReady(int Ready);
     static void NeedPal(int posnum, bool enable);
+    static void ConvState(int state);
 
-        protected : ArtIOClass();
+protected:
+    ArtIOClass();
     ~ArtIOClass();
 };
 

@@ -228,6 +228,8 @@ ArtConveyor1Type::ArtConveyor1Type(int id, const char name[], ConveyorType type,
 
 void ArtConveyor1Type::doLogic()
 {
+	ArtIOClass::ConvState(conveyorState << ((DevNum - 1) * 4));
+
 	//int retVal;
 	if ((conveyorState == ST_CONVEYOR_FREE) || (conveyorState == ST_CONVEYOR_PROD_FWD))
 	{
@@ -384,7 +386,7 @@ void ArtConveyor2Type::doLogic()
 {
 	//int retVal;
 	//float _time;
-
+	ArtIOClass::ConvState(conveyorState << ((DevNum - 1) * 4));
 	if (productFctEnterConveyor)
 	{
 		productEnterSensConvey = true;
@@ -3068,7 +3070,7 @@ void ArtCrossConveyor::doLogic() //на переменную flags приход�
 
 	case ST_CONVEYOR_ERROR:
 	{
-		ArtIOClass::Error(error << ((DevNum - 1) * 4), true); // смещаем влево на 4 бита
+		ArtIOClass::Error(error << ((DevNum - 1) * 4), true); // смещаем влево
 		if (ArtIOClass::ResetDrv(ActPoint->ResetSignalOut))	  //сброс ошибки частотника
 		{
 			conveyorState = ST_CONVEYOR_UNKNOWN;

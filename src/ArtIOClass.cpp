@@ -163,10 +163,10 @@ bool ArtIOClass::ExtSens(uint16_t sensinput, int boardnum)
 {
     if (boardnum == 1)
     {
-        if ((m_ptrEasyCat->BufferOut.Cust.NextConvReadySignal1 & sensinput) == sensinput) 
-            {
-                return (true);
-            }
+        if ((m_ptrEasyCat->BufferOut.Cust.NextConvReadySignal1 & sensinput) == sensinput)
+        {
+            return (true);
+        }
         else
         {
             return (false);
@@ -427,6 +427,11 @@ void ArtIOClass::Error(uint8_t error, bool flag)
     {
         m_ptrEasyCat->BufferIn.Cust.OutFault ^ error;
     }
+}
+
+void ArtIOClass::ConvState(int state)
+{
+    m_ptrEasyCat->BufferIn.Cust.ConvState = state;
 }
 
 int ArtIOClass::ARTTimerGetTime()

@@ -70,7 +70,7 @@ void setup()
   ArtConveyor1Type ConvM2(13, ("ConvM2"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M2DRV, &M1End, &M2End, &ConvM3, 1000, 0, 2);
   ArtConveyor1Type ConvM1(14, ("ConvM1"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M1DRV, &AfterSiat, &M1End, &ConvM2, 1000, 0, 1);
   //----setup for A31---------------------------------------------------------------------------------------
-
+*/
   //----setup for A32---------------------------------------------------------------------------------------
   //Эта A32 барда берет сигнал с датчика B5 с предыдущей барды поэтому в ArtIOClass распарсиваются входы
   //с предыдущей, также там добавлен сброс ошибки драйвера
@@ -99,7 +99,7 @@ void setup()
   ArtConveyor1Type ConvM4(15, ("ConvM4"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M4DRV, &B5, &B6, &ConvM5, 1000, 0, 1);
   ArtPusher PusherOnM4(16, ("Podzhim2"), &B6, &ConvM4, &ConvM5, &PusherSV1);
   //----setup for A32---------------------------------------------------------------------------------------
-
+/*
   //----setup for A33---------------------------------------------------------------------------------------
   ArtSensor AfterSiatB14(1, ("B14"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false); // Фотодатчик после Сиата 2 (B14) (тип R)
   ArtSensor M7Perepoln(2, ("B15"), 2, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);   // Фотодатчик переполнения М7 (B15) (тип R)

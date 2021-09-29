@@ -11,9 +11,9 @@
 
 
 #define CUST_BYTE_NUM_OUT	36
-#define CUST_BYTE_NUM_IN	25
+#define CUST_BYTE_NUM_IN	40
 #define TOT_BYTE_NUM_ROUND_OUT	36
-#define TOT_BYTE_NUM_ROUND_IN	28
+#define TOT_BYTE_NUM_ROUND_IN	40
 
 
 typedef union												//---- output buffer ----
@@ -51,8 +51,8 @@ typedef union												//---- input buffer ----
 	uint8_t  Byte [TOT_BYTE_NUM_ROUND_IN];
 	struct
 	{
-		uint16_t    AnaIn_0;
-		uint16_t    AnaIn_1;
+		uint64_t    OutFault;
+		uint64_t    ConvState;
 		uint16_t    AnaIn_2;
 		uint16_t    AnaIn_3;
 		uint16_t    DigiIn;
@@ -60,13 +60,14 @@ typedef union												//---- input buffer ----
 		uint16_t    SensSignalOnNextBarda;
 		uint16_t    PalletNeed;
 		uint16_t    DevReady;
-		uint8_t     GaveStack;
-		uint8_t     OutFault;
-		uint8_t     myInputVariable;
+		uint16_t    AnaIn_0;
+		uint16_t    AnaIn_1;
 		uint8_t     TookProduct;
 		uint8_t     NeedPos;
-		uint8_t     ConvReadySignal;
 		uint8_t     StackReady;
+		uint8_t     GaveStack;
+		uint8_t     ConvReadySignal;
+		uint8_t     myInputVariable;
 	}Cust;
 } PROCBUFFER_IN;
 
