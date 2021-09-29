@@ -217,6 +217,10 @@ void ArtCylinder::ARTCylinderClose()
 void ArtCylinder::ARTCylinderOFF()
 {
    ArtIOClass::setOutputState(cylOpenOut, false);
+   if (cylCloseOut > 16 || cylCloseOut < 1)
+   {
+      cylCloseOut = cylOpenOut;
+   }
    ArtIOClass::setOutputState(cylCloseOut, false);
 }
 
@@ -224,13 +228,13 @@ int ArtCylinder::getCylState()
 {
    if (cylCloseIn->SensorState())
    {
-      return (1);
+      return (0);
    }
    else
    {
       if (cylOpenIn->SensorState())
       {
-         return (0);
+         return (1);
       }
    }
    //return (cylState);

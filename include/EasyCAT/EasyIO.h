@@ -11,9 +11,9 @@
 
 
 #define CUST_BYTE_NUM_OUT	36
-#define CUST_BYTE_NUM_IN	24
+#define CUST_BYTE_NUM_IN	25
 #define TOT_BYTE_NUM_ROUND_OUT	36
-#define TOT_BYTE_NUM_ROUND_IN	24
+#define TOT_BYTE_NUM_ROUND_IN	28
 
 
 typedef union												//---- output buffer ----
@@ -59,14 +59,14 @@ typedef union												//---- input buffer ----
 		uint16_t    OutState;
 		uint16_t    SensSignalOnNextBarda;
 		uint16_t    PalletNeed;
-		uint8_t     StackReady;
+		uint16_t    DevReady;
 		uint8_t     GaveStack;
 		uint8_t     OutFault;
-		uint8_t     DevReady;
 		uint8_t     myInputVariable;
 		uint8_t     TookProduct;
 		uint8_t     NeedPos;
 		uint8_t     ConvReadySignal;
+		uint8_t     StackReady;
 	}Cust;
 } PROCBUFFER_IN;
 

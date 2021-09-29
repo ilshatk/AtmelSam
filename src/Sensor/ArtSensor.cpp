@@ -93,7 +93,14 @@ bool ArtSensor::update()
 		}
 	}
 	lastSensorState = value;
-	return (!valueOFF || value || valueON);
+	if ((sensorDelayRE > 0) || sensorDelayFE > 0)
+	{
+		return (valueON || !valueOFF);
+	}
+	else
+	{
+		return (value);
+	}
 }
 
 bool ArtSensor::SensorState()
@@ -115,7 +122,7 @@ bool ArtSensor::SensorState()
 	{
 		if (boardnum > 0)
 		{
-			if (ArtIOClass::ExtSens(SensorInput, boardnum) == true)
+			if (ArtIOClass::ExtSens(pow(2, SensorInput - 1), boardnum) == true)
 			{
 				return (true);
 			}
@@ -126,7 +133,7 @@ bool ArtSensor::SensorState()
 		}
 		else
 		{
-			if (ArtIOClass::ExtSens(pow(2,SensorInput-1)) == true)
+			if (ArtIOClass::ExtSens(pow(2, SensorInput - 1)) == true)
 			{
 				return (true);
 			}

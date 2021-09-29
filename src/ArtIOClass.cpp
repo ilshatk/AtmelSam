@@ -1,5 +1,6 @@
 #include "ArtIOClass.h"
 uint16_t ArtIOClass::m_nCurrentOutputState = 0;
+int ArtIOClass::buffer = 0;
 uint8_t ArtIOClass::m_CurrentPosition = 0;
 int16_t ArtIOClass::Pos[];
 const uint8_t ArtIOClass::N_MIN_INPORT_NUM = 1;
@@ -162,10 +163,10 @@ bool ArtIOClass::ExtSens(uint16_t sensinput, int boardnum)
 {
     if (boardnum == 1)
     {
-        if (m_ptrEasyCat->BufferOut.Cust.NextConvReadySignal1 == (1 << (sensinput - 1)))
-        {
-            return (true);
-        }
+        if ((m_ptrEasyCat->BufferOut.Cust.NextConvReadySignal1 & sensinput) == sensinput) 
+            {
+                return (true);
+            }
         else
         {
             return (false);
@@ -174,7 +175,7 @@ bool ArtIOClass::ExtSens(uint16_t sensinput, int boardnum)
 
     if (boardnum == 2)
     {
-        if (m_ptrEasyCat->BufferOut.Cust.NextConvReadySignal2 == (1 << (sensinput - 1)))
+        if ((m_ptrEasyCat->BufferOut.Cust.NextConvReadySignal2 & sensinput) == sensinput)
         {
             return (true);
         }
@@ -260,7 +261,7 @@ bool ArtIOClass::readySignalFromNext(int convnum, int boardnum) //сигнал �
 {
     if (boardnum == 1)
     {
-        if (m_ptrEasyCat->BufferOut.Cust.NextConvReadySignal1 & convnum == convnum)
+        if ((m_ptrEasyCat->BufferOut.Cust.NextConvReadySignal1 & convnum) == convnum)
         {
             return (true);
         }
@@ -272,7 +273,7 @@ bool ArtIOClass::readySignalFromNext(int convnum, int boardnum) //сигнал �
 
     if (boardnum == 2)
     {
-        if (m_ptrEasyCat->BufferOut.Cust.NextConvReadySignal2 & convnum == convnum)
+        if ((m_ptrEasyCat->BufferOut.Cust.NextConvReadySignal2 & convnum) == convnum)
         {
             return (true);
         }
@@ -295,9 +296,9 @@ void ArtIOClass::ShuttlePosition(int Position, bool enable) //позиция ш�
     }
 }
 
-bool ArtIOClass::ExtDevReady(int bit) // для приема сигнала готов
+bool ArtIOClass::ExtDevReady(int bit) // для приема сигнала "готов"
 {
-    if (m_ptrEasyCat->BufferOut.Cust.Flags & bit == bit)
+    if ((m_ptrEasyCat->BufferOut.Cust.Flags & bit) == bit)
     {
         // ArtIOClass::setOutputState(16, true);
         return (true);
@@ -361,7 +362,7 @@ void ArtIOClass::DevReady(int posnum, bool enable) // для передачи с
 void ArtIOClass::NeedPal(int posnum, bool enable) // для передачи сигнала какой плейспоинт готов
 {
     std::bitset<16> PLPNeedPall;
-    int buffer;
+
     if (enable)
     {
         PLPNeedPall.reset();

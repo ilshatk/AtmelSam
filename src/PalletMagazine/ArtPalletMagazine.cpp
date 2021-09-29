@@ -66,11 +66,11 @@ void PalletMagazine::CLAMP_POS_STATE_SPS()
 {
     if ((!ArtIOClass::getInputState(isAutoMode)) /*&& (!ArtIOClass::getInputState(isBotlleConvServiceMode))*/) // Проверка включен ли ручной режим
     {
-        if (Clamp1->getCylState() == ArtCylinder::ARTCYL_ST_CLOSED) // Состояние цилиндра
+        if (!Clamp1->getCylState()) // Состояние цилиндра
         {
-            if (ArtIOClass::CHK_ACTIVE_NTIME(Clamp1->getCylState() == ArtCylinder::ARTCYL_ST_CLOSED, &isClamp1Open_timer, DEF_TIME_POS_SENS)) //Проверка отсчитал ли таймер isClamp1Open_timer до DEF_TIME_POS_SENS
+            if (ArtIOClass::CHK_ACTIVE_NTIME(!Clamp1->getCylState(), &isClamp1Open_timer, DEF_TIME_POS_SENS)) //Проверка отсчитал ли таймер isClamp1Open_timer до DEF_TIME_POS_SENS
             {
-                if (Clamp2->getCylState() == ArtCylinder::ARTCYL_ST_CLOSED)
+                if (!Clamp2->getCylState())
                 {
                     ClampState = CL_CLOSE;
                 }
@@ -81,7 +81,7 @@ void PalletMagazine::CLAMP_POS_STATE_SPS()
             }
             else
             {
-                if (ArtIOClass::CHK_ACTIVE_NTIME(Clamp1->getCylState() == ArtCylinder::ARTCYL_ST_CLOSED, &isClamp1Open_timer, DEF_TIME_POS_SENS))
+                if (ArtIOClass::CHK_ACTIVE_NTIME(!Clamp1->getCylState(), &isClamp1Open_timer, DEF_TIME_POS_SENS))
                 {
                     //;reset timer
                 }
@@ -89,11 +89,11 @@ void PalletMagazine::CLAMP_POS_STATE_SPS()
             isClamp1Close_timer = 0;
         }
 
-        if (Clamp1->getCylState() == ArtCylinder::ARTCYL_ST_OPEN)
+        if (Clamp1->getCylState())
         {
-            if (ArtIOClass::CHK_ACTIVE_NTIME(Clamp1->getCylState() == ArtCylinder::ARTCYL_ST_OPEN, &isClamp1Close_timer, DEF_TIME_POS_SENS))
+            if (ArtIOClass::CHK_ACTIVE_NTIME(Clamp1->getCylState(), &isClamp1Close_timer, DEF_TIME_POS_SENS))
             {
-                if (Clamp2->getCylState() == ArtCylinder::ARTCYL_ST_OPEN)
+                if (Clamp2->getCylState())
                 {
                     ClampState = ClampStates::CL_OPEN;
                 }
@@ -104,7 +104,7 @@ void PalletMagazine::CLAMP_POS_STATE_SPS()
             }
             else
             {
-                if (ArtIOClass::CHK_ACTIVE_NTIME(Clamp1->getCylState() == ArtCylinder::ARTCYL_ST_OPEN, &isClamp1Close_timer, DEF_TIME_POS_SENS))
+                if (ArtIOClass::CHK_ACTIVE_NTIME(Clamp1->getCylState(), &isClamp1Close_timer, DEF_TIME_POS_SENS))
                 {
                     //reset timer
                 }
@@ -140,10 +140,10 @@ void PalletMagazine::CLAMP_POS_STATE_SPS()
 
 void PalletMagazine::DISP_POS_STATE_SPS()
 {
-    isTOPCylinderUP = TOPCylinder->getCylState() == ArtCylinder::ARTCYL_ST_CLOSED; // верхний цилиндр вверху
-    isTOPCylinderDOWN = TOPCylinder->getCylState() == ArtCylinder::ARTCYL_ST_OPEN; // верхний цилиндр внизу
-    isBOTCylinderUP = BOTCylinder->getCylState() == ArtCylinder::ARTCYL_ST_CLOSED; // нижний цилиндр вверху
-    isBOTCylinderDOWN = BOTCylinder->getCylState() == ArtCylinder::ARTCYL_ST_OPEN; // нижний цилиндр внизу
+    isTOPCylinderUP = !TOPCylinder->getCylState();  // верхний цилиндр вверху
+    isTOPCylinderDOWN = TOPCylinder->getCylState(); // верхний цилиндр внизу
+    isBOTCylinderUP = !BOTCylinder->getCylState();  // нижний цилиндр вверху
+    isBOTCylinderDOWN = BOTCylinder->getCylState(); // нижний цилиндр внизу
 
     if (isTOPCylinderUP)
     {
@@ -286,13 +286,13 @@ void PalletMagazine::DISP_MAIN_CYCLE_SPS()
                         DispPallState = DispPallSt::NO_PALL;
                     }
 
-                    if (ClampState == ClampStates::CL_OPEN && DispPallState == DispPallSt::HAS_PALL && PallONConvey)
+                    if (ClampState == ClampStates::CL_OPEN && DispPallState == DispPallSt::HAS_PALL && isPallONConvey->SensorState())
                     {
                         DISPGOMID();
                     }
                     else
                     {
-                        if (PallONConvey)
+                        if (isPallONConvey->SensorState())
                         {
                             doOPENCLAMPS();
                         }
@@ -329,13 +329,13 @@ void PalletMagazine::DISP_MAIN_CYCLE_SPS()
                     {
                         if ((DispPallState == DispPallSt::HAS_PALL) || (DispPallState == DispPallSt::LOW_PALL))
                         {
-                            if (PallONConvey /*&& (/*PALL_conveyors[4].state == CONV_RUN 1)*/)
+                            if (isPallONConvey->SensorState() /*&& (/*PALL_conveyors[4].state == CONV_RUN 1)*/)
                             {
                                 DISPGOTOP();
                             }
                             else
                             {
-                                if (!PallONConvey)
+                                if (!isPallONConvey->SensorState())
                                 {
                                     DISPGOBOT();
                                 }
@@ -362,18 +362,18 @@ void PalletMagazine::DISP_MAIN_CYCLE_SPS()
                 {
                     DispPallState = DispPallSt::NO_PALL;
                 }
-                if (PallONConvey && (/*PALL_conveyors[4].state == CONV_RUN*/ 1))
+                if (isPallONConvey->SensorState() && (/*PALL_conveyors[4].state == CONV_RUN*/ 1))
                 {
                     ArtIOClass::DevReady(true);
                 }
                 else
                 {
                     ArtIOClass::DevReady(false);
-                    if (!PallONConvey)
+                    if (!isPallONConvey->SensorState())
                     {
                         if ((DispPallState == DispPallSt::HAS_PALL) || (DispPallState == DispPallSt::LOW_PALL))
                         {
-                            if (!PallONConvey)
+                            if (!isPallONConvey->SensorState())
                             {
                                 DISPGOBOT();
                             }
@@ -465,6 +465,7 @@ void PalletMagazine::doOPENCLAMPS()
 {
     doOpenClamps = true;
     Clamp1->ARTCylinderOpen();
+
 }
 
 void PalletMagazine::doCLOSECLAMPS()

@@ -62,7 +62,8 @@ public:
 		CONVEYOR_TYPE_3,
 		CONVEYOR_TYPE_4,
 		CONVEYOR_TYPE_1A,
-		CONVEYOR_TYPE_1_EXTERNAL_BARDA
+		CONVEYOR_TYPE_1_EXTERNAL_BARDA,
+		CONVEYOR_TYPE_CROSS
 	};
 
 	enum ConveyorState
@@ -318,6 +319,28 @@ public:
 	ArtConveyorPalletPickPoint(int id, const char name[]);
 	ArtConveyorPalletPickPoint(int id, const char name[], ConveyorType type, ArtDriver *ActPoint, ArtSensor *ConvEnter, ArtSensor *ConvEnd,
 							   int PassTime, int RunTimer, int ButtonIn, int DevNum);
+	void doLogic();
+};
+
+class ArtCrossConveyor : public ArtBasicConveyor // паллетный конвейер после диспенсера со стоперами и лифтами
+{
+private:
+	ArtSensor *PosPtr;	 //указатель на сенсор 1 позиция
+	ArtSensor *LiftDown; //лифт 1 внизу
+	ArtCylinder *StopperPos;
+	ArtDriver *DispDrvPtr;
+	bool Pos1Sens, Pos2Sens, Pos3Sens, Pos4Sens, Conv1Free, Conv2Free, Conv3Free, Conv4Free, flag, last;
+	int productPassTime, ExtDevReady;
+	ArtBasicConveyor *NextConvPoint;
+
+public:
+	ArtCrossConveyor(int id, const char name[]);
+	ArtCrossConveyor(int id, const char name[], ConveyorType type, ArtDriver *ActPoint, ArtDriver *DispDrvPtr,
+					 ArtBasicConveyor *NextConvPoint, ArtSensor *PosPtr, ArtCylinder *StopperPos, int PassTime, int RunTimer,
+					 ArtSensor *LiftDown, int DevNum, bool last);
+	ArtCrossConveyor(int id, const char name[], ConveyorType type, ArtDriver *ActPoint, ArtDriver *DispDrvPtr,
+					 ArtSensor *PosPtr, ArtCylinder *StopperPos, int PassTime, int RunTimer,
+					 ArtSensor *LiftDown, int DevNum, bool last);
 	void doLogic();
 };
 

@@ -2,7 +2,7 @@
 
 ArtDriver::ArtDriver(int id, const char name[])
 {
-    IHasCycleLogicHelper::addDevice(this);
+    //IHasCycleLogicHelper::addDevice(this);
     memset(nDriverFWDSpeed, 0, sizeof(nDriverFWDSpeed));
     memset(nDriverREVSpeed, 0, sizeof(nDriverREVSpeed));
     //memset(OutState, 0, sizeof(OutState));
@@ -31,6 +31,7 @@ ArtDriver::ArtDriver(int id, const char name[], DriverType Driver_Type, int Read
     nDriverState = ST_DRIVER_UNKNOWN;
     bDriverManualMode = false;
     memset(OUT, 0, sizeof(OUT));
+    bDriverRUN = false;
 }
 
 void ArtDriver::doLogic()
@@ -148,7 +149,7 @@ void ArtDriver::doLogic()
 
     case ST_DRIVER_ERROR:
     {
-        if (ArtIOClass::ResetDrv(pow(2,ResetSignalOut-1)))
+        if (ArtIOClass::ResetDrv(pow(2, ResetSignalOut - 1)))
         {
             ArtIOClass::setOutputState(ResetSignalOut, true);
         }
