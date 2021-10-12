@@ -274,7 +274,7 @@ void setup()
   ArtConveyorWithLiftType1 ConvM27(21, ("ConvM24"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M27DRV, &Lift4, &M27UP, &M27DOWN, &M31Pall, 500000, 2000, 2000, 0, 4, 4);
   //входы с A39, A40 и A37 передать сюда
   //----setup for A38 лифты паллет на цепном конвейере----------------------------------------------------------------------------------------
-  /*
+  /**/
   //----setup for A39 PLP 1,2----------------------------------------------------------------------------------------
   //
   ArtSensor EnterShuttle(1, ("B95"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true, 2); //с шаттла
