@@ -1,6 +1,7 @@
 #include "ArtIOClass.h"
 uint16_t ArtIOClass::m_nCurrentOutputState = 0;
 int ArtIOClass::buffer = 0;
+int ArtIOClass::boxqnt = -1;
 uint8_t ArtIOClass::m_CurrentPosition = 0;
 int16_t ArtIOClass::Pos[];
 const uint8_t ArtIOClass::N_MIN_INPORT_NUM = 1;
@@ -452,7 +453,7 @@ void ArtIOClass::doIOLogic()
         if (m_ptrEasyCat->MainTask() == ESM_OP)
         {
             PosSet(); // задаем позиции шаттла
-
+            BoxCountSet();
             m_ptrEasyCat->BufferIn.Cust.OutState = ArtIOClass::getCommonOutputState();
             m_ptrEasyCat->BufferIn.Cust.DigiIn = DigitalIn();
             m_ptrEasyCat->BufferIn.Cust.SensSignalOnNextBarda = DigitalIn();
@@ -533,6 +534,14 @@ void ArtIOClass::PosSet()
         Pos[2] = m_ptrEasyCat->BufferOut.Cust.Pos3;
         Pos[3] = m_ptrEasyCat->BufferOut.Cust.Pos4;
         Pos[4] = m_ptrEasyCat->BufferOut.Cust.Pos5;
+    }
+}
+
+void ArtIOClass::BoxCountSet()
+{
+    if ((m_ptrEasyCat->BufferOut.Cust.Flags & 2) == 2)
+    {
+        boxqnt = (m_ptrEasyCat->BufferOut.Cust.Flags & 3840) >> 8;
     }
 }
 

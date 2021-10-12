@@ -387,6 +387,7 @@ void ArtConveyor2Type::doLogic()
 	//int retVal;
 	//float _time;
 	ArtIOClass::ConvState(conveyorState << ((DevNum - 1) * 5));
+
 	if (productFctEnterConveyor)
 	{
 		productEnterSensConvey = true;
@@ -436,6 +437,10 @@ void ArtConveyor2Type::doLogic()
 	{
 	case ST_CONVEYOR_UNKNOWN:
 	{
+		if (ArtIOClass::boxqnt == (-1)) // позиция не выбрана
+		{
+			return;
+		}
 		if (productEnterSensConvey || productExitSensConvey)
 		{
 			if (conveyorRunTimer != 0)

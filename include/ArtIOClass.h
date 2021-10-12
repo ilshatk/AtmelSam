@@ -32,12 +32,14 @@ class ArtIOClass
 protected:
     static uint16_t m_nCurrentOutputState;
     static int buffer;
+
     static uint8_t m_CurrentPosition;
     static const uint8_t N_MIN_INPORT_NUM, N_MAX_INPORT_NUM;
     static const uint8_t N_MIN_OUTPORT_NUM, N_MAX_OUTPORT_NUM;
     static int16_t Pos[5];
 
 public:
+    static int boxqnt;
     static void initializeBoard(EasyCAT *ptrEasyCat); //DONE code form main
 
     //direct IOs
@@ -74,6 +76,7 @@ public:
     static void ConvReady(int Ready);
     static void NeedPal(int posnum, bool enable);
     static void ConvState(int state);
+    static void BoxCountSet();
 
 protected:
     ArtIOClass();
