@@ -13,18 +13,20 @@ protected:
     char name[256], m_name[256];
     ArtCylinder *PusherCylPtr;
     ArtSensor *OnPusherPtr;
+    ArtSensor *EnterSens;
     ArtBasicConveyor *NextConvPointPtr;
     ArtBasicConveyor *ConvPointPtr;
-
+    ArtDriver *ActPoint;
     enum PusherStates
     {
         PUSHED,
+        PUSH,
         HOME
     };
 
 public:
     ArtPusher(int id, const char name[]);
-    ArtPusher(int id, const char name[], ArtSensor *OnPusherPtr, ArtBasicConveyor *ConvPointPtr, ArtBasicConveyor *NextConvPointPtr, ArtCylinder *PusherCylPtr);
+    ArtPusher(int id, const char name[], ArtSensor *OnPusherPtr, ArtSensor *EnterSens, ArtBasicConveyor *NextConvPointPtr, ArtCylinder *PusherCylPtr, ArtDriver *ActPoint);
     void doLogic();
     void update();
     int getName();
@@ -56,7 +58,6 @@ public:
     int getCylState();
 };
 
-
 class ArtStopper : public IHasCycleLogic
 {
 protected:
@@ -84,7 +85,7 @@ public:
 class ArtLift : public IHasCycleLogic
 {
 protected:
-    int m_id, LiftState,posnum;
+    int m_id, LiftState, posnum;
     char name[256], m_name[256];
     ArtCylinder *LiftCylPtr;
     ArtSensor *PalletOnPosition;
@@ -97,7 +98,7 @@ protected:
 
 public:
     ArtLift(int id, const char name[]);
-    ArtLift(int id, const char name[], ArtCylinder *LiftCylPtr,int posnum,ArtSensor *PalletOnPosition);
+    ArtLift(int id, const char name[], ArtCylinder *LiftCylPtr, int posnum, ArtSensor *PalletOnPosition);
     void doLogic();
     void update();
     int getName();

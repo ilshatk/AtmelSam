@@ -63,7 +63,9 @@ public:
 		CONVEYOR_TYPE_4,
 		CONVEYOR_TYPE_1A,
 		CONVEYOR_TYPE_1_EXTERNAL_BARDA,
-		CONVEYOR_TYPE_CROSS
+		CONVEYOR_TYPE_1_EXTE,
+		CONVEYOR_TYPE_CROSS,
+		CONVEYOR_TYPE_SHUTTLE
 	};
 
 	enum ConveyorState
@@ -199,8 +201,8 @@ private:
 	int ReqPos, ConveyorRunTimerShuttle, ConveyorRunTimerOverShuttle, PLPNum;
 	ArtDriver *ShuttlePtr;
 	ArtDriver *OverShuttlePtr;
-
 public:
+	bool signalfornext;
 	int productPassOverShuttle, PassTimeShuttle, CurPos, BrakeOUT, Range;
 	ArtAnalogSensor *PositionSens; //указатель на аналоговый датчик
 	ArtSensor *PalletOnConv;
@@ -210,7 +212,7 @@ public:
 	ArtBasicConveyor *NextConvPtr; //указатель на приниммающий конвейер
 
 	ArtConveyorShuttleType(int id, const char name[]);
-	ArtConveyorShuttleType(int id, const char name[], ArtDriver *ShuttlePtr, ArtDriver *OverShuttlePtr, ArtAnalogSensor *PositionSens, ArtSensor *PalletOnConv,
+	ArtConveyorShuttleType(int id, const char name[],ConveyorType type, ArtDriver *ShuttlePtr, ArtDriver *OverShuttlePtr, ArtAnalogSensor *PositionSens, ArtSensor *PalletOnConv,
 						   ArtSensor *SensOnIN, ArtSensor *SensOnOUT, ArtBasicConveyor *NextConvPtr, ArtSensor *ShuttleEdge, bool readySignalFromNextBarda, int BrakeOUT, int PassTimeOverShuttle,
 						   int PassTimeShuttle, int RunTimer, int ConveyorRunTimerOverShuttle, int Range, int DevNum);
 	void doLogic();
@@ -226,6 +228,7 @@ private:
 	int productPassTime, ExtDevReady, BitNum;
 
 public:
+	bool signalExt;
 	ArtConveyor1TypeNextExtDev(int id, const char name[]);
 	ArtConveyor1TypeNextExtDev(int id, const char name[], ConveyorType type, ArtDriver *ActPoint, ArtSensor *EnterSensPoint, ArtSensor *ExitSensPoint, int PassTime, int RunTimer, int BitNum, int DevNum);
 	void doLogic();

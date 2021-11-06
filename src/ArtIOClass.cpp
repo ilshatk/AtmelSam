@@ -289,11 +289,23 @@ void ArtIOClass::ShuttlePosition(int Position, bool enable) //позиция ш�
 {
     if (enable)
     {
-        m_ptrEasyCat->BufferIn.Cust.SensSignalOnNextBarda |= Position;
+        m_ptrEasyCat->BufferIn.Cust.DevReady = Position;
     }
     else
     {
-        m_ptrEasyCat->BufferIn.Cust.SensSignalOnNextBarda &= Position;
+        m_ptrEasyCat->BufferIn.Cust.DevReady = 0;
+    }
+}
+
+void ArtIOClass::PLPReady(int Position, bool enable) //позиция шаттла 1,2,3,4,5
+{
+    if (enable)
+    {
+        m_ptrEasyCat->BufferIn.Cust.AnaIn_2 = Position;
+    }
+    else
+    {
+        m_ptrEasyCat->BufferIn.Cust.AnaIn_2 = 0;
     }
 }
 
@@ -432,7 +444,8 @@ void ArtIOClass::Error(uint8_t error, bool flag)
 
 void ArtIOClass::ConvState(int state)
 {
-    m_ptrEasyCat->BufferIn.Cust.ConvState = state;
+    m_ptrEasyCat->BufferIn.Cust.ConvState &= 0;
+    m_ptrEasyCat->BufferIn.Cust.ConvState |= state ;
 }
 
 int ArtIOClass::ARTTimerGetTime()

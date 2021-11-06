@@ -20,29 +20,67 @@ ArtPusher::ArtPusher(int id, const char name[])
     m_id = id;
 }
 
-ArtPusher::ArtPusher(int id, const char name[], ArtSensor *OnPusherPtr, ArtBasicConveyor *ConvPointPtr, ArtBasicConveyor *NextConvPointPtr, ArtCylinder *PusherCylPtr) : ArtPusher(id, name)
+ArtPusher::ArtPusher(int id, const char name[], ArtSensor *OnPusherPtr, ArtSensor *EnterSens, ArtBasicConveyor *NextConvPointPtr, ArtCylinder *PusherCylPtr, ArtDriver *ActPoint) : ArtPusher(id, name)
 {
     ArtPusher::OnPusherPtr = OnPusherPtr;
     ArtPusher::NextConvPointPtr = NextConvPointPtr;
     ArtPusher::PusherCylPtr = PusherCylPtr;
-    ArtPusher::ConvPointPtr = ConvPointPtr;
+    ArtPusher::ActPoint = ActPoint;
     PusherState = HOME;
+    ArtPusher::EnterSens = EnterSens;
 }
 
 void ArtPusher::doLogic()
 {
-    if ((OnPusherPtr->SensorState() == true) && (NextConvPointPtr->ConveyorGetReadyReceive()) && PusherState == HOME)
+    switch (PusherState)
     {
-        PusherCylPtr->ARTCylinderOpen();
+        case HOME:
+        {
+            if (EnterSens->SensorState() && (!OnPusherPtr->SensorState()))
+            {
+                ActPoint->ConveySetDriverFWD(true); // запуск конвейера
+                ArtIOClass::ConvReady(1);
+            }
 
-        PusherState = PUSHED;
+            if (OnPusherPtr->SensorState())
+            {
+                ArtIOClass::ConvReady(0);
+                ActPoint->ConveySetSTOP();
+                PusherCylPtr->cylCloseIn->SensorState();
+
+                if ((NextConvPointPtr->ConveyorGetReadyReceive()) && PusherCylPtr->cylCloseIn->SensorState())
+                {
+                    PusherState = PUSH;
+                }
+            }
+
+            break;
+        }
+
+        case PUSH:
+        {
+            ArtIOClass::ConvReady(0);
+            PusherCylPtr->ARTCylinderOpen();
+            if (PusherCylPtr->cylOpenIn->SensorState())
+            {
+                PusherState = PUSHED;
+            }
+            break;
+        }
+
+        case PUSHED:
+        {
+            ArtIOClass::ConvReady(0);
+            PusherCylPtr->ARTCylinderClose();
+            if (PusherCylPtr->cylCloseIn->SensorState())
+            {
+                PusherState = HOME;
+            }
+            break;
+        }
     }
 
-    if (PusherState == PUSHED)
-    {
-        PusherCylPtr->ARTCylinderClose();
-        PusherState = HOME;
-    }
+    
 }
 //-----------------------------ПОджим----------------------------------
 ArtPodzhim::ArtPodzhim(int id, const char name[])
@@ -200,7 +238,7 @@ void ArtLift::doLogic()
     {
     case UP:
     {
-        if (ArtIOClass::ExtDevReady(pow(2, posnum-1)) != true) //сигнал приходит с цепного конвейера
+        if (ArtIOClass::ExtDevReady(pow(2, posnum - 1)) != true) //сигнал приходит с цепного конвейера
         {
             while (!PalletOnPosition->SensorState()) // пока не доедет до конца PLP-шки будет return
             {
@@ -218,7 +256,7 @@ void ArtLift::doLogic()
 
     case DOWN:
     {
-        if (ArtIOClass::ExtDevReady(pow(2, posnum-1))) //сигнал приходит с цепного конвейера
+        if (ArtIOClass::ExtDevReady(pow(2, posnum - 1))) //сигнал приходит с цепного конвейера
         {
             LiftCylPtr->ARTCylinderOpen();
             while (!LiftCylPtr->getCylState() == ArtCylinder::ARTCYL_ST_OPEN)

@@ -11,9 +11,9 @@
 
 
 #define CUST_BYTE_NUM_OUT	36
-#define CUST_BYTE_NUM_IN	40
+#define CUST_BYTE_NUM_IN	32
 #define TOT_BYTE_NUM_ROUND_OUT	36
-#define TOT_BYTE_NUM_ROUND_IN	40
+#define TOT_BYTE_NUM_ROUND_IN	32
 
 
 typedef union												//---- output buffer ----
@@ -51,8 +51,8 @@ typedef union												//---- input buffer ----
 	uint8_t  Byte [TOT_BYTE_NUM_ROUND_IN];
 	struct
 	{
-		uint64_t    OutFault;
-		uint64_t    ConvState;
+		uint32_t    OutFault;
+		uint32_t    ConvState;
 		uint16_t    AnaIn_2;
 		uint16_t    AnaIn_3;
 		uint16_t    DigiIn;

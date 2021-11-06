@@ -27,10 +27,11 @@ private:
 
     char name[256], m_name[256];
 
-    ArtSensor *cylOpenIn;
-    ArtSensor *cylCloseIn;
+
 
 public:
+    ArtSensor *cylOpenIn;
+    ArtSensor *cylCloseIn;
     enum cylinderState
     {
         ARTCYL_ST_OPEN,

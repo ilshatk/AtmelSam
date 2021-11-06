@@ -24,7 +24,7 @@ struct Pulse_T
     };
 };
 
-static Pulse_T nPulseId[16]; //must be out of class
+static Pulse_T nPulseId[16]; // must be out of class
 static EasyCAT *m_ptrEasyCat;
 
 class ArtIOClass
@@ -40,13 +40,13 @@ protected:
 
 public:
     static int boxqnt;
-    static void initializeBoard(EasyCAT *ptrEasyCat); //DONE code form main
+    static void initializeBoard(EasyCAT *ptrEasyCat); // DONE code form main
 
-    //direct IOs
-    static bool getInputState(int nInputPort);                                  //DONE
-    static bool getOutputState(int nOutputPort);                                //DONE
-    static void setOutputState(int nOutputPort, bool bSettedValue);             //DONE
-    static void setPulse(int nOutputPort, bool bPulsedValue, int nPulseTimeMs); //DONE
+    // direct IOs
+    static bool getInputState(int nInputPort);                                  // DONE
+    static bool getOutputState(int nOutputPort);                                // DONE
+    static void setOutputState(int nOutputPort, bool bSettedValue);             // DONE
+    static void setPulse(int nOutputPort, bool bPulsedValue, int nPulseTimeMs); // DONE
     static void setOutputState(uint16_t commonstate);
     static bool isTimerPassed(int &nTimerId, int nTimeoutMs); //
     static void doIOLogic();
@@ -77,10 +77,11 @@ public:
     static void NeedPal(int posnum, bool enable);
     static void ConvState(int state);
     static void BoxCountSet();
+    static void PLPReady(int Position, bool enable);
 
 protected:
     ArtIOClass();
     ~ArtIOClass();
 };
 
-#endif //ART_LOWLEVEL_CLASS_H
+#endif // ART_LOWLEVEL_CLASS_H
