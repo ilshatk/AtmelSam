@@ -74,7 +74,7 @@ void setup()
   //----setup for A32---------------------------------------------------------------------------------------
   //Эта A32 барда берет сигнал с датчика B5 с предыдущей барды поэтому в ArtIOClass распарсиваются входы
   //с предыдущей, также там добавлен сброс ошибки драйвера
-  /*
+  /**/
 ArtSensor B5(1, ("B5"), 5, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true); // Фотодатчик на конце М3 (B5) (тип R)
                                   
 ArtSensor B6(2, ("B6"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);         // Фотодатчик на пушере М4 (B6) (тип BGS)
@@ -352,8 +352,8 @@ ArtConveyorWithLiftType1 ConvM27(21, ("ConvM24"), ArtConveyor1Type::CONVEYOR_TYP
 
   // ArtPodzhim M31Stopper(21, ("Stopper4"), &M27UP, &Stopper4);
 
-  ArtDriver M30DRV(22, ("M30DRV"), ArtDriver::DRIVER_TYPE_1, 15, 14, 13, 6, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M30
-  ArtDriver M31DRV(23, ("M31DRV"), ArtDriver::DRIVER_TYPE_1, 16, 16, 15, 6, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M31
+  ArtDriver M30DRV(22, ("M30DRV"), ArtDriver::DRIVER_TYPE_1, 15, 1, 13, 6, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M30
+  ArtDriver M31DRV(23, ("M31DRV"), ArtDriver::DRIVER_TYPE_1, 16, 2, 15, 6, true, 0, 2, 0, 2, 0, 0, 0); //Драйвер на M31
 
   ArtConveyorPLPType ConvM30(24, ("ConvM30"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M30DRV, &M26UP, &EnterShuttle, &M30Pall, &M30Layer,
                              &Stopper3, &Podzhim3, 50000, 0, 3, 1);
@@ -362,7 +362,7 @@ ArtConveyorWithLiftType1 ConvM27(21, ("ConvM24"), ArtConveyor1Type::CONVEYOR_TYP
   /*ArtConveyor1TypeNextExtDev ConvM30(15, ("ConvM30"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M30DRV, &M26UP, &M28Pall, 5000, 0, 0);
   ArtConveyor1TypeNextExtDev ConvM31(15, ("ConvM31"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M31DRV, &M27UP, &M29Pall, 5000, 0, 0);*/
   //----setup for A40---------------------------------------------------------------------------------------------------
-  /**/
+  /*
   //----setup for A41--Shuttle and CO-------------------------------------------------------------------------------------
 
   ArtSensor EnterShuttle(1, ("B95"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);          // Фотодатчик наличия паллеты на входе шаттла (B95) (тип R)
@@ -373,9 +373,9 @@ ArtConveyorWithLiftType1 ConvM27(21, ("ConvM24"), ArtConveyor1Type::CONVEYOR_TYP
   ArtSensor PalletOnConvM34(6, ("B100"), 6, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, false);      // Датчик паллеты на М34 (B100) (тип Инд)
   ArtAnalogSensor RangeFinderAnalog(7, ("ConvM16"), 1);                                      //Фотодатчик дальномер шаттла (B96) (тип лазер BGS) (аналог выход)
 
-  ArtDriver ShuttleDrv(8, ("M33DRV"), ArtDriver::DRIVER_TYPE_1, 15, 13, 11, 12, true, 2, 2, 2, 2, 2, 2, 2);   //Драйвер на M33
-  ArtDriver OverShuttleDrv(9, ("M32DRV"), ArtDriver::DRIVER_TYPE_1, 14, 10, 9, 5, true, 2, 2, 2, 2, 2, 2, 2); //Драйвер на M32
-  ArtDriver BeforWinding(10, ("M34DRV"), ArtDriver::DRIVER_TYPE_1, 16, 16, 15, 5, true, 2, 2, 2, 0, 2, 2, 2); //Драйвер на M34
+  ArtDriver ShuttleDrv(8, ("M33DRV"), ArtDriver::DRIVER_TYPE_1, 15, 1, 11, 12, true, 2, 2, 2, 2, 2, 2, 2);   //Драйвер на M33
+  ArtDriver OverShuttleDrv(9, ("M32DRV"), ArtDriver::DRIVER_TYPE_1, 14, 2, 9, 5, true, 2, 2, 2, 2, 2, 2, 2); //Драйвер на M32
+  ArtDriver BeforWinding(10, ("M34DRV"), ArtDriver::DRIVER_TYPE_1, 16, 3, 15, 5, true, 2, 2, 2, 0, 2, 2, 2); //Драйвер на M34
 
   ArtConveyor1TypeNextExtDev BeforWin(11, ("ConvM34"), ArtBasicConveyor::CONVEYOR_TYPE_1_EXTE, &BeforWinding, &ExitShuttle, &PalletOnConvM34, 20000, 0, 8, 2);
   ArtConveyorShuttleType Shuttle(12, ("ConvM32&33"), ArtBasicConveyor::CONVEYOR_TYPE_SHUTTLE, &ShuttleDrv, &OverShuttleDrv, &RangeFinderAnalog, &PalletOnConvM32, &EnterShuttle, &ExitShuttle,

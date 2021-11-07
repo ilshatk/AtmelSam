@@ -76,11 +76,11 @@ public:
     static void ConvReady(int Ready);
     static void NeedPal(int posnum, bool enable);
     static void ConvState(int state);
-    static void BoxCountSet();
+    static int BoxCountSet();
     static void PLPReady(int Position, bool enable);
+    static void BoxQnt(int QNT);
 
-protected:
-    ArtIOClass();
+        protected : ArtIOClass();
     ~ArtIOClass();
 };
 

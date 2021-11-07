@@ -137,7 +137,7 @@ public:
 class ArtConveyor2Type : public ArtBasicConveyor // накопительный конвейер
 {
 public:
-	bool productCountSensConvey, fproductCounted, pp_stack_ready, ftook_product;
+	bool productCountSensConvey, fproductCounted, pp_stack_ready, ftook_product, QntFlag;
 	int productInSensAllowTime,
 		productPassTime;
 	ArtSensor *ExitSensPtr;	 //указатель на входной сенсор

@@ -139,7 +139,7 @@ bool ArtIOClass::isTimerPassed(int &nTimerId, int nTimeoutMs)
             }
             else
             {
-                nTimerId = nTimerId - 16777215; //maxCurretnTimerValue 2147483647 (form Ilshat) //24-bits
+                nTimerId = nTimerId - 16777215; // maxCurretnTimerValue 2147483647 (form Ilshat) //24-bits
             }
         }
     }
@@ -445,7 +445,12 @@ void ArtIOClass::Error(uint8_t error, bool flag)
 void ArtIOClass::ConvState(int state)
 {
     m_ptrEasyCat->BufferIn.Cust.ConvState &= 0;
-    m_ptrEasyCat->BufferIn.Cust.ConvState |= state ;
+    m_ptrEasyCat->BufferIn.Cust.ConvState |= state;
+}
+
+void ArtIOClass::BoxQnt(int QNT)
+{
+    m_ptrEasyCat->BufferIn.Cust.AnaIn_2 = QNT;
 }
 
 int ArtIOClass::ARTTimerGetTime()
@@ -474,7 +479,7 @@ void ArtIOClass::doIOLogic()
             //-----------------Это сброс ошибки конвейера, нужно переделать, но пока так
             if (m_ptrEasyCat->BufferOut.Cust.DigiOut == 32 || m_ptrEasyCat->BufferOut.Cust.DigiOut == 16 || m_ptrEasyCat->BufferOut.Cust.DigiOut == 8 || m_ptrEasyCat->BufferOut.Cust.DigiOut == 24 || m_ptrEasyCat->BufferOut.Cust.DigiOut == 48 || m_ptrEasyCat->BufferOut.Cust.DigiOut == 40 || m_ptrEasyCat->BufferOut.Cust.DigiOut == 56)
             {
-                //DigitalOut(m_ptrEasyCat->BufferOut.Cust.DigiOut);
+                // DigitalOut(m_ptrEasyCat->BufferOut.Cust.DigiOut);
             }
             else
             {
@@ -485,7 +490,7 @@ void ArtIOClass::doIOLogic()
         }
     }
 
-    //pulse logic control
+    // pulse logic control
     for (int i = 0; i < N_MAX_OUTPORT_NUM; i++)
     {
         if (nPulseId[i].m_TimeoutMs > 0)
@@ -493,7 +498,7 @@ void ArtIOClass::doIOLogic()
             setOutputState(i + 1, nPulseId[i].m_bSettedvalue);
             if (isTimerPassed(nPulseId[i].m_nTimerId, nPulseId[i].m_TimeoutMs))
             {
-                //drop pulse
+                // drop pulse
                 setOutputState(i + 1, nPulseId[i].m_bValueOnStart);
                 nPulseId[i].nullifyMe();
             }
@@ -550,15 +555,16 @@ void ArtIOClass::PosSet()
     }
 }
 
-void ArtIOClass::BoxCountSet()
+int ArtIOClass::BoxCountSet()
 {
     if ((m_ptrEasyCat->BufferOut.Cust.Flags & 2) == 2)
     {
         boxqnt = (m_ptrEasyCat->BufferOut.Cust.Flags & 3840) >> 8;
     }
+    return (boxqnt);
 }
 
-bool ArtIOClass::CHK_ACTIVE_NTIME(bool sens_in, int *timer_in, int delta_time) //sensor,timer for check, active time before return true
+bool ArtIOClass::CHK_ACTIVE_NTIME(bool sens_in, int *timer_in, int delta_time) // sensor,timer for check, active time before return true
 {
     int curTime, deltaTime;
 
@@ -580,7 +586,7 @@ bool ArtIOClass::CHK_ACTIVE_NTIME(bool sens_in, int *timer_in, int delta_time) /
             deltaTime = curTime - (*timer_in);
             return (deltaTime > delta_time);
         }
-        else //exceptions check
+        else // exceptions check
         {
             if ((*timer_in) == curTime)
             {

@@ -308,6 +308,11 @@ void ArtConveyor1Type::doLogic()
 			conveyorState = ST_CONVEYOR_BUSY;
 		}
 
+		if ((NextConvPoint->ConveyorGetReadyReceive() == 1) && (productExitSensConvey))
+		{
+			conveyorState = ST_CONVEYOR_PROD_FWD;
+		}
+
 		if (productEnterSensConvey) //
 		{
 			conveyorState = ST_CONVEYOR_PROD_FWD;
@@ -406,13 +411,21 @@ ArtConveyor2Type::ArtConveyor2Type(int id, const char name[], ConveyorType type,
 	CalcedNumProdInConveyor = 0;
 	ArtConveyor2Type::DevNum = DevNum;
 	ArtConveyor2Type::error = 0;
+	ArtConveyor2Type::QntFlag = true;
 }
 
 void ArtConveyor2Type::doLogic()
 {
+	if (ArtIOClass::BoxCountSet() && QntFlag)
+	{
+		CalcedNumProdInConveyor = ArtIOClass::BoxCountSet();
+		QntFlag = false;
+	}
+
 	// int retVal;
 	// float _time;
 	ArtIOClass::ConvState(conveyorState << ((DevNum - 1) * 5));
+	ArtIOClass::BoxQnt(CalcedNumProdInConveyor);
 
 	if (productFctEnterConveyor)
 	{
@@ -585,6 +598,7 @@ void ArtConveyor2Type::doLogic()
 
 	case ST_CONVEYOR_ERROR:
 	{
+		QntFlag = true;
 		ArtIOClass::StackReady(false);
 		ArtIOClass::Error(error << ((DevNum - 1) * 4), true); // смещаем влево на 4 бита
 
@@ -1472,7 +1486,7 @@ void ArtConveyorShuttleType::doLogic()
 			conveyorState = ST_CONVEYOR_AT_THE_POINT;
 		}
 
-		if ((CurPos - ReqPos) <= Range && (CurPos - ReqPos) >= (-Range) && PalletOnConv->SensorState())
+		if ((CurPos - ReqPos) <= Range && (CurPos - ReqPos) >= (-Range) && PalletOnConv->SensorState() && ReqPos == ArtIOClass::ReqPosition(5))
 		{
 			WriteDacValues(0, 0);
 			ActuatorsSet(SET_CONV_ACTUATOR_STOP, ShuttlePtr);
@@ -2137,6 +2151,7 @@ ArtConveyorPLPType::ArtConveyorPLPType(int id, const char name[], ConveyorType t
 void ArtConveyorPLPType::doLogic()
 {
 	ArtIOClass::ConvState(conveyorState << ((DevNum - 1) * 5));
+
 	if (ActuatorsGet(GET_CONV_ACTUATOR_READY, ActPoint) != 1) //состояние драйвера
 	{
 		conveyorState = ST_CONVEYOR_ERROR;
@@ -2152,6 +2167,7 @@ void ArtConveyorPLPType::doLogic()
 	{
 		productEnterSensConvey = EnterSensPoint->SensorState();
 	}
+
 	PalletOnPosition = PallOnPosition->SensorState();	  //сенсор паллеты на конце PLP
 	productExitSensConvey = ExitSensPoint->SensorState(); //сенсор между шаттлом и PLP
 
