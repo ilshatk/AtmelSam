@@ -113,12 +113,12 @@ public:
 
 	enum SetDriverState
 	{
-		SET_CONV_ACTUATOR_FWD,	//Parameter for set driver run forward
-		SET_CONV_ACTUATOR_STOP, //Parameter for set driver stop
-		SET_CONV_ACTUATOR_REV,	//Parameter for set driver run reverse
-		SET_CONV_PROD_ENTERING, //Parameter for set product in enter conveyor
-		SET_CONV_DIRECTION_FWD, //Parameter for set direction forward
-		SET_CONV_DIRECTION_REV	//Parameter for set direction reverse
+		SET_CONV_ACTUATOR_FWD,	// Parameter for set driver run forward
+		SET_CONV_ACTUATOR_STOP, // Parameter for set driver stop
+		SET_CONV_ACTUATOR_REV,	// Parameter for set driver run reverse
+		SET_CONV_PROD_ENTERING, // Parameter for set product in enter conveyor
+		SET_CONV_DIRECTION_FWD, // Parameter for set direction forward
+		SET_CONV_DIRECTION_REV	// Parameter for set direction reverse
 	};
 	ArtDriver *pointer;
 	ArtSensor *EnterSensPoint; //указатель на входной сенсор
@@ -201,6 +201,7 @@ private:
 	int ReqPos, ConveyorRunTimerShuttle, ConveyorRunTimerOverShuttle, PLPNum;
 	ArtDriver *ShuttlePtr;
 	ArtDriver *OverShuttlePtr;
+
 public:
 	bool signalfornext;
 	int productPassOverShuttle, PassTimeShuttle, CurPos, BrakeOUT, Range;
@@ -209,11 +210,12 @@ public:
 	ArtSensor *SensOnIN;
 	ArtSensor *SensOnOUT;
 	ArtSensor *ShuttleEdge;
+	ArtSensor *ExitSensPoint;
 	ArtBasicConveyor *NextConvPtr; //указатель на приниммающий конвейер
 
 	ArtConveyorShuttleType(int id, const char name[]);
-	ArtConveyorShuttleType(int id, const char name[],ConveyorType type, ArtDriver *ShuttlePtr, ArtDriver *OverShuttlePtr, ArtAnalogSensor *PositionSens, ArtSensor *PalletOnConv,
-						   ArtSensor *SensOnIN, ArtSensor *SensOnOUT, ArtBasicConveyor *NextConvPtr, ArtSensor *ShuttleEdge, bool readySignalFromNextBarda, int BrakeOUT, int PassTimeOverShuttle,
+	ArtConveyorShuttleType(int id, const char name[], ConveyorType type, ArtDriver *ShuttlePtr, ArtDriver *OverShuttlePtr, ArtAnalogSensor *PositionSens, ArtSensor *PalletOnConv,
+						   ArtSensor *SensOnIN, ArtSensor *SensOnOUT, ArtBasicConveyor *NextConvPtr, ArtSensor *ShuttleEdge, ArtSensor *ExitSensPoint, bool readySignalFromNextBarda, int BrakeOUT, int PassTimeOverShuttle,
 						   int PassTimeShuttle, int RunTimer, int ConveyorRunTimerOverShuttle, int Range, int DevNum);
 	void doLogic();
 	int expRunningAverage(int newVal);
@@ -347,4 +349,4 @@ public:
 	void doLogic();
 };
 
-#endif //ArtConv
+#endif // ArtConv
