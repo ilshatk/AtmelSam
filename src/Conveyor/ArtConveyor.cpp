@@ -1477,7 +1477,7 @@ void ArtConveyorShuttleType::doLogic()
 			WriteDacValues(0, 0);
 			ActuatorsSet(SET_CONV_ACTUATOR_STOP, ShuttlePtr);
 			conveyorRunTimer = 0;
-			conveyorState = ST_CONVEYOR_AT_THE_POINT;
+			conveyorState = ST_CONVEYOR_MOVE_OUT;
 		}
 		break;
 	}
@@ -1543,6 +1543,7 @@ void ArtConveyorShuttleType::doLogic()
 
 	case ST_CONVEYOR_MOVE_OUT:
 	{
+		ArtIOClass::setOutputState(BrakeOUT, false);
 		if (NextConvPtr->ConveyorGetReadyReceive() && !ExitSensPoint->SensorState())
 		{
 			ConveyorRunTimerOverShuttle = ArtIOClass::ARTTimerGetTime(); //крутим верхний конвейер

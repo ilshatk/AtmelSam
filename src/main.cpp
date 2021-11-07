@@ -319,7 +319,7 @@ ArtConveyorWithLiftType1 ConvM27(21, ("ConvM24"), ArtConveyor1Type::CONVEYOR_TYP
   ArtConveyor1TypeNextExtDev ConvM28(11, ("ConvM28"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M28DRV, &M24UP, &M28Pall, 5000, 0, 0);
   ArtConveyor1TypeNextExtDev ConvM29(12, ("ConvM29"), ArtConveyor1Type::CONVEYOR_TYPE_1, &M29DRV, &M25UP, &M29Pall, 5000, 0, 0);*/
   //----setup for A39----------------------------------------------------------------------------------------
-  /**/
+  /*
   //----setup for A40 PLP 3,4--------------------------------------------------------------------------------
 
   ArtSensor EnterShuttle(26, ("B95"), 1, ArtSensor::SENSOR_TYPE_BASIC, 0, 0, true, 2); //с шаттла
