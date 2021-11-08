@@ -560,8 +560,12 @@ int ArtIOClass::BoxCountSet()
     if ((m_ptrEasyCat->BufferOut.Cust.Flags & 2) == 2)
     {
         boxqnt = (m_ptrEasyCat->BufferOut.Cust.Flags & 3840) >> 8;
+        return (boxqnt);
     }
-    return (boxqnt);
+    else
+    {
+        return (0);
+    }
 }
 
 bool ArtIOClass::CHK_ACTIVE_NTIME(bool sens_in, int *timer_in, int delta_time) // sensor,timer for check, active time before return true
@@ -581,25 +585,18 @@ bool ArtIOClass::CHK_ACTIVE_NTIME(bool sens_in, int *timer_in, int delta_time) /
 
         curTime = millis();
 
-        if ((*timer_in) < curTime)
+        if ((*timer_in) <= curTime)
         {
             deltaTime = curTime - (*timer_in);
             return (deltaTime > delta_time);
         }
         else // exceptions check
         {
-            if ((*timer_in) == curTime)
+            if ((*timer_in) > curTime)
             {
-                return (false);
-            }
-            else
-            {
-                if ((*timer_in) > curTime)
-                {
-                    timer_in = timer_in - 2147483647;
-                    deltaTime = curTime - (*timer_in);
-                    return (deltaTime > delta_time);
-                }
+                timer_in = timer_in - 2147483647;
+                deltaTime = curTime - (*timer_in);
+                return (deltaTime > delta_time);
             }
         }
     }

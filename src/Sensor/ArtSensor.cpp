@@ -79,28 +79,23 @@ bool ArtSensor::update()
 		valueON = ArtIOClass::CHK_ACTIVE_NTIME(value, &sensorTimerRE, sensorDelayRE);
 	}
 
-	if (sensorDelayFE > 0 && lastSensorState == true && value == false)
-	{
-		flag = true;
-	}
-	if (flag)
+	if (sensorDelayFE > 0)
 	{
 		valueOFF = ArtIOClass::CHK_ACTIVE_NTIME(!value, &sensorTimerFE, sensorDelayFE);
-		if (valueOFF)
-		{
-			flag = false;
-			sensorTimerFE = 0;
-		}
 	}
-	lastSensorState = value;
-	if ((sensorDelayRE > 0) || sensorDelayFE > 0)
+
+	if (sensorDelayRE > 0)
 	{
-		return (valueON || !valueOFF);
+		return (valueON);
 	}
-	else
+
+	if (sensorDelayFE > 0)
 	{
+		return (!valueOFF || value);
+	}
+
 		return (value);
-	}
+	
 }
 
 bool ArtSensor::SensorState()
@@ -109,7 +104,7 @@ bool ArtSensor::SensorState()
 	if (!SensorExternal)
 	{
 		state = update(); /*ArtIOClass::getInputState(SensorInput)*/ // на первый вход enter sensor
-		if ((sensorType & 0x1) != 0)								 //0x1 это инверсный тип датчика
+		if ((sensorType & 0x1) != 0)								 // 0x1 это инверсный тип датчика
 		{
 			return (!state);
 		}

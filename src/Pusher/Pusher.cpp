@@ -34,53 +34,59 @@ void ArtPusher::doLogic()
 {
     switch (PusherState)
     {
-        case HOME:
+    case HOME:
+    {
+        if (EnterSens->SensorState() && (!OnPusherPtr->SensorState()))
         {
-            if (EnterSens->SensorState() && (!OnPusherPtr->SensorState()))
+            if ((NextConvPointPtr->ConveyorGetReadyReceive()))
             {
                 ActPoint->ConveySetDriverFWD(true); // запуск конвейера
                 ArtIOClass::ConvReady(1);
             }
-
-            if (OnPusherPtr->SensorState())
+            else
             {
+                ActPoint->ConveySetDriverFWD(true); // запуск конвейера
                 ArtIOClass::ConvReady(0);
-                ActPoint->ConveySetSTOP();
-                PusherCylPtr->cylCloseIn->SensorState();
-
-                if ((NextConvPointPtr->ConveyorGetReadyReceive()) && PusherCylPtr->cylCloseIn->SensorState())
-                {
-                    PusherState = PUSH;
-                }
             }
-
-            break;
         }
 
-        case PUSH:
+        if (OnPusherPtr->SensorState())
         {
             ArtIOClass::ConvReady(0);
-            PusherCylPtr->ARTCylinderOpen();
-            if (PusherCylPtr->cylOpenIn->SensorState())
+            ActPoint->ConveySetSTOP();
+            PusherCylPtr->cylCloseIn->SensorState();
+
+            if ((NextConvPointPtr->ConveyorGetReadyReceive()) && PusherCylPtr->cylCloseIn->SensorState())
             {
-                PusherState = PUSHED;
+                PusherState = PUSH;
             }
-            break;
         }
 
-        case PUSHED:
-        {
-            ArtIOClass::ConvReady(0);
-            PusherCylPtr->ARTCylinderClose();
-            if (PusherCylPtr->cylCloseIn->SensorState())
-            {
-                PusherState = HOME;
-            }
-            break;
-        }
+        break;
     }
 
-    
+    case PUSH:
+    {
+        ArtIOClass::ConvReady(0);
+        PusherCylPtr->ARTCylinderOpen();
+        if (PusherCylPtr->cylOpenIn->SensorState())
+        {
+            PusherState = PUSHED;
+        }
+        break;
+    }
+
+    case PUSHED:
+    {
+        ArtIOClass::ConvReady(0);
+        PusherCylPtr->ARTCylinderClose();
+        if (PusherCylPtr->cylCloseIn->SensorState())
+        {
+            PusherState = HOME;
+        }
+        break;
+    }
+    }
 }
 //-----------------------------ПОджим----------------------------------
 ArtPodzhim::ArtPodzhim(int id, const char name[])
