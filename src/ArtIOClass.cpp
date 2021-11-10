@@ -1,7 +1,9 @@
 #include "ArtIOClass.h"
 uint16_t ArtIOClass::m_nCurrentOutputState = 0;
 int ArtIOClass::buffer = 0;
+int ArtIOClass::Convstate = 0;
 int ArtIOClass::boxqnt = -1;
+bool ArtIOClass::FlagConvState = false;
 uint8_t ArtIOClass::m_CurrentPosition = 0;
 int16_t ArtIOClass::Pos[];
 const uint8_t ArtIOClass::N_MIN_INPORT_NUM = 1;
@@ -442,10 +444,39 @@ void ArtIOClass::Error(uint8_t error, bool flag)
     }
 }
 
-void ArtIOClass::ConvState(int state)
+void ArtIOClass::ConvState(int state, int DevNum)
 {
-    m_ptrEasyCat->BufferIn.Cust.ConvState &= 0;
-    m_ptrEasyCat->BufferIn.Cust.ConvState |= state;
+    std::bitset<32> ConvState;
+
+    if (FlagConvState == false)
+    {
+        m_ptrEasyCat->BufferIn.Cust.ConvState = 0;
+        FlagConvState = true;
+    }
+
+    if (DevNum > 1)
+    {
+        state = (state << ((DevNum - 1) * 5));
+    }
+
+    for (int i = (DevNum - 1) * 5; i < DevNum * 5; i++)
+    {
+        ConvState.reset(i);
+        // bitClear(ConvState,i);
+        // ConvState[i] = 0;
+    }
+
+    if (state)
+    {
+        // bitWrite(ConvState, state, 1); // |= state;
+        ConvState |= state;
+        Convstate = 0;
+        Convstate |= ConvState.to_ulong();
+    }
+    else
+    {
+    }
+    m_ptrEasyCat->BufferIn.Cust.ConvState |= Convstate;
 }
 
 void ArtIOClass::BoxQnt(int QNT)

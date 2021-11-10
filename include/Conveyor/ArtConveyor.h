@@ -143,8 +143,9 @@ public:
 	ArtSensor *ExitSensPtr;	 //указатель на входной сенсор
 	ArtSensor *EnterSensPtr; //указатель на выходной сенсор
 	ArtSensor *CountSensPtr; //указатель на выходной сенсор
+	ArtSensor *Perep; //указатель на выходной сенсор
 	ArtConveyor2Type(int id, const char name[]);
-	ArtConveyor2Type(int id, const char name[], ConveyorType type, ArtDriver *ActPoint2, ArtSensor *EnterSensPtr,
+	ArtConveyor2Type(int id, const char name[], ConveyorType type, ArtDriver *ActPoint2, ArtSensor *EnterSensPtr,ArtSensor *Perep,
 					 ArtSensor *CountSensPtr, ArtSensor *ExitSensPtr, int PassTime, int NumProdInConveyor, int InSensAllowTime, int DevNum);
 	void doLogic();
 	void ArtConveyorTookProduct();

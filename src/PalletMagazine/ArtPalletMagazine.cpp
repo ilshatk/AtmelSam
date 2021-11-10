@@ -262,6 +262,7 @@ void PalletMagazine::DISP_MAIN_CYCLE_SPS()
 
     if ((!ArtIOClass::getInputState(isAutoMode)) /*&& (!ArtIOClass::getInputState(isBotlleConvServiceMode))*/)
     {
+        ArtIOClass::DevReady(false);
         if (DISP_STATE == DispStates::READY)
         {
             switch (DispCurPosition)
@@ -286,7 +287,7 @@ void PalletMagazine::DISP_MAIN_CYCLE_SPS()
                         DispPallState = DispPallSt::NO_PALL;
                     }
 
-                    if (ClampState == ClampStates::CL_OPEN && (DispPallState == DispPallSt::HAS_PALL || DispPallSt::LOW_PALL) && isPallONConvey->SensorState() )
+                    if (ClampState == ClampStates::CL_OPEN && (DispPallState == DispPallSt::HAS_PALL || DispPallSt::LOW_PALL) && isPallONConvey->SensorState())
                     {
                         DISPGOMID();
                     }
@@ -362,7 +363,7 @@ void PalletMagazine::DISP_MAIN_CYCLE_SPS()
                 {
                     DispPallState = DispPallSt::NO_PALL;
                 }
-                if (isPallONConvey->SensorState() && true /*(PALL_conveyors[4].state == CONV_RUN1)*/ )
+                if (isPallONConvey->SensorState() && true /*(PALL_conveyors[4].state == CONV_RUN1)*/)
                 {
                     ArtIOClass::DevReady(true);
                 }
