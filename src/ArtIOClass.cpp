@@ -586,6 +586,18 @@ void ArtIOClass::PosSet()
     }
 }
 
+int ArtIOClass::SetProdNumberCollect()
+{
+    if ((m_ptrEasyCat->BufferOut.Cust.Flags & 4) == 4)
+    {
+        return ((m_ptrEasyCat->BufferOut.Cust.Flags & 3840) >> 8);
+    }
+    else
+    {
+        return (0);
+    }
+}
+
 int ArtIOClass::BoxCountSet()
 {
     if ((m_ptrEasyCat->BufferOut.Cust.Flags & 2) == 2)

@@ -80,6 +80,8 @@ public:
     static int BoxCountSet();
     static void PLPReady(int Position, bool enable);
     static void BoxQnt(int QNT);
+    static int SetProdNumberCollect();
+
 
 protected:
     ArtIOClass();

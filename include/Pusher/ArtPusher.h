@@ -9,7 +9,7 @@
 class ArtPusher : public IHasCycleLogic
 {
 protected:
-    int m_id, PusherState;
+    int m_id, PusherState,ConveyorRunTimer;
     char name[256], m_name[256];
     ArtCylinder *PusherCylPtr;
     ArtSensor *OnPusherPtr;

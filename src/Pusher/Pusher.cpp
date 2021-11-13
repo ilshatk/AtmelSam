@@ -28,6 +28,7 @@ ArtPusher::ArtPusher(int id, const char name[], ArtSensor *OnPusherPtr, ArtSenso
     ArtPusher::ActPoint = ActPoint;
     PusherState = HOME;
     ArtPusher::EnterSens = EnterSens;
+    ConveyorRunTimer = 0;
 }
 
 void ArtPusher::doLogic()
@@ -45,7 +46,7 @@ void ArtPusher::doLogic()
             }
             else
             {
-                ActPoint->ConveySetDriverFWD(true); // запуск конвейера
+                ActPoint->ConveySetSTOP(); // остановка конвейера
                 ArtIOClass::ConvReady(0);
             }
         }
@@ -54,7 +55,7 @@ void ArtPusher::doLogic()
         {
             ArtIOClass::ConvReady(0);
             ActPoint->ConveySetSTOP();
-            PusherCylPtr->cylCloseIn->SensorState();
+            //PusherCylPtr->cylCloseIn->SensorState();
 
             if ((NextConvPointPtr->ConveyorGetReadyReceive()) && PusherCylPtr->cylCloseIn->SensorState())
             {
