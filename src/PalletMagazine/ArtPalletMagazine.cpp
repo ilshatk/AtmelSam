@@ -22,7 +22,7 @@ PalletMagazine::PalletMagazine(int id, const char name[])
 
 PalletMagazine::PalletMagazine(int id, const char name[], ArtCylinder *Clamp1, ArtCylinder *Clamp2, ArtCylinder *TOPCylinder,
                                ArtCylinder *BOTCylinder, int ResButtonInput, ArtSensor *PallONConvey, ArtSensor *PalletsInStack,
-                               int isAutoMode, int isBotlleConvServiceMode) : PalletMagazine(id, name)
+                               int isAutoMode, int isBotlleConvServiceMode, int StartButtonPressed, int StopButtonPressed) : PalletMagazine(id, name)
 {
     PalletMagazine::Clamp1 = Clamp1;
     PalletMagazine::Clamp2 = Clamp2;
@@ -46,20 +46,47 @@ PalletMagazine::PalletMagazine(int id, const char name[], ArtCylinder *Clamp1, A
     PalletMagazine::isBOTandNOPALLPLAC_timer = 0;
     PalletMagazine::isTOPcylinderError_timer = 0;
     PalletMagazine::isPallONConvey_timer = 0;
+    PalletMagazine::StartButtonPressed = StartButtonPressed;
+    PalletMagazine::StopButtonPressed = StopButtonPressed;
     Clamp1->ACGetInitialState();
     Clamp2->ACGetInitialState();
     TOPCylinder->ACGetInitialState();
     BOTCylinder->ACGetInitialState();
     timer = 0;
+    PalletMagazine::StopButtonFlag = false;
+    PalletMagazine::ErrorNum = 0;
+    PalletMagazine::FlagOpenClamps = false;
+    PalletMagazine::FlagGoMid = false;
+    PalletMagazine::FlagGoBot = false;
+    PalletMagazine::FlagGoTop = false;
+    PalletMagazine::flagBlink = false;
+    blinkON = ArtIOClass::ARTTimerGetTime();
 }
 
 void PalletMagazine::doLogic()
 {
-    DISP_POS_STATE_SPS();  // Главные цилиндры
-    CLAMP_POS_STATE_SPS(); // Захват диспенсера
+    ArtIOClass::ConvState(DISP_STATE,1);
+    DISP_POS_STATE_SPS();   // Главные цилиндры
+    CLAMP_POS_STATE_SPS();  // Захват диспенсера
+    TIMERS_FOR_CYLINDERS(); // Захват диспенсера
+
+    if (ART_DISP_ERR_SPS())
+    {
+        return;
+    }
+
+    if (ART_DISP_BTN_STOP_SPS())
+    {
+        return;
+    }
+
+    if (ART_DISP_BTN_START_SPS())
+    {
+        return;
+    }
     DISP_MAIN_CYCLE_SPS(); // Основной цикловик диспенсера
     ART_DISP_BTN_SPS();    // SPS-ка кнопки сброса
-    ART_DISP_ERR_SPS();    //
+                           //
 }
 
 void PalletMagazine::CLAMP_POS_STATE_SPS()
@@ -241,7 +268,7 @@ void PalletMagazine::DISP_MAIN_CYCLE_SPS()
         }
     }
 
-    if ((!isPallONConvey->SensorState()) /*&& (doRunConv4)*/)
+    if (!isPallONConvey->SensorState())
     {
         isPallONConvey_flag = true;
     }
@@ -269,6 +296,7 @@ void PalletMagazine::DISP_MAIN_CYCLE_SPS()
             {
             case BOT:
             {
+                FlagGoBot = false;
                 ArtIOClass::DevReady(false);
                 if (ArtIOClass::CHK_ACTIVE_NTIME(isBOT, &isBOT_timer, DEF_TIME_POS_SENS_DOWN))
                 {
@@ -287,15 +315,25 @@ void PalletMagazine::DISP_MAIN_CYCLE_SPS()
                         DispPallState = DispPallSt::NO_PALL;
                     }
 
+                    if (ClampState == ClampStates::CL_OPEN)
+                    {
+                        FlagOpenClamps = false;
+                    }
+
                     if (ClampState == ClampStates::CL_OPEN && (DispPallState == DispPallSt::HAS_PALL || DispPallSt::LOW_PALL) && isPallONConvey->SensorState())
                     {
+                        FlagOpenClamps = false;
                         DISPGOMID();
+                        CylMidRunTimer = ArtIOClass::ARTTimerGetTime();
+                        FlagGoMid = true;
                     }
                     else
                     {
                         if (isPallONConvey->SensorState())
                         {
                             doOPENCLAMPS();
+                            CylOpenClampsRunTimer = ArtIOClass::ARTTimerGetTime();
+                            FlagOpenClamps = true;
                         }
                     }
                 }
@@ -304,6 +342,7 @@ void PalletMagazine::DISP_MAIN_CYCLE_SPS()
 
             case MID:
             {
+                FlagGoMid = false;
                 ArtIOClass::DevReady(false);
                 if (ArtIOClass::CHK_ACTIVE_NTIME(isMID, &isMID_timer, DEF_TIME_POS_SENS))
                 {
@@ -312,6 +351,8 @@ void PalletMagazine::DISP_MAIN_CYCLE_SPS()
                         if ((DispPallState == DispPallSt::HAS_PALL) || (DispPallState == DispPallSt::LOW_PALL))
                         {
                             doCLOSECLAMPS();
+                            FlagCloseClamps = true;
+                            CylCloseClampsRunTimer = ArtIOClass::ARTTimerGetTime();
                         }
 
                         if (DispPallState == DispPallSt::NO_PALL)
@@ -319,20 +360,28 @@ void PalletMagazine::DISP_MAIN_CYCLE_SPS()
                             if (ClampState == ClampStates::CL_OPEN)
                             {
                                 doCLOSECLAMPS();
+                                FlagCloseClamps = true;
+                                CylCloseClampsRunTimer = ArtIOClass::ARTTimerGetTime();
                             }
                             else
                             {
-                                DISPGOTOP(); //проверить
+                                FlagCloseClamps = false;
+                                DISPGOTOP();
+                                FlagGoTop = true;
+                                CylTopRunTimer = ArtIOClass::ARTTimerGetTime();
                             }
                         }
                     }
                     else
                     {
+                        FlagCloseClamps = false;
                         if ((DispPallState == DispPallSt::HAS_PALL) || (DispPallState == DispPallSt::LOW_PALL))
                         {
                             if (isPallONConvey->SensorState() /*&& (/*PALL_conveyors[4].state == CONV_RUN 1)*/)
                             {
                                 DISPGOTOP();
+                                FlagGoTop = true;
+                                CylTopRunTimer = ArtIOClass::ARTTimerGetTime();
                             }
                         }
                         else
@@ -340,6 +389,8 @@ void PalletMagazine::DISP_MAIN_CYCLE_SPS()
                             if (!isPallONConvey->SensorState())
                             {
                                 DISPGOBOT();
+                                FlagGoBot = true;
+                                CylBotRunTimer = ArtIOClass::ARTTimerGetTime();
                             }
                         }
                     }
@@ -349,6 +400,7 @@ void PalletMagazine::DISP_MAIN_CYCLE_SPS()
 
             case TOP:
             {
+                FlagGoTop = false;
                 if (PalletsInStack->SensorState())
                 {
                     DispPallState = DispPallSt::HAS_PALL;
@@ -363,6 +415,7 @@ void PalletMagazine::DISP_MAIN_CYCLE_SPS()
                 {
                     DispPallState = DispPallSt::NO_PALL;
                 }
+
                 if (isPallONConvey->SensorState() && true /*(PALL_conveyors[4].state == CONV_RUN1)*/)
                 {
                     ArtIOClass::DevReady(true);
@@ -370,14 +423,15 @@ void PalletMagazine::DISP_MAIN_CYCLE_SPS()
                 else
                 {
                     ArtIOClass::DevReady(false);
+
                     if (!isPallONConvey->SensorState())
                     {
-                        if ((DispPallState == DispPallSt::HAS_PALL) || (DispPallState == DispPallSt::LOW_PALL))
+
+                        if (!isPallONConvey->SensorState())
                         {
-                            if (!isPallONConvey->SensorState())
-                            {
-                                DISPGOBOT();
-                            }
+                            DISPGOBOT();
+                            FlagGoBot = true;
+                            CylBotRunTimer = ArtIOClass::ARTTimerGetTime();
                         }
                     }
                 }
@@ -387,6 +441,74 @@ void PalletMagazine::DISP_MAIN_CYCLE_SPS()
                 break;
             }
         }
+    }
+}
+
+bool PalletMagazine::TIMERS_FOR_CYLINDERS()
+{
+    if (FlagGoTop)
+    {
+        if (ArtIOClass::ARTTimer(CylTopRunTimer, 30000, 99000))
+        {
+            DISP_STATE = ERROR_STATE;
+            ErrorNum = 2;
+        }
+    }
+    else
+    {
+        CylTopRunTimer = 0;
+    }
+
+    if (FlagGoMid)
+    {
+        if (ArtIOClass::ARTTimer(CylMidRunTimer, 30000, 99000))
+        {
+            DISP_STATE = ERROR_STATE;
+            ErrorNum = 1;
+        }
+    }
+    else
+    {
+        CylMidRunTimer = 0;
+    }
+
+    if (FlagGoBot)
+    {
+        if (ArtIOClass::ARTTimer(CylBotRunTimer, 60000, 99000))
+        {
+            DISP_STATE = ERROR_STATE;
+            ErrorNum = 3;
+        }
+    }
+    else
+    {
+        CylBotRunTimer = 0;
+    }
+
+    if (FlagOpenClamps)
+    {
+        if (ArtIOClass::ARTTimer(CylOpenClampsRunTimer, 20000, 99000))
+        {
+            DISP_STATE = ERROR_STATE;
+            ErrorNum = 4;
+        }
+    }
+    else
+    {
+        CylOpenClampsRunTimer = 0;
+    }
+
+    if (FlagCloseClamps)
+    {
+        if (ArtIOClass::ARTTimer(CylCloseClampsRunTimer, 20000, 99000))
+        {
+            DISP_STATE = ERROR_STATE;
+            ErrorNum = 4;
+        }
+    }
+    else
+    {
+        CylCloseClampsRunTimer = 0;
     }
 }
 
@@ -404,6 +526,124 @@ void PalletMagazine::ART_DISP_BTN_SPS()
         isMID_timer = 0;
         isBOT_timer = 0;
     }
+}
+
+bool PalletMagazine::ART_DISP_BTN_STOP_SPS()
+{
+    if (ArtIOClass::getInputState(StartButtonPressed))
+    {
+        StopButtonFlag = false;
+        ArtIOClass::setOutputState(10, false); //кнопка зеленая
+        ArtIOClass::setOutputState(11, false); //кнопка красная
+        ArtIOClass::setOutputState(6, false);  //световая колонна красная
+    }
+
+    if (!ArtIOClass::getInputState(StopButtonPressed) || StopButtonFlag)
+    {
+        StopButtonFlag = true;
+
+        ArtIOClass::setOutputState(11, true);
+        ArtIOClass::setOutputState(6, true);
+
+        if (ArtIOClass::ARTTimer(blinkON, 500, 99000) && !flagBlink)
+        {
+            ArtIOClass::setOutputState(10, true);
+            blinkON = 0;
+            flagBlink = true;
+            blinkOFF = ArtIOClass::ARTTimerGetTime();
+        }
+
+        if (ArtIOClass::ARTTimer(blinkOFF, 500, 99000) && flagBlink)
+        {
+            ArtIOClass::setOutputState(10, false);
+            blinkOFF = 0;
+            flagBlink = false;
+            blinkON = ArtIOClass::ARTTimerGetTime();
+        }
+        if (Clamp1->cylCloseIn->SensorState())
+        {
+            ArtIOClass::setOutputState(1, false);
+            ArtIOClass::setOutputState(2, false);
+            ArtIOClass::setOutputState(3, false);
+            ArtIOClass::setOutputState(4, false);
+            ArtIOClass::setOutputState(5, false);
+            ArtIOClass::setOutputState(6, false);
+            ArtIOClass::setOutputState(7, false);
+            ArtIOClass::setOutputState(8, false);
+            ArtIOClass::setOutputState(9, false);
+            ArtIOClass::setOutputState(12, false);
+            ArtIOClass::setOutputState(13, false);
+            ArtIOClass::setOutputState(14, false);
+        }
+        else
+        {
+            ArtIOClass::setOutputState(1, false);
+            ArtIOClass::setOutputState(2, false);
+            ArtIOClass::setOutputState(3, false);
+            ArtIOClass::setOutputState(4, false);
+            ArtIOClass::setOutputState(5, true);
+            ArtIOClass::setOutputState(6, false);
+            ArtIOClass::setOutputState(7, false);
+            ArtIOClass::setOutputState(8, false);
+            ArtIOClass::setOutputState(9, false);
+            ArtIOClass::setOutputState(12, false);
+            ArtIOClass::setOutputState(13, false);
+            ArtIOClass::setOutputState(14, false);
+        }
+
+        return (true);
+    }
+
+    return (false);
+}
+
+bool PalletMagazine::ART_DISP_BTN_START_SPS()
+{
+    if ((DispCurPosition == BOT) && (DispPallState == DispPallSt::NO_PALL))
+    {
+        ArtIOClass::setOutputState(8, false);
+        ErrorNum = 7;
+        ArtIOClass::Error(ErrorNum, true);
+        doOPENCLAMPS();
+        ArtIOClass::setOutputState(11, true);
+        ArtIOClass::setOutputState(6, true);
+        if (ArtIOClass::ARTTimer(blinkON, 500, 99000) && !flagBlink)
+        {
+            ArtIOClass::setOutputState(10, true);
+            ArtIOClass::setOutputState(7, true);
+            blinkON = 0;
+            flagBlink = true;
+            blinkOFF = ArtIOClass::ARTTimerGetTime();
+        }
+
+        if (ArtIOClass::ARTTimer(blinkOFF, 500, 99000) && flagBlink)
+        {
+            ArtIOClass::setOutputState(7, false);
+            ArtIOClass::setOutputState(10, false);
+            blinkOFF = 0;
+            flagBlink = false;
+            blinkON = ArtIOClass::ARTTimerGetTime();
+        }
+
+        if (!ArtIOClass::getInputState(StartButtonPressed))
+        {
+            return (true);
+        }
+        else
+        {
+            ArtIOClass::Error(ErrorNum, false);
+            ArtIOClass::setOutputState(7, false);
+            ArtIOClass::setOutputState(11, false);
+            ArtIOClass::setOutputState(10, false);
+            DispPallState = DispPallSt::LOW_PALL;
+            return (false);
+        }
+    }
+    flagBlink = false;
+    blinkON = ArtIOClass::ARTTimerGetTime();
+    ArtIOClass::setOutputState(10, true);
+    ArtIOClass::setOutputState(8, true);
+    return (false);
 }
 
 void PalletMagazine::DISPGOMID()
@@ -474,9 +714,9 @@ void PalletMagazine::doCLOSECLAMPS()
     Clamp1->ARTCylinderClose();
 }
 
-void PalletMagazine::ART_DISP_ERR_SPS()
+bool PalletMagazine::ART_DISP_ERR_SPS()
 {
-    if (DISP_STATE == READY)
+    /*if (DISP_STATE == READY)
     {
         ArtIOClass::setOutputState(8, true);
     }
@@ -505,6 +745,7 @@ void PalletMagazine::ART_DISP_ERR_SPS()
     else
     {
         ArtIOClass::setOutputState(7, false);
+        // ArtIOClass::setPulse(7,true,1000);
     }
 
     if (DispPallState == DispPallSt::NO_PALL)
@@ -527,7 +768,21 @@ void PalletMagazine::ART_DISP_ERR_SPS()
     else
     {
         ArtIOClass::setOutputState(6, false);
+    }*/
+
+    if (DISP_STATE == ERROR_STATE)
+    {
+        ArtIOClass::Error(ErrorNum, true);
+
+        if (ArtIOClass::getInputState(StartButtonPressed))
+        {
+            ArtIOClass::Error(ErrorNum, false);
+            DISP_STATE = DispStates::READY;
+            return (false);
+        }
+        return (true);
     }
+    return (false);
 
     /*if (ArtIOClass::CHK_ACTIVE_NTIME((DispCurPosition == BOT), &isBOTandNOPALLPLAC_timer, isBOTandNOPALLPLAC_TIME))
     {
@@ -549,3 +804,5 @@ void PalletMagazine::ART_DISP_ERR_SPS()
       ENDIF
    ENDIF*/
 }
+
+

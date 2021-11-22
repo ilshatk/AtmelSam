@@ -98,7 +98,8 @@ public:
 		ST_CONVEYOR_POS_SELECT,
 		ST_CONVEYOR_LIFT_UP,
 		ST_CONVEYOR_LIFT_DOWN,
-		ST_CONVEYOR_PALLET_READY
+		ST_CONVEYOR_PALLET_READY,
+		ST_CONVEYOR_ACCUM
 	};
 
 	enum GetDriverState
@@ -201,7 +202,8 @@ public:
 class ArtConveyor1AType : public ArtBasicConveyor // проходной конвейер который по сигналу может стать накопительным
 {
 private:
-	bool fproductCounted, productCountSensConvey, pp_stack_ready, readySignalFromNextBarda;
+	bool fproductCounted, productCountSensConvey, pp_stack_ready;
+	int readySignalFromNextBarda;
 
 public:
 	int productPassTime;
@@ -294,10 +296,12 @@ public:
 	ArtSensor *LayerSensor;	   //указатель на сенсор слоя
 	ArtCylinder *Stopper;
 	ArtCylinder *Podzhim;
+	ArtSensor *StopperDown;
+	ArtSensor *PodzhimDown;
 	ArtConveyorPLPType(int id, const char name[]);
 	ArtConveyorPLPType(int id, const char name[], ConveyorType type, ArtDriver *ActPoint, ArtSensor *EnterSensPoint,
 					   ArtSensor *ExitSensPoint, ArtSensor *PallOnPosition, ArtSensor *LayerSensor,
-					   ArtCylinder *Stopper, ArtCylinder *Podzhim, int PassTime, int RunTimer, int PLPNum, int DevNum);
+					   ArtCylinder *Stopper, ArtCylinder *Podzhim, int PassTime, int RunTimer, int PLPNum, int DevNum,ArtSensor *StopperDown,ArtSensor *PodzhimDown);
 	void doLogic();
 };
 
@@ -379,9 +383,11 @@ public:
 	int PushOutTimer,PushInTimer;
 	ArtCylinder *PusherCylPtr;
 	ArtSensor *OnPusher;
+	ArtSensor *PushHome;
+	ArtSensor *PushNoHome;
 	ArtConveyorWithPusher(int id, const char name[]);
 	ArtConveyorWithPusher(int id, const char name[], ConveyorType type, ArtDriver *ActPoint, ArtSensor *EnterSensPoint,
-							 ArtSensor *ExitSensPoint, ArtSensor *OnPusher,ArtCylinder *PusherCylPtr, ArtBasicConveyor *NextConvPoint, int PassTime, int RunTimer, int DevNum);
+							 ArtSensor *ExitSensPoint, ArtSensor *OnPusher,ArtCylinder *PusherCylPtr, ArtBasicConveyor *NextConvPoint, int PassTime, int RunTimer, int DevNum,ArtSensor *PushHome,ArtSensor *PushNoHome);
 	void doLogic();
 };
 

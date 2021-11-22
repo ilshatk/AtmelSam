@@ -84,7 +84,12 @@ bool ArtSensor::update()
 		valueOFF = ArtIOClass::CHK_ACTIVE_NTIME(!value, &sensorTimerFE, sensorDelayFE);
 	}
 
-	if (sensorDelayRE > 0)
+	if (sensorDelayRE > 0 && sensorDelayFE > 0)
+	{
+		return (valueON && !valueOFF);
+	}
+
+	if (sensorDelayRE > 0 )
 	{
 		return (valueON);
 	}
@@ -94,8 +99,7 @@ bool ArtSensor::update()
 		return (!valueOFF || value);
 	}
 
-		return (value);
-	
+	return (value);
 }
 
 bool ArtSensor::SensorState()

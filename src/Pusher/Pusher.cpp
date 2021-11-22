@@ -33,6 +33,10 @@ ArtPusher::ArtPusher(int id, const char name[], ArtSensor *OnPusherPtr, ArtSenso
 
 void ArtPusher::doLogic()
 {
+    if(NextConvPointPtr->ConveyorGetReadyReceive())
+    {
+        ArtIOClass::ConvReady(2);
+    }
     switch (PusherState)
     {
     case HOME:
@@ -55,7 +59,6 @@ void ArtPusher::doLogic()
         {
             ArtIOClass::ConvReady(0);
             ActPoint->ConveySetSTOP();
-            //PusherCylPtr->cylCloseIn->SensorState();
 
             if ((NextConvPointPtr->ConveyorGetReadyReceive()) && PusherCylPtr->cylCloseIn->SensorState())
             {

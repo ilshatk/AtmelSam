@@ -55,7 +55,7 @@ public:
     static bool ExtSens(uint16_t sensinput);
     static bool ExtSens(uint16_t sensinput, int boardnum);
     static void Error(uint8_t error, bool flag);
-    static bool readySignalFromNext();
+    static int readySignalFromNext();
     static bool readySignalFromNext(int convnum, int boardnum);
     static bool TookProd();
     static void GaveStack(bool gave);
@@ -81,10 +81,10 @@ public:
     static void PLPReady(int Position, bool enable);
     static void BoxQnt(int QNT);
     static int SetProdNumberCollect();
+    static void ActiveScheme(int Scheme);
+    static bool ARTTimer(int timer, int timeSpan, int timeOut);
 
-
-protected:
-    ArtIOClass();
+        protected : ArtIOClass();
     ~ArtIOClass();
 };
 

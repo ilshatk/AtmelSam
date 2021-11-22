@@ -225,23 +225,32 @@ void ArtIOClass::GaveStack(bool gave)
     }
 }
 
-bool ArtIOClass::readySignalFromNext()
+int ArtIOClass::readySignalFromNext()
 {
-    if (m_ptrEasyCat->BufferOut.Cust.NextConvReadySignal & 1 == 1)
+    if (m_ptrEasyCat->BufferOut.Cust.NextConvReadySignal)
     {
-        return (true);
+        return (m_ptrEasyCat->BufferOut.Cust.NextConvReadySignal);
     }
     else
     {
-        return (false);
+        return (0);
     }
+
+    /* if (m_ptrEasyCat->BufferOut.Cust.NextConvReadySignal & 2 == 2)
+     {
+         return (2);
+     }
+     else
+     {
+         return (0);
+     }*/
 }
 
 void ArtIOClass::ConvReady(int Ready)
 {
     if (Ready)
     {
-        m_ptrEasyCat->BufferIn.Cust.ConvReadySignal |= 1; // для передачи сигнала готовности предыдущему конвейеру
+        m_ptrEasyCat->BufferIn.Cust.ConvReadySignal = Ready; // для передачи сигнала готовности предыдущему конвейеру
     }
     else
     {
@@ -285,6 +294,11 @@ bool ArtIOClass::readySignalFromNext(int convnum, int boardnum) //сигнал �
             return (false);
         }
     }
+}
+
+void ArtIOClass::ActiveScheme(int Scheme)
+{
+    m_ptrEasyCat->BufferIn.Cust.AnaIn_3 = Scheme;
 }
 
 void ArtIOClass::ShuttlePosition(int Position, bool enable) //позиция шаттла 1,2,3,4,5
@@ -440,7 +454,10 @@ void ArtIOClass::Error(uint8_t error, bool flag)
     }
     else
     {
-        m_ptrEasyCat->BufferIn.Cust.OutFault ^ error;
+        if (error != 0)
+        {
+            m_ptrEasyCat->BufferIn.Cust.OutFault ^ error;
+        }
     }
 }
 
@@ -609,6 +626,33 @@ int ArtIOClass::BoxCountSet()
     {
         return (0);
     }
+}
+
+bool ArtIOClass::ARTTimer(int timer, int timeSpan, int timeOut)
+{
+    int curTime, deltaTime;
+
+    if (timer > 0)
+    {
+        curTime = millis();
+        if (timer < curTime)
+        {
+            deltaTime = curTime - timer;
+            return ((deltaTime > timeSpan) && (deltaTime <= timeOut));
+        }
+        else //; exceptions check
+        {
+            if (timer == curTime)
+            {
+                return (false);
+            }
+            else
+            {
+                timer = timer - 3600000;
+            }
+        }
+    }
+    return (false);
 }
 
 bool ArtIOClass::CHK_ACTIVE_NTIME(bool sens_in, int *timer_in, int delta_time) // sensor,timer for check, active time before return true
