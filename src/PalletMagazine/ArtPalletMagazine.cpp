@@ -65,10 +65,12 @@ PalletMagazine::PalletMagazine(int id, const char name[], ArtCylinder *Clamp1, A
 
 void PalletMagazine::doLogic()
 {
-    ArtIOClass::ConvState(DISP_STATE,1);
+    ArtIOClass::ConvState(DISP_STATE, 1);
     DISP_POS_STATE_SPS();   // Главные цилиндры
     CLAMP_POS_STATE_SPS();  // Захват диспенсера
     TIMERS_FOR_CYLINDERS(); // Захват диспенсера
+
+    ArtIOClass::PallState(DispPallState); // состояние паллет 
 
     if (ART_DISP_ERR_SPS())
     {
@@ -84,6 +86,7 @@ void PalletMagazine::doLogic()
     {
         return;
     }
+    
     DISP_MAIN_CYCLE_SPS(); // Основной цикловик диспенсера
     ART_DISP_BTN_SPS();    // SPS-ка кнопки сброса
                            //
@@ -377,7 +380,7 @@ void PalletMagazine::DISP_MAIN_CYCLE_SPS()
                         FlagCloseClamps = false;
                         if ((DispPallState == DispPallSt::HAS_PALL) || (DispPallState == DispPallSt::LOW_PALL))
                         {
-                            if (isPallONConvey->SensorState() /*&& (/*PALL_conveyors[4].state == CONV_RUN 1)*/)
+                            if (isPallONConvey->SensorState())
                             {
                                 DISPGOTOP();
                                 FlagGoTop = true;
@@ -416,7 +419,7 @@ void PalletMagazine::DISP_MAIN_CYCLE_SPS()
                     DispPallState = DispPallSt::NO_PALL;
                 }
 
-                if (isPallONConvey->SensorState() && true /*(PALL_conveyors[4].state == CONV_RUN1)*/)
+                if (isPallONConvey->SensorState())
                 {
                     ArtIOClass::DevReady(true);
                 }
@@ -716,65 +719,11 @@ void PalletMagazine::doCLOSECLAMPS()
 
 bool PalletMagazine::ART_DISP_ERR_SPS()
 {
-    /*if (DISP_STATE == READY)
-    {
-        ArtIOClass::setOutputState(8, true);
-    }
-    else
-    {
-        ArtIOClass::setOutputState(8, false);
-    }
-
-    if (DispPallState == DispPallSt::NO_PALL && DISP_STATE == READY)
-    {
-        if (ArtIOClass::getOutputState(7))
-        {
-            if (ArtIOClass::CHK_ACTIVE_NTIME(true, &timer, 500))
-            {
-                ArtIOClass::setOutputState(7, false);
-            }
-        }
-        else
-        {
-            if (ArtIOClass::CHK_ACTIVE_NTIME(true, &timer, 500))
-            {
-                ArtIOClass::setOutputState(7, true);
-            }
-        }
-    }
-    else
-    {
-        ArtIOClass::setOutputState(7, false);
-        // ArtIOClass::setPulse(7,true,1000);
-    }
-
-    if (DispPallState == DispPallSt::NO_PALL)
-    {
-        if (ArtIOClass::getOutputState(6))
-        {
-            if (ArtIOClass::CHK_ACTIVE_NTIME(true, &timer, 500))
-            {
-                ArtIOClass::setOutputState(6, false);
-            }
-        }
-        else
-        {
-            if (ArtIOClass::CHK_ACTIVE_NTIME(true, &timer, 500))
-            {
-                ArtIOClass::setOutputState(6, true);
-            }
-        }
-    }
-    else
-    {
-        ArtIOClass::setOutputState(6, false);
-    }*/
-
     if (DISP_STATE == ERROR_STATE)
     {
         ArtIOClass::Error(ErrorNum, true);
 
-        if (ArtIOClass::getInputState(StartButtonPressed))
+        if (ArtIOClass::getInputState(StartButtonPressed) || ArtIOClass::ResetDrv(1))
         {
             ArtIOClass::Error(ErrorNum, false);
             DISP_STATE = DispStates::READY;
@@ -783,26 +732,4 @@ bool PalletMagazine::ART_DISP_ERR_SPS()
         return (true);
     }
     return (false);
-
-    /*if (ArtIOClass::CHK_ACTIVE_NTIME((DispCurPosition == BOT), &isBOTandNOPALLPLAC_timer, isBOTandNOPALLPLAC_TIME))
-    {
-        if (!isPallONConvey->SensorState())
-        {
-            DISP_STATE = ERROR_STATE;
-        }
-    }
-
-    /*if (ARTSystemState == CRITICAL)
-      ;DISPGOSTOP()
-      disp_run_bool = TRUE
-      ;DISP_STATE=#ERROR;
-   ELSE
-      IF (ARTSystemState == #ARTSYS_STATE_NORMAL)  AND (disp_run_bool == TRUE) THEN
-       disp_run_bool = FALSE
-       ;DISP_STATE = #READY
-       ;DISPGORUN()
-      ENDIF
-   ENDIF*/
 }
-
-

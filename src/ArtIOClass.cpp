@@ -2,8 +2,10 @@
 uint16_t ArtIOClass::m_nCurrentOutputState = 0;
 int ArtIOClass::buffer = 0;
 int ArtIOClass::Convstate = 0;
+int ArtIOClass::errors = 0;
 int ArtIOClass::boxqnt = -1;
 bool ArtIOClass::FlagConvState = false;
+bool ArtIOClass::FlagErrors = false;
 uint8_t ArtIOClass::m_CurrentPosition = 0;
 int16_t ArtIOClass::Pos[];
 const uint8_t ArtIOClass::N_MIN_INPORT_NUM = 1;
@@ -254,7 +256,7 @@ void ArtIOClass::ConvReady(int Ready)
     }
     else
     {
-        m_ptrEasyCat->BufferIn.Cust.ConvReadySignal &= 0;
+        m_ptrEasyCat->BufferIn.Cust.ConvReadySignal = 0;
     }
 }
 
@@ -329,12 +331,10 @@ bool ArtIOClass::ExtDevReady(int bit) // для приема сигнала "г�
 {
     if ((m_ptrEasyCat->BufferOut.Cust.Flags & bit) == bit)
     {
-        // ArtIOClass::setOutputState(16, true);
         return (true);
     }
     else
     {
-        // ArtIOClass::setOutputState(16, false);
         return (false);
     }
 }
@@ -450,15 +450,51 @@ void ArtIOClass::Error(uint8_t error, bool flag)
 {
     if (flag)
     {
-        m_ptrEasyCat->BufferIn.Cust.OutFault | error;
+        m_ptrEasyCat->BufferIn.Cust.OutFault |= error;
     }
     else
     {
         if (error != 0)
         {
-            m_ptrEasyCat->BufferIn.Cust.OutFault ^ error;
+            m_ptrEasyCat->BufferIn.Cust.OutFault ^= error;
         }
     }
+}
+
+void ArtIOClass::Error(int error, int DevNum)
+{
+    std::bitset<32> Errors;
+
+    if (FlagErrors == false)
+    {
+        m_ptrEasyCat->BufferIn.Cust.OutFault = 0;
+        FlagErrors = true;
+    }
+
+    if (DevNum > 1)
+    {
+        error = (error << ((DevNum - 1) * 4));
+    }
+
+    for (int i = (DevNum - 1) * 4; i < DevNum * 4; i++)
+    {
+        Errors.reset(i);
+        // bitClear(ConvState,i);
+        // ConvState[i] = 0;
+    }
+
+   // if (error)
+  //  {
+        // bitWrite(ConvState, state, 1); // |= state;
+        Errors |= error;
+        errors = 0;
+        errors |= Errors.to_ulong();
+  //  }
+  //  else
+  //  {
+
+  //  }
+    m_ptrEasyCat->BufferIn.Cust.OutFault = errors;
 }
 
 void ArtIOClass::ConvState(int state, int DevNum)
@@ -494,6 +530,11 @@ void ArtIOClass::ConvState(int state, int DevNum)
     {
     }
     m_ptrEasyCat->BufferIn.Cust.ConvState |= Convstate;
+}
+
+void ArtIOClass::PallState(int PallState)
+{
+    m_ptrEasyCat->BufferIn.Cust.AnaIn_3 = PallState;
 }
 
 void ArtIOClass::BoxQnt(int QNT)
@@ -624,7 +665,7 @@ int ArtIOClass::BoxCountSet()
     }
     else
     {
-        return (0);
+        return (6);
     }
 }
 

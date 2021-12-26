@@ -33,7 +33,8 @@ public:
 	int input1,
 		m_id,
 		SensorInput,
-		boardnum;
+		boardnum,
+		curentTime;
 	ArtSensor(int id, const char name[]);
 	ArtSensor(int id, const char name[], int SensorInput, SensorType type, int delayRe, int delayFe, bool SensorExternal);
 	ArtSensor(int id, const char name[], int SensorInput, SensorType type, int delayRe, int delayFe, bool SensorExternal,int boardnum);

@@ -139,9 +139,9 @@ public:
 class ArtConveyor2Type : public ArtBasicConveyor // накопительный конвейер
 {
 public:
-	bool productCountSensConvey, fproductCounted, pp_stack_ready, ftook_product, QntFlag,entersensFlag;
+	bool productCountSensConvey, fproductCounted, pp_stack_ready, ftook_product, QntFlag, entersensFlag;
 	int productInSensAllowTime,
-		productPassTime,enterSensTimer;
+		productPassTime, enterSensTimer;
 
 	ArtSensor *ExitSensPtr;	 //указатель на входной сенсор
 	ArtSensor *EnterSensPtr; //указатель на выходной сенсор
@@ -301,7 +301,7 @@ public:
 	ArtConveyorPLPType(int id, const char name[]);
 	ArtConveyorPLPType(int id, const char name[], ConveyorType type, ArtDriver *ActPoint, ArtSensor *EnterSensPoint,
 					   ArtSensor *ExitSensPoint, ArtSensor *PallOnPosition, ArtSensor *LayerSensor,
-					   ArtCylinder *Stopper, ArtCylinder *Podzhim, int PassTime, int RunTimer, int PLPNum, int DevNum,ArtSensor *StopperDown,ArtSensor *PodzhimDown);
+					   ArtCylinder *Stopper, ArtCylinder *Podzhim, int PassTime, int RunTimer, int PLPNum, int DevNum, ArtSensor *StopperDown, ArtSensor *PodzhimDown);
 	void doLogic();
 };
 
@@ -380,14 +380,14 @@ public:
 	int productPassTime;
 	//указатель на следующий конвейер
 	ArtBasicConveyor *NextConvPoint;
-	int PushOutTimer,PushInTimer;
+	int PushOutTimer, PushInTimer;
 	ArtCylinder *PusherCylPtr;
 	ArtSensor *OnPusher;
 	ArtSensor *PushHome;
 	ArtSensor *PushNoHome;
 	ArtConveyorWithPusher(int id, const char name[]);
 	ArtConveyorWithPusher(int id, const char name[], ConveyorType type, ArtDriver *ActPoint, ArtSensor *EnterSensPoint,
-							 ArtSensor *ExitSensPoint, ArtSensor *OnPusher,ArtCylinder *PusherCylPtr, ArtBasicConveyor *NextConvPoint, int PassTime, int RunTimer, int DevNum,ArtSensor *PushHome,ArtSensor *PushNoHome);
+						  ArtSensor *ExitSensPoint, ArtSensor *OnPusher, ArtCylinder *PusherCylPtr, ArtBasicConveyor *NextConvPoint, int PassTime, int RunTimer, int DevNum, ArtSensor *PushHome, ArtSensor *PushNoHome);
 	void doLogic();
 };
 

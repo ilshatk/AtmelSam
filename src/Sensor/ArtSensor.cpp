@@ -33,7 +33,7 @@ ArtSensor::ArtSensor(int id, const char name[], int SensorInput, SensorType type
 		sensorDelayFE = 0;
 	}
 	valueON = false;
-	valueOFF = true;
+	valueOFF = false;
 	lastSensorState = false;
 	flag = false;
 }
@@ -65,7 +65,7 @@ ArtSensor::ArtSensor(int id, const char name[], int SensorInput, SensorType type
 		sensorDelayFE = 0;
 	}
 	valueON = false;
-	valueOFF = true;
+	valueOFF = false;
 	lastSensorState = false;
 	flag = false;
 }
@@ -79,9 +79,35 @@ bool ArtSensor::update()
 		valueON = ArtIOClass::CHK_ACTIVE_NTIME(value, &sensorTimerRE, sensorDelayRE);
 	}
 
-	if (sensorDelayFE > 0)
+	if (sensorDelayFE > 0 && (value || flag))
 	{
-		valueOFF = ArtIOClass::CHK_ACTIVE_NTIME(!value, &sensorTimerFE, sensorDelayFE);
+		flag = true;
+		//valueOFF = ArtIOClass::CHK_ACTIVE_NTIME(!value, &sensorTimerFE, sensorDelayFE);
+
+		if (value)
+		{
+			sensorTimerFE = 0;
+			valueOFF = false;
+		}
+		else
+		{
+			if ((sensorTimerFE) == 0)
+			{
+				sensorTimerFE = millis();
+			}
+
+			curentTime = millis();
+
+			if ( (curentTime - sensorTimerFE) > sensorDelayFE)
+			{
+				valueOFF = false;
+			}
+			else
+			{
+				valueOFF = true;
+			}
+
+		}
 	}
 
 	if (sensorDelayRE > 0 && sensorDelayFE > 0)
@@ -89,14 +115,14 @@ bool ArtSensor::update()
 		return (valueON && !valueOFF);
 	}
 
-	if (sensorDelayRE > 0 )
+	if (sensorDelayRE > 0)
 	{
 		return (valueON);
 	}
 
 	if (sensorDelayFE > 0)
 	{
-		return (!valueOFF || value);
+		return (valueOFF || value);
 	}
 
 	return (value);

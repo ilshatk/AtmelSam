@@ -271,15 +271,17 @@ void ArtConveyor1Type::doLogic()
 	// int retVal;
 	if ((conveyorState == ST_CONVEYOR_FREE) || (conveyorState == ST_CONVEYOR_PROD_FWD))
 	{
-		 ArtIOClass::ConvReady(1);//раскоментить если нужен сигнал на предыдущий конвейер
+		// ArtIOClass::ConvReady(1); //раскоментить если нужен сигнал на предыдущий конвейер
 	}
 	else
 	{
-		 ArtIOClass::ConvReady(0); //раскоментить если нужен сигнал на предыдущий конвейер
+		// ArtIOClass::ConvReady(0); //раскоментить если нужен сигнал на предыдущий конвейер
 	}
+
 	if (ActuatorsGet(GET_CONV_ACTUATOR_READY, ActPoint) != 1)
 	{
 		conveyorState = ST_CONVEYOR_ERROR;
+		error = 1;
 	}
 
 	if (productFctEnterConveyor)
@@ -389,11 +391,15 @@ void ArtConveyor1Type::doLogic()
 	case ST_CONVEYOR_ERROR:
 	{
 		ActuatorsSet(SET_CONV_ACTUATOR_STOP, ActPoint);
-		ArtIOClass::Error(error << ((DevNum - 1) * 4), true); // смещаем влево на 4 бита
-		if (ArtIOClass::ResetDrv(ActPoint->ResetSignalOut))	  //сброс ошибки частотника
+		// ArtIOClass::Error(error, DevNum); // смещаем влево на 4 бита
+		ArtIOClass::Error(error, DevNum);
+		if (ArtIOClass::ResetDrv(ActPoint->ResetSignalOut)) //сброс ошибки частотника
 		{
 			conveyorState = ST_CONVEYOR_UNKNOWN;
-			ArtIOClass::Error(error << ((DevNum - 1) * 4), false);
+			// error = 0;
+			ArtIOClass::Error(error, DevNum);
+			error = 0;
+			ArtIOClass::Error(error, DevNum);
 		}
 
 		break;
@@ -441,23 +447,24 @@ ArtConveyor2Type::ArtConveyor2Type(int id, const char name[], ConveyorType type,
 void ArtConveyor2Type::doLogic()
 {
 	ArtIOClass::ActiveScheme(SetedProdNumberCollect);
-
+	ArtIOClass::Error(error, DevNum);
 	if (ArtIOClass::SetProdNumberCollect())
 	{
 		SetedProdNumberCollect = ArtIOClass::SetProdNumberCollect();
 	}
 
+	if (ArtIOClass::BoxCountSet() != 6)
+	{
+		CalcedNumProdInConveyor = ArtIOClass::BoxCountSet();
+	}
+
+	ArtIOClass::BoxQnt(CalcedNumProdInConveyor);
 	if (SetedProdNumberCollect == 0)
 	{
 		return;
 	}
 
-	if (ArtIOClass::BoxCountSet())
-	{
-		CalcedNumProdInConveyor = ArtIOClass::BoxCountSet();
-	}
-
-	if (ArtIOClass::ResetDrv(ActPoint2->ResetSignalOut)) //сброс ошибки
+	/*if (ArtIOClass::ResetDrv(ActPoint2->ResetSignalOut)) //сброс ошибки
 	{
 		if (!productCountSensConvey && !productExitSensConvey)
 		{
@@ -466,9 +473,12 @@ void ArtConveyor2Type::doLogic()
 
 		ArtIOClass::StackReady(false);
 		conveyorState = ST_CONVEYOR_UNKNOWN;
-		ArtIOClass::Error(error << ((DevNum - 1) * 4), false);
-	}
+		error = 0;
+		ArtIOClass::Error(error, DevNum);
+	}*/
 
+	productExitSensConvey = ExitSensPtr->SensorState();
+	productCountSensConvey = CountSensPtr->SensorState();
 	if ((CalcedNumProdInConveyor == SetedProdNumberCollect) && (!Perep->SensorState()) && (productExitSensConvey))
 	{
 		ArtIOClass::GaveStack(false);
@@ -479,7 +489,6 @@ void ArtConveyor2Type::doLogic()
 	}
 
 	ArtIOClass::ConvState(conveyorState, DevNum);
-	ArtIOClass::BoxQnt(CalcedNumProdInConveyor);
 
 	if (productFctEnterConveyor)
 	{
@@ -496,8 +505,6 @@ void ArtConveyor2Type::doLogic()
 		enterSensTimer = 0;
 		entersensFlag = false;
 	}
-	productExitSensConvey = ExitSensPtr->SensorState();
-	productCountSensConvey = CountSensPtr->SensorState();
 
 	if ((ActuatorsGet(GET_CONV_ACTUATOR_READY, ActPoint2)) == 1) // ; TODO: Change ARTActuatorsGet to actual function
 	{
@@ -569,6 +576,7 @@ void ArtConveyor2Type::doLogic()
 
 		break;
 	}
+
 	case ST_CONVEYOR_FREE:
 	{
 		if (productEnterSensConvey || CountSensPtr->SensorState())
@@ -584,7 +592,7 @@ void ArtConveyor2Type::doLogic()
 															 error = 8;*/
 		}
 
-		if (CalcedNumProdInConveyor == SetedProdNumberCollect && (!Perep->SensorState() || productExitSensConvey))
+		if (CalcedNumProdInConveyor == SetedProdNumberCollect && !Perep->SensorState() && productExitSensConvey)
 		{
 			ArtIOClass::GaveStack(false);
 			conveyorState = ST_CONVEYOR_BUSY;
@@ -594,7 +602,7 @@ void ArtConveyor2Type::doLogic()
 		}
 		else
 		{
-			if (CalcedNumProdInConveyor == SetedProdNumberCollect && !Perep->SensorState())
+			if (CalcedNumProdInConveyor == SetedProdNumberCollect && Perep->SensorState())
 			{
 				conveyorState = ST_CONVEYOR_ERROR;
 				error = 10;
@@ -602,7 +610,7 @@ void ArtConveyor2Type::doLogic()
 
 			if (!CountSensPtr->SensorState() && !productEnterSensConvey) // (ARTTimerIsTimePassed(conveyorRunTimer, productPassTime, 99000))
 			{
-				if (ARTTimerIsTimePassed(conveyorRunTimer, (productPassTime - 10500), 99000))
+				if (ARTTimerIsTimePassed(conveyorRunTimer, 1500, 99000))
 				{
 					ActuatorsSet(SET_CONV_ACTUATOR_STOP, ActPoint2); //!*! Change to actual function
 					conveyorRunTimer = 0;
@@ -635,7 +643,7 @@ void ArtConveyor2Type::doLogic()
 
 	case ST_CONVEYOR_STACK_READY:
 	{
-		if (ARTTimerIsTimePassed(conveyorRunTimer, productPassTime, 99000))
+		if (ARTTimerIsTimePassed(conveyorRunTimer, 2000, 99000))
 		{
 			ActuatorsSet(SET_CONV_ACTUATOR_STOP, ActPoint2); //!*! Change to actual function
 		}
@@ -658,10 +666,10 @@ void ArtConveyor2Type::doLogic()
 			}
 		}
 
-		if (ARTTimerIsTimePassed(conveyorRunTimer, (int)(productPassTime * 1.2), 99000))
+		/*if (ARTTimerIsTimePassed(conveyorRunTimer, (int)(productPassTime * 1.2), 99000))
 		{
 			ActuatorsSet(SET_CONV_ACTUATOR_STOP, ActPoint2);
-		}
+		}*/
 		break;
 	}
 
@@ -669,8 +677,9 @@ void ArtConveyor2Type::doLogic()
 	{
 		QntFlag = true;
 		ArtIOClass::StackReady(false);
-		ArtIOClass::Error(error << ((DevNum - 1) * 4), true); // смещаем влево на 4 бита
-		ActuatorsSet(SET_CONV_ACTUATOR_STOP, ActPoint2);	  //!*! Change to actual function
+		// ArtIOClass::Error(error, DevNum); // смещаем влево на 4 бита
+		ArtIOClass::Error(error, DevNum);
+		ActuatorsSet(SET_CONV_ACTUATOR_STOP, ActPoint2); //!*! Change to actual function
 
 		if (ArtIOClass::ResetDrv(ActPoint2->ResetSignalOut)) //сброс ошибки
 		{
@@ -679,7 +688,10 @@ void ArtConveyor2Type::doLogic()
 				CalcedNumProdInConveyor = 0;
 			}
 			conveyorState = ST_CONVEYOR_UNKNOWN;
-			ArtIOClass::Error(error << ((DevNum - 1) * 4), false);
+			error = 0;
+			// error = 0;
+			ArtIOClass::Error(error, DevNum);
+			ArtIOClass::Error(error, DevNum);
 		}
 		break;
 	}
@@ -865,12 +877,13 @@ void ArtConveyor1EType::doLogic()
 
 	case ST_CONVEYOR_ERROR:
 	{
-		ArtIOClass::Error(error << ((DevNum - 1) * 4), true); // смещаем влево на 4 бита
+		ArtIOClass::Error(error, DevNum); // смещаем влево на 4 бита
 
 		if (ArtIOClass::ResetDrv(ActPoint->ResetSignalOut)) //сброс ошибки
 		{
 			conveyorState = ST_CONVEYOR_UNKNOWN;
-			ArtIOClass::Error(error << ((DevNum - 1) * 4), false);
+			error = 0;
+			ArtIOClass::Error(error, DevNum);
 		}
 		break;
 	}
@@ -975,8 +988,10 @@ void ArtConveyor1AType::doLogic()
 	if (ArtIOClass::ResetDrv(ActPoint->ResetSignalOut)) //сброс ошибки
 	{
 		conveyorState = ST_CONVEYOR_UNKNOWN;
-
-		ArtIOClass::Error(error << ((DevNum - 1) * 4), false);
+		// error = 0;
+		ArtIOClass::Error(error, DevNum);
+		error = 0;
+		ArtIOClass::Error(error, DevNum);
 	}
 
 	if (productFctEnterConveyor)
@@ -1160,6 +1175,11 @@ void ArtConveyor1AType::doLogic()
 					conveyorRunTimer = 0;
 					conveyorState = ST_CONVEYOR_BUSY;
 				}
+
+				if ((readySignalFromNextBarda == 1) && productExitSensConvey)
+				{
+					conveyorRunTimer = 0;
+				}
 			}
 			else
 			{
@@ -1191,7 +1211,7 @@ void ArtConveyor1AType::doLogic()
 	{
 		if (conveyorType == CONVEYOR_TYPE_1_EXTERNAL_BARDA)
 		{
-			if (readySignalFromNextBarda == 2 || readySignalFromNextBarda == 1)
+			if ((readySignalFromNextBarda == 2) && !productExitSensConvey)
 			{
 				ConveyorSetProdEntering();
 				conveyorState = ST_CONVEYOR_PROD_FWD;
@@ -1200,6 +1220,13 @@ void ArtConveyor1AType::doLogic()
 			else
 			{
 				ActuatorsSet(SET_CONV_ACTUATOR_STOP, ActPoint); //!* !Change to actual function
+				conveyorRunTimer = 0;
+			}
+
+			if ((readySignalFromNextBarda == 1) && productExitSensConvey)
+			{
+				conveyorRunTimer = 0;
+				conveyorState = ST_CONVEYOR_PROD_FWD;
 				conveyorRunTimer = 0;
 			}
 		}
@@ -1222,12 +1249,16 @@ void ArtConveyor1AType::doLogic()
 	case ST_CONVEYOR_ERROR:
 	{
 		ActuatorsSet(SET_CONV_ACTUATOR_STOP, ActPoint);
-		ArtIOClass::Error(error << ((DevNum - 1) * 4), true); // смещаем влево на 4 бита
+		// ArtIOClass::Error(error, DevNum); // смещаем влево на 4 бита
+		ArtIOClass::Error(error, DevNum);
 		conveyorRunTimer = 0;
 		if (ArtIOClass::ResetDrv(ActPoint->ResetSignalOut)) //сброс ошибки
 		{
 			conveyorState = ST_CONVEYOR_UNKNOWN;
-			ArtIOClass::Error(error << ((DevNum - 1) * 4), false);
+			// error = 0;
+			ArtIOClass::Error(error, DevNum);
+			error = 0;
+			ArtIOClass::Error(error, DevNum);
 		}
 		break;
 	}
@@ -1281,6 +1312,8 @@ void ArtConveyorShuttleType::doLogic()
 		ConveyorRunTimerOverShuttle = 0;
 		ConveyorRunTimerShuttle = 0;
 		conveyorState = ST_CONVEYOR_UNKNOWN;
+		error = 0;
+		ArtIOClass::Error(error, DevNum);
 	}
 
 	ArtIOClass::ConvState(conveyorState, DevNum);
@@ -1292,6 +1325,7 @@ void ArtConveyorShuttleType::doLogic()
 	else
 	{
 		conveyorState = ST_SHUTTLE_CONVEYOR_ERROR;
+		error = 1;
 	}
 
 	switch (conveyorState)
@@ -1325,115 +1359,115 @@ void ArtConveyorShuttleType::doLogic()
 					if ((CurPos - ReqPos) <= (-10000))
 					{
 						ActuatorsSet(SET_CONV_ACTUATOR_FWD, ShuttlePtr); //запускаю конвейер вперед
-						WriteDacValues(0, 26000);						 //функция для задания частоты на частотнике 32600 - максимальная частота
+						WriteDacValues(26000, 26000);					 //функция для задания частоты на частотнике 32600 - максимальная частота
 					}
 
 					if ((CurPos - ReqPos) <= (-9000) && (CurPos - ReqPos) > (-10000))
 					{
 						ActuatorsSet(SET_CONV_ACTUATOR_FWD, ShuttlePtr);
-						WriteDacValues(0, 24000);
+						WriteDacValues(24000, 24000);
 					}
 
 					if ((CurPos - ReqPos) <= (-8000) && (CurPos - ReqPos) > (-9000))
 					{
 						ActuatorsSet(SET_CONV_ACTUATOR_FWD, ShuttlePtr);
-						WriteDacValues(0, 23000);
+						WriteDacValues(23000, 23000);
 					}
 
 					if ((CurPos - ReqPos) <= (-7000) && (CurPos - ReqPos) > (-8000))
 					{
 						ActuatorsSet(SET_CONV_ACTUATOR_FWD, ShuttlePtr);
-						WriteDacValues(0, 21000);
+						WriteDacValues(21000, 21000);
 					}
 
 					if ((CurPos - ReqPos) <= (-5000) && (CurPos - ReqPos) > (-6000))
 					{
 						ActuatorsSet(SET_CONV_ACTUATOR_FWD, ShuttlePtr);
-						WriteDacValues(0, 19000);
+						WriteDacValues(19000, 19000);
 					}
 
 					if ((CurPos - ReqPos) <= (-4500) && (CurPos - ReqPos) > (-5000))
 					{
 						ActuatorsSet(SET_CONV_ACTUATOR_FWD, ShuttlePtr);
-						WriteDacValues(0, 17000);
+						WriteDacValues(17000, 17000);
 					}
 
 					if ((CurPos - ReqPos) <= (-4000) && (CurPos - ReqPos) > (-4500))
 					{
 						ActuatorsSet(SET_CONV_ACTUATOR_FWD, ShuttlePtr);
-						WriteDacValues(0, 15000);
+						WriteDacValues(15000, 15000);
 					}
 
 					if ((CurPos - ReqPos) <= (-3500) && (CurPos - ReqPos) > (-4000))
 					{
 						ActuatorsSet(SET_CONV_ACTUATOR_FWD, ShuttlePtr);
-						WriteDacValues(0, 13000);
+						WriteDacValues(13000, 13000);
 					}
 
 					if ((CurPos - ReqPos) <= (-3000) && (CurPos - ReqPos) > (-3500))
 					{
 						ActuatorsSet(SET_CONV_ACTUATOR_FWD, ShuttlePtr);
-						WriteDacValues(0, 11000);
+						WriteDacValues(11000, 11000);
 					}
 
 					if ((CurPos - ReqPos) <= (-2500) && (CurPos - ReqPos) > (-3000))
 					{
 						ActuatorsSet(SET_CONV_ACTUATOR_FWD, ShuttlePtr);
-						WriteDacValues(0, 10000);
+						WriteDacValues(10000, 10000);
 					}
 
 					if ((CurPos - ReqPos) <= (-1000) && (CurPos - ReqPos) > (-2500))
 					{
 						ActuatorsSet(SET_CONV_ACTUATOR_FWD, ShuttlePtr);
-						WriteDacValues(0, 8000);
+						WriteDacValues(8000, 8000);
 					}
 
 					if ((CurPos - ReqPos) <= (-900) && (CurPos - ReqPos) > (-1000))
 					{
 						ActuatorsSet(SET_CONV_ACTUATOR_FWD, ShuttlePtr);
-						WriteDacValues(0, 7000);
+						WriteDacValues(7000, 7000);
 					}
 
 					if ((CurPos - ReqPos) <= (-800) && (CurPos - ReqPos) > (-900))
 					{
 						ActuatorsSet(SET_CONV_ACTUATOR_FWD, ShuttlePtr);
-						WriteDacValues(0, 6000);
+						WriteDacValues(6000, 6000);
 					}
 
 					if ((CurPos - ReqPos) <= (-700) && (CurPos - ReqPos) > (-800))
 					{
 						ActuatorsSet(SET_CONV_ACTUATOR_FWD, ShuttlePtr);
-						WriteDacValues(0, 5000);
+						WriteDacValues(5000, 5000);
 					}
 
 					if ((CurPos - ReqPos) <= (-600) && (CurPos - ReqPos) > (-700))
 					{
 						ActuatorsSet(SET_CONV_ACTUATOR_FWD, ShuttlePtr);
-						WriteDacValues(0, 4000);
+						WriteDacValues(4000, 4000);
 					}
 
 					if ((CurPos - ReqPos) <= (-600) && (CurPos - ReqPos) > (-700))
 					{
 						ActuatorsSet(SET_CONV_ACTUATOR_FWD, ShuttlePtr);
-						WriteDacValues(0, 3000);
+						WriteDacValues(3000, 3000);
 					}
 
 					if ((CurPos - ReqPos) <= (-500) && (CurPos - ReqPos) > (-600))
 					{
 						ActuatorsSet(SET_CONV_ACTUATOR_FWD, ShuttlePtr);
-						WriteDacValues(0, 2500);
+						WriteDacValues(2500, 2500);
 					}
 
 					if ((CurPos - ReqPos) <= (-150) && (CurPos - ReqPos) > (-500))
 					{
 						ActuatorsSet(SET_CONV_ACTUATOR_FWD, ShuttlePtr);
-						WriteDacValues(0, 1500);
+						WriteDacValues(1500, 1500);
 					}
 
 					if ((CurPos - ReqPos) < (-Range) && (CurPos - ReqPos) > (-150))
 					{
 						ActuatorsSet(SET_CONV_ACTUATOR_FWD, ShuttlePtr);
-						WriteDacValues(0, 1000);
+						WriteDacValues(1000, 1000);
 					}
 				}
 				else
@@ -1443,121 +1477,121 @@ void ArtConveyorShuttleType::doLogic()
 						if ((CurPos - ReqPos) >= 10000)
 						{
 							ActuatorsSet(SET_CONV_ACTUATOR_REV, ShuttlePtr);
-							WriteDacValues(0, 26000); // 32600
+							WriteDacValues(26000, 26000); // 32600
 						}
 
 						if ((CurPos - ReqPos) >= 9000 && (CurPos - ReqPos) < 10000)
 						{
 							ActuatorsSet(SET_CONV_ACTUATOR_REV, ShuttlePtr);
-							WriteDacValues(0, 24000);
+							WriteDacValues(24000, 24000);
 						}
 
 						if ((CurPos - ReqPos) >= 8000 && (CurPos - ReqPos) < 9000)
 						{
 							ActuatorsSet(SET_CONV_ACTUATOR_REV, ShuttlePtr);
-							WriteDacValues(0, 23000);
+							WriteDacValues(23000, 23000);
 						}
 
 						if ((CurPos - ReqPos) >= 7000 && (CurPos - ReqPos) < 8000)
 						{
 							ActuatorsSet(SET_CONV_ACTUATOR_REV, ShuttlePtr);
-							WriteDacValues(0, 21000);
+							WriteDacValues(21000, 21000);
 						}
 
 						if ((CurPos - ReqPos) >= 6000 && (CurPos - ReqPos) < 7000)
 						{
 							ActuatorsSet(SET_CONV_ACTUATOR_REV, ShuttlePtr);
-							WriteDacValues(0, 19000);
+							WriteDacValues(19000, 19000);
 						}
 
 						if ((CurPos - ReqPos) >= 5000 && (CurPos - ReqPos) < 6000)
 						{
 							ActuatorsSet(SET_CONV_ACTUATOR_REV, ShuttlePtr);
-							WriteDacValues(0, 17000);
+							WriteDacValues(17000, 17000);
 						}
 
 						if ((CurPos - ReqPos) >= 4000 && (CurPos - ReqPos) < 5000)
 						{
 							ActuatorsSet(SET_CONV_ACTUATOR_REV, ShuttlePtr);
-							WriteDacValues(0, 15000);
+							WriteDacValues(15000, 15000);
 						}
 
 						if ((CurPos - ReqPos) >= 3500 && (CurPos - ReqPos) < 4000)
 						{
 							ActuatorsSet(SET_CONV_ACTUATOR_REV, ShuttlePtr);
-							WriteDacValues(0, 13000);
+							WriteDacValues(13000, 13000);
 						}
 
 						if ((CurPos - ReqPos) >= 3000 && (CurPos - ReqPos) < 3500)
 						{
 							ActuatorsSet(SET_CONV_ACTUATOR_REV, ShuttlePtr);
-							WriteDacValues(0, 11000);
+							WriteDacValues(11000, 11000);
 						}
 
 						if ((CurPos - ReqPos) >= 2500 && (CurPos - ReqPos) < 3000)
 						{
 							ActuatorsSet(SET_CONV_ACTUATOR_REV, ShuttlePtr);
-							WriteDacValues(0, 9000);
+							WriteDacValues(9000, 9000);
 						}
 
 						if ((CurPos - ReqPos) >= 2000 && (CurPos - ReqPos) < 2500)
 						{
 							ActuatorsSet(SET_CONV_ACTUATOR_REV, ShuttlePtr);
-							WriteDacValues(0, 8000);
+							WriteDacValues(8000, 8000);
 						}
 
 						if ((CurPos - ReqPos) >= 1500 && (CurPos - ReqPos) < 2000)
 						{
 							ActuatorsSet(SET_CONV_ACTUATOR_REV, ShuttlePtr);
-							WriteDacValues(0, 7000);
+							WriteDacValues(7000, 7000);
 						}
 
 						if ((CurPos - ReqPos) >= 1000 && (CurPos - ReqPos) < 1500)
 						{
 							ActuatorsSet(SET_CONV_ACTUATOR_REV, ShuttlePtr);
-							WriteDacValues(0, 6000);
+							WriteDacValues(6000, 6000);
 						}
 
 						if ((CurPos - ReqPos) >= 900 && (CurPos - ReqPos) < 1000)
 						{
 							ActuatorsSet(SET_CONV_ACTUATOR_REV, ShuttlePtr);
-							WriteDacValues(0, 5000);
+							WriteDacValues(5000, 5000);
 						}
 
 						if ((CurPos - ReqPos) >= 800 && (CurPos - ReqPos) < 900)
 						{
 							ActuatorsSet(SET_CONV_ACTUATOR_REV, ShuttlePtr);
-							WriteDacValues(0, 4000);
+							WriteDacValues(4000, 4000);
 						}
 
 						if ((CurPos - ReqPos) >= 700 && (CurPos - ReqPos) < 800)
 						{
 							ActuatorsSet(SET_CONV_ACTUATOR_REV, ShuttlePtr);
-							WriteDacValues(0, 3500);
+							WriteDacValues(3500, 3500);
 						}
 
 						if ((CurPos - ReqPos) >= 600 && (CurPos - ReqPos) < 700)
 						{
 							ActuatorsSet(SET_CONV_ACTUATOR_REV, ShuttlePtr);
-							WriteDacValues(0, 3000);
+							WriteDacValues(3000, 3000);
 						}
 
 						if ((CurPos - ReqPos) >= 500 && (CurPos - ReqPos) < 600)
 						{
 							ActuatorsSet(SET_CONV_ACTUATOR_REV, ShuttlePtr);
-							WriteDacValues(0, 2500);
+							WriteDacValues(2500, 2500);
 						}
 
 						if ((CurPos - ReqPos) >= 150 && (CurPos - ReqPos) < 500)
 						{
 							ActuatorsSet(SET_CONV_ACTUATOR_REV, ShuttlePtr);
-							WriteDacValues(0, 1500);
+							WriteDacValues(1500, 1500);
 						}
 
 						if ((CurPos - ReqPos) > Range && (CurPos - ReqPos) < 150)
 						{
 							ActuatorsSet(SET_CONV_ACTUATOR_REV, ShuttlePtr);
-							WriteDacValues(0, 1000);
+							WriteDacValues(1000, 1000);
 						}
 					}
 				}
@@ -1582,7 +1616,6 @@ void ArtConveyorShuttleType::doLogic()
 			ActuatorsSet(SET_CONV_ACTUATOR_STOP, ShuttlePtr);
 			ArtIOClass::setOutputState(BrakeOUT, false);
 			conveyorState = ST_SHUTTLE_CONVEYOR_ERROR;
-
 			break;
 		}
 
@@ -1706,7 +1739,7 @@ void ArtConveyorShuttleType::doLogic()
 	{
 		ArtIOClass::ShuttlePosition(16, true);
 		ArtIOClass::setOutputState(BrakeOUT, false);
-		if (NextConvPtr->ConveyorGetReadyReceive() && !ExitSensPoint->SensorState())
+		if (NextConvPtr->ConveyorGetReadyReceive() && !ExitSensPoint->SensorState() && !ArtIOClass::ExtDevReady(pow(2, 2)))
 		{
 			ConveyorRunTimerOverShuttle = ArtIOClass::ARTTimerGetTime(); //крутим верхний конвейер
 			ActuatorsSet(SET_CONV_ACTUATOR_FWD, OverShuttlePtr);
@@ -1728,13 +1761,12 @@ void ArtConveyorShuttleType::doLogic()
 				}
 			}
 		}
-
 		break;
 	}
 
 	case ST_CONVEYOR_POS_SELECT:
 	{
-		ArtIOClass::ShuttlePosition(0, false);
+		// ArtIOClass::ShuttlePosition(0, false);
 		ActuatorsSet(SET_CONV_ACTUATOR_STOP, OverShuttlePtr);
 		ActuatorsSet(SET_CONV_ACTUATOR_STOP, ShuttlePtr);
 
@@ -1783,12 +1815,13 @@ void ArtConveyorShuttleType::doLogic()
 		ActuatorsSet(SET_CONV_ACTUATOR_STOP, ShuttlePtr);
 		ArtIOClass::setOutputState(BrakeOUT, false);
 
-		ArtIOClass::Error(error << ((DevNum - 1) * 4), true); // смещаем влево на 4 бита
+		ArtIOClass::Error(error, DevNum); // смещаем влево на 4 бита
 
 		if (ArtIOClass::ResetDrv(OverShuttlePtr->ResetSignalOut)) //сброс ошибки
 		{
 			conveyorState = ST_CONVEYOR_UNKNOWN;
-			ArtIOClass::Error(error << ((DevNum - 1) * 4), false);
+			error = 0;
+			ArtIOClass::Error(error, DevNum);
 		}
 		break;
 	}
@@ -1799,12 +1832,13 @@ void ArtConveyorShuttleType::doLogic()
 		ActuatorsSet(SET_CONV_ACTUATOR_STOP, OverShuttlePtr);
 		ArtIOClass::setOutputState(BrakeOUT, false);
 
-		ArtIOClass::Error(error << ((DevNum - 1) * 4), true); // смещаем влево на 4 бита
+		ArtIOClass::Error(error, DevNum); // смещаем влево на 4 бита
 
 		if (ArtIOClass::ResetDrv(OverShuttlePtr->ResetSignalOut)) //сброс ошибки
 		{
 			conveyorState = ST_CONVEYOR_UNKNOWN;
-			ArtIOClass::Error(error << ((DevNum - 1) * 4), false); // перестаем передавать ошибку
+			error = 0;
+			ArtIOClass::Error(error, DevNum); // перестаем передавать ошибку
 		}
 		break;
 	}
@@ -1851,6 +1885,8 @@ void ArtConveyor1TypeNextExtDev::doLogic()
 		error = 1;
 	}
 
+	ArtIOClass::ConvState(conveyorState, DevNum);
+
 	if (productFctEnterConveyor)
 	{
 		productEnterSensConvey = true;
@@ -1875,7 +1911,7 @@ void ArtConveyor1TypeNextExtDev::doLogic()
 		{
 			if (productExitSensConvey)
 			{
-				conveyorState = ST_CONVEYOR_BUSY;
+				conveyorState = ST_CONVEYOR_MOVE_OUT;
 			}
 			else
 			{
@@ -1889,11 +1925,13 @@ void ArtConveyor1TypeNextExtDev::doLogic()
 	{
 		if (!ArtIOClass::ExtDevReady(pow(2, BitNum)) && productExitSensConvey) // ждем сигнал с внешнего устройства
 		{
-			conveyorState = ST_CONVEYOR_BUSY;
+			conveyorRunTimer = 0;
+			conveyorState = ST_CONVEYOR_MOVE_OUT;
 		}
 
-		if (productEnterSensConvey || signalExt)
+		if (productEnterSensConvey)
 		{
+			conveyorRunTimer = 0;
 			conveyorState = ST_CONVEYOR_PROD_FWD;
 		}
 		break;
@@ -1907,52 +1945,51 @@ void ArtConveyor1TypeNextExtDev::doLogic()
 			ActuatorsSet(SET_CONV_ACTUATOR_FWD, ActPoint); //
 		}
 
-		if (ARTTimerIsTimePassed(conveyorRunTimer, productPassTime, 99000))
+		/*if (ARTTimerIsTimePassed(conveyorRunTimer, productPassTime, 99000))
 		{
 			ActuatorsSet(SET_CONV_ACTUATOR_STOP, ActPoint); //
 			conveyorRunTimer = 0;
-			conveyorState = ST_CONVEYOR_ERROR;
+			//conveyorState = ST_CONVEYOR_ERROR;
 		}
 		else
-		{
-			if (!ArtIOClass::ExtDevReady(pow(2, BitNum)) && productExitSensConvey) //если внешнее устройство не готово и сработал датчик на выходе
+		{*/
+			if (productExitSensConvey) //если сработал датчик на выходе
 			{
 				ActuatorsSet(SET_CONV_ACTUATOR_STOP, ActPoint);
 				conveyorRunTimer = 0;
-				conveyorState = ST_CONVEYOR_BUSY;
+				conveyorState = ST_CONVEYOR_MOVE_OUT;
 			}
-		}
+	//	}
 		break;
 	}
 
-	case ST_CONVEYOR_BUSY:
+	case ST_CONVEYOR_MOVE_OUT:
 	{
-		if (!productExitSensConvey)
-		{
-			conveyorRunTimer = 0;
-			conveyorState = ST_CONVEYOR_FREE;
-		}
-
 		if (ArtIOClass::ExtDevReady(pow(2, BitNum))) // если внешнее устр-во готово то отправляй паллету
 		{
-			conveyorState = ST_CONVEYOR_PROD_FWD;
-			conveyorRunTimer = 0;
+			ActuatorsSet(SET_CONV_ACTUATOR_FWD, ActPoint);
 		}
 		else
 		{
 			ActuatorsSet(SET_CONV_ACTUATOR_STOP, ActPoint);
-			conveyorRunTimer = 0;
+			
+			if (!productExitSensConvey)
+			{
+				conveyorRunTimer = 0;
+				conveyorState = ST_CONVEYOR_FREE;
+			}
 		}
 		break;
 	}
 
 	case ST_CONVEYOR_ERROR:
 	{
-		ArtIOClass::Error(error << ((DevNum - 1) * 4), true); // смещаем влево на 4 бита
-		if (ArtIOClass::ResetDrv(ActPoint->ResetSignalOut))	  //сброс ошибки частотника
+		ArtIOClass::Error(error, DevNum);					// смещаем влево на 4 бита
+		if (ArtIOClass::ResetDrv(ActPoint->ResetSignalOut)) //сброс ошибки частотника
 		{
 			conveyorState = ST_CONVEYOR_UNKNOWN;
-			ArtIOClass::Error(error << ((DevNum - 1) * 4), false);
+			error = 0;
+			ArtIOClass::Error(error, DevNum);
 		}
 		break;
 	}
@@ -2259,11 +2296,12 @@ void ArtPalletConveyorWithStoppers::doLogic() //на переменную flags 
 
 	case ST_CONVEYOR_ERROR:
 	{
-		ArtIOClass::Error(error << ((DevNum - 1) * 4), true); // смещаем влево на 4 бита
-		if (ArtIOClass::ResetDrv(ActPoint->ResetSignalOut))	  //сброс ошибки частотника
+		ArtIOClass::Error(error, DevNum);					// смещаем влево на 4 бита
+		if (ArtIOClass::ResetDrv(ActPoint->ResetSignalOut)) //сброс ошибки частотника
 		{
 			conveyorState = ST_CONVEYOR_UNKNOWN;
-			ArtIOClass::Error(error << ((DevNum - 1) * 4), false);
+			error = 0;
+			ArtIOClass::Error(error, DevNum);
 		}
 		break;
 	}
@@ -2509,11 +2547,12 @@ void ArtConveyorPLPType::doLogic()
 		ActuatorsSet(SET_CONV_ACTUATOR_STOP, ActPoint);
 		ArtIOClass::NeedPal(PLPNum, false);
 		conveyorRunTimer = 0;
-		ArtIOClass::Error(error << ((DevNum - 1) * 4), true); // смещаем влево на 4 бита
-		if (ArtIOClass::ResetDrv(ActPoint->ResetSignalOut))	  //сброс ошибки частотника
+		ArtIOClass::Error(error, DevNum);					// смещаем влево на 4 бита
+		if (ArtIOClass::ResetDrv(ActPoint->ResetSignalOut)) //сброс ошибки частотника
 		{
 			conveyorState = ST_CONVEYOR_UNKNOWN;
-			ArtIOClass::Error(error << ((DevNum - 1) * 4), false);
+			error = 0;
+			ArtIOClass::Error(error, DevNum);
 		}
 		break;
 	}
@@ -2538,15 +2577,15 @@ ArtConveyorWithLift::ArtConveyorWithLift(int id, const char name[], ConveyorType
 										 int PassTime, int LiftUpTime, int LiftDOWNTime, int RunTimer, int DevNum) : ArtConveyorWithLift(id, name)
 {
 	ArtConveyorWithLift::conveyorType = type;
-	ArtConveyorWithLift::ActPoint = ActPoint;			//указатель на драйвер
-	ArtConveyorWithLift::LiftDrv = LiftDrv;				//указатель на драйвер
-	ArtConveyorWithLift::LiftUP = LiftUP;				//лифт вверху
-	ArtConveyorWithLift::LiftUpTime = LiftUpTime;		//время подъема
-	ArtConveyorWithLift::LiftDOWNTime = LiftDOWNTime;	// время опускания
-	ArtConveyorWithLift::LiftDOWN = LiftDOWN;			//лифт внизу
-	ArtConveyorWithLift::LiftDOWN = EnterSensPoint;		//указатель на входной сенсор
-	ArtConveyorWithLift::ExitSensPoint = ExitSensPoint; //указатель на выходной сенсор
-	ArtConveyorWithLift::NextConvEnd = NextConvEnd;		//указатель на сенсор следующего конвейера
+	ArtConveyorWithLift::ActPoint = ActPoint;			  //указатель на драйвер
+	ArtConveyorWithLift::LiftDrv = LiftDrv;				  //указатель на драйвер
+	ArtConveyorWithLift::LiftUP = LiftUP;				  //лифт вверху
+	ArtConveyorWithLift::LiftUpTime = LiftUpTime;		  //время подъема
+	ArtConveyorWithLift::LiftDOWNTime = LiftDOWNTime;	  // время опускания
+	ArtConveyorWithLift::LiftDOWN = LiftDOWN;			  //лифт внизу
+	ArtConveyorWithLift::EnterSensPoint = EnterSensPoint; //указатель на входной сенсор
+	ArtConveyorWithLift::ExitSensPoint = ExitSensPoint;	  //указатель на выходной сенсор
+	ArtConveyorWithLift::NextConvEnd = NextConvEnd;		  //указатель на сенсор следующего конвейера
 	ArtConveyorWithLift::productPassTime = PassTime;
 	ArtConveyorWithLift::conveyorRunTimer = RunTimer;
 	ArtConveyorWithLift::DevNum = DevNum;
@@ -2576,31 +2615,42 @@ void ArtConveyorWithLift::doLogic()
 	{
 	case ST_CONVEYOR_UNKNOWN:
 	{
-		if (productEnterSensConvey && LiftUP->SensorState() && !productExitSensConvey)
+		if (productExitSensConvey && !NextConvEnd->SensorState())
 		{
-			conveyorState = ST_CONVEYOR_PROD_FWD;
-		}
-
-		if (productExitSensConvey)
-		{
-			conveyorState = ST_CONVEYOR_BUSY;
+			conveyorState = ST_CONVEYOR_LIFT_DOWN;
 		}
 		else
 		{
-			conveyorState = ST_CONVEYOR_FREE;
+			if (!productExitSensConvey)
+			{
+				conveyorState = ST_CONVEYOR_FREE;
+			}
+		}
+
+		if (productEnterSensConvey && LiftUP->SensorState() && !productExitSensConvey)
+		{
+			conveyorState = ST_CONVEYOR_PROD_FWD;
+			conveyorRunTimer = 0;
 		}
 		break;
 	}
 
 	case ST_CONVEYOR_FREE:
 	{
-		if (productEnterSensConvey && LiftUP->SensorState())
+		ArtIOClass::setOutputState(1, false);
+		ActuatorsSet(SET_CONV_ACTUATOR_STOP, LiftDrv);
+		
+		if (productEnterSensConvey && LiftUP->SensorState() && !productExitSensConvey)
 		{
 			conveyorState = ST_CONVEYOR_PROD_FWD;
+			conveyorRunTimer = 0;
 		}
 		else
 		{
-			conveyorState = ST_CONVEYOR_LIFT_UP;
+			if (!LiftUP->SensorState())
+			{
+				conveyorState = ST_CONVEYOR_LIFT_UP;
+			}
 		}
 		break;
 	}
@@ -2624,10 +2674,9 @@ void ArtConveyorWithLift::doLogic()
 		{
 			ActuatorsSet(SET_CONV_ACTUATOR_STOP, ActPoint); //!* !Change to actual function
 			conveyorRunTimer = 0;
-			conveyorState = ST_CONVEYOR_ERROR;
+			//conveyorState = ST_CONVEYOR_ERROR;
 			error = 1;
 		}
-
 		break;
 	}
 
@@ -2635,11 +2684,9 @@ void ArtConveyorWithLift::doLogic()
 	{
 		if (conveyorLiftRunTimer == 0)
 		{
-			if (LiftDOWN->SensorState() == true)
-			{
-				conveyorRunTimer = ArtIOClass::ARTTimerGetTime();
-				ActuatorsSet(SET_CONV_ACTUATOR_FWD, LiftDrv);
-			}
+			conveyorRunTimer = ArtIOClass::ARTTimerGetTime();
+			ArtIOClass::setOutputState(1, true);
+			ActuatorsSet(SET_CONV_ACTUATOR_FWD, LiftDrv);
 		}
 
 		if (ARTTimerIsTimePassed(conveyorLiftRunTimer, LiftUpTime, 99000)) // если крутится больше LiftUpTime то вырубай и в ошибку
@@ -2661,13 +2708,11 @@ void ArtConveyorWithLift::doLogic()
 
 	case ST_CONVEYOR_LIFT_DOWN:
 	{
-		if (conveyorLiftRunTimer == 0)
+		if ((conveyorLiftRunTimer == 0) && !NextConvEnd->SensorState())
 		{
-			if (LiftUP->SensorState() == true)
-			{
-				conveyorRunTimer = ArtIOClass::ARTTimerGetTime();
-				ActuatorsSet(SET_CONV_ACTUATOR_REV, LiftDrv);
-			}
+			ArtIOClass::setOutputState(1, true);
+			conveyorRunTimer = ArtIOClass::ARTTimerGetTime();
+			ActuatorsSet(SET_CONV_ACTUATOR_REV, LiftDrv);
 		}
 
 		if (ARTTimerIsTimePassed(conveyorLiftRunTimer, LiftDOWNTime, 99000)) // если крутится больше LiftDOWNTime то вырубай и в ошибку
@@ -2689,7 +2734,8 @@ void ArtConveyorWithLift::doLogic()
 
 	case ST_CONVEYOR_BUSY:
 	{
-		if (NextConvEnd->SensorState() == true && !ArtIOClass::ExtDevReady(pow(2, 2))) //подобрать номер бита 
+		ArtIOClass::setOutputState(1, false);
+		if (NextConvEnd->SensorState() == true /*&& !ArtIOClass::ExtDevReady(pow(2, 2))*/) //подобрать номер бита
 		{
 			conveyorState = ST_CONVEYOR_LIFT_UP; // надо переделать если следующий встанет по ошибке зависнет
 		}
@@ -2698,11 +2744,12 @@ void ArtConveyorWithLift::doLogic()
 
 	case ST_CONVEYOR_ERROR:
 	{
-		ArtIOClass::Error(error << ((DevNum - 1) * 4), true); // смещаем влево на 4 бита
-		if (ArtIOClass::ResetDrv(ActPoint->ResetSignalOut))	  //сброс ошибки частотника
+		ArtIOClass::Error(error, DevNum);					// смещаем влево на 4 бита
+		if (ArtIOClass::ResetDrv(ActPoint->ResetSignalOut)) //сброс ошибки частотника
 		{
 			conveyorState = ST_CONVEYOR_UNKNOWN;
-			ArtIOClass::Error(error << ((DevNum - 1) * 4), false);
+			error = 0;
+			ArtIOClass::Error(error, DevNum);
 		}
 		break;
 	}
@@ -2867,11 +2914,12 @@ void ArtConveyorWithLiftType1::doLogic()
 
 	case ST_CONVEYOR_ERROR:
 	{
-		ArtIOClass::Error(error << ((DevNum - 1) * 4), true); // смещаем влево на 4 бита
-		if (ArtIOClass::ResetDrv(ActPoint->ResetSignalOut))	  //сброс ошибки частотника
+		ArtIOClass::Error(error, DevNum);					// смещаем влево на 4 бита
+		if (ArtIOClass::ResetDrv(ActPoint->ResetSignalOut)) //сброс ошибки частотника
 		{
 			conveyorState = ST_CONVEYOR_UNKNOWN;
-			ArtIOClass::Error(error << ((DevNum - 1) * 4), false);
+			error = 0;
+			ArtIOClass::Error(error, DevNum);
 		}
 		break;
 	}
@@ -2939,6 +2987,7 @@ void ArtConveyorPalletPickPoint::doLogic()
 			if (productEnterSensConvey)
 			{
 				conveyorState = ST_CONVEYOR_PROD_FWD;
+				conveyorRunTimer = 0;
 			}
 		}
 		else
@@ -2967,7 +3016,7 @@ void ArtConveyorPalletPickPoint::doLogic()
 		{
 			ActuatorsSet(SET_CONV_ACTUATOR_STOP, ActPoint); //!* !Change to actual function
 			conveyorRunTimer = 0;
-			conveyorState = ST_CONVEYOR_ERROR;
+			//conveyorState = ST_CONVEYOR_ERROR;
 		}
 
 		break;
@@ -2987,11 +3036,12 @@ void ArtConveyorPalletPickPoint::doLogic()
 
 	case ST_CONVEYOR_ERROR:
 	{
-		ArtIOClass::Error(error << ((DevNum - 1) * 4), true); // смещаем влево на 4 бита
-		if (ArtIOClass::ResetDrv(ActPoint->ResetSignalOut))	  //сброс ошибки частотника
+		ArtIOClass::Error(error, DevNum);					// смещаем влево на 4 бита
+		if (ArtIOClass::ResetDrv(ActPoint->ResetSignalOut)) //сброс ошибки частотника
 		{
 			conveyorState = ST_CONVEYOR_UNKNOWN;
-			ArtIOClass::Error(error << ((DevNum - 1) * 4), false);
+			error = 0;
+			ArtIOClass::Error(error, DevNum);
 		}
 		break;
 	}
@@ -3074,6 +3124,8 @@ void ArtCrossConveyor::doLogic() //на переменную flags приход�
 	if (ArtIOClass::ResetDrv(ActPoint->ResetSignalOut))
 	{
 		conveyorState = ST_CONVEYOR_UNKNOWN;
+		error = 0;
+		ArtIOClass::Error(error, DevNum);
 	}
 
 	ArtIOClass::ConvState(conveyorState, DevNum);
@@ -3415,11 +3467,12 @@ void ArtCrossConveyor::doLogic() //на переменную flags приход�
 		DispDrvPtr->ConveySetDriverFWD(false);
 		ActPoint->ConveySetDriverFWD(false);
 		ArtIOClass::DevReady(DevNum, false);
-		ArtIOClass::Error(error << ((DevNum - 1) * 4), true); // смещаем влево
-		if (ArtIOClass::ResetDrv(ActPoint->ResetSignalOut))	  //сброс ошибки частотника
+		ArtIOClass::Error(error, DevNum);					// смещаем влево
+		if (ArtIOClass::ResetDrv(ActPoint->ResetSignalOut)) //сброс ошибки частотника
 		{
 			conveyorState = ST_CONVEYOR_UNKNOWN;
-			ArtIOClass::Error(error << ((DevNum - 1) * 4), false);
+			error = 0;
+			ArtIOClass::Error(error, DevNum);
 		}
 		break;
 	}
@@ -3581,11 +3634,11 @@ void ArtConveyor1NextPushType::doLogic()
 	case ST_CONVEYOR_ERROR:
 	{
 		ActuatorsSet(SET_CONV_ACTUATOR_STOP, ActPoint);
-		ArtIOClass::Error(error << ((DevNum - 1) * 4), true); // смещаем влево на 4 бита
-		if (ArtIOClass::ResetDrv(ActPoint->ResetSignalOut))	  //сброс ошибки частотника
+		ArtIOClass::Error(error, DevNum);					// смещаем влево на 4 бита
+		if (ArtIOClass::ResetDrv(ActPoint->ResetSignalOut)) //сброс ошибки частотника
 		{
 			conveyorState = ST_CONVEYOR_UNKNOWN;
-			ArtIOClass::Error(error << ((DevNum - 1) * 4), false);
+			ArtIOClass::Error(error, DevNum);
 		}
 
 		break;
@@ -3638,15 +3691,6 @@ void ArtConveyorWithPusher::doLogic()
 		conveyorRunTimer = 0;
 	}
 
-	if ((conveyorState == ST_CONVEYOR_FREE) || (conveyorState == ST_CONVEYOR_PROD_FWD))
-	{
-		// ArtIOClass::ConvReady(1);//раскоментить если нужен сигнал на предыдущий конвейер
-	}
-	else
-	{
-		// ArtIOClass::ConvReady(0); //раскоментить если нужен сигнал на предыдущий конвейер
-	}
-
 	if (ActuatorsGet(GET_CONV_ACTUATOR_READY, ActPoint) != 1)
 	{
 		conveyorState = ST_CONVEYOR_ERROR;
@@ -3680,7 +3724,14 @@ void ArtConveyorWithPusher::doLogic()
 			}
 			else
 			{
-				conveyorState = ST_CONVEYOR_FREE;
+				if (!OnPusher->SensorState())
+				{
+					conveyorState = ST_CONVEYOR_FREE;
+				}
+				else
+				{
+					conveyorState = ST_CONVEYOR_MOVE_OUT;
+				}
 			}
 		}
 		break;
@@ -3776,6 +3827,7 @@ void ArtConveyorWithPusher::doLogic()
 		if (NextConvPoint->ConveyorGetReadyReceive() == 1 && PusherCylPtr->cylCloseIn->SensorState())
 		{
 			conveyorRunTimer = 0;
+
 			if (!OnPusher->SensorState())
 			{
 				conveyorState = ST_CONVEYOR_FREE;
@@ -3789,11 +3841,12 @@ void ArtConveyorWithPusher::doLogic()
 	{
 		ArtIOClass::ConvReady(0);
 		ActuatorsSet(SET_CONV_ACTUATOR_STOP, ActPoint);
-		ArtIOClass::Error(error << ((DevNum - 1) * 4), true); // смещаем влево на 4 бита
-		if (ArtIOClass::ResetDrv(ActPoint->ResetSignalOut))	  //сброс ошибки частотника
+		ArtIOClass::Error(error, DevNum);					// смещаем влево на 4 бита
+		if (ArtIOClass::ResetDrv(ActPoint->ResetSignalOut)) //сброс ошибки частотника
 		{
 			conveyorState = ST_CONVEYOR_UNKNOWN;
-			ArtIOClass::Error(error << ((DevNum - 1) * 4), false);
+			error = 0;
+			ArtIOClass::Error(error, DevNum);
 		}
 
 		break;

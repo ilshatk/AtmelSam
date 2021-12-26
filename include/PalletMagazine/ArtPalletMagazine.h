@@ -90,6 +90,7 @@ protected:
         READY,
         ERROR_STATE
     };
+    
     enum MagazineStates
     {
         CRITICAL,

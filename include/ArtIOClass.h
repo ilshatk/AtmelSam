@@ -33,6 +33,7 @@ protected:
     static uint16_t m_nCurrentOutputState;
     static int buffer;
     static int Convstate;
+    static int errors;
     static uint8_t m_CurrentPosition;
     static const uint8_t N_MIN_INPORT_NUM, N_MAX_INPORT_NUM;
     static const uint8_t N_MIN_OUTPORT_NUM, N_MAX_OUTPORT_NUM;
@@ -41,6 +42,7 @@ protected:
 public:
     static int boxqnt;
     static bool FlagConvState;
+    static bool FlagErrors;
     static void initializeBoard(EasyCAT *ptrEasyCat); // DONE code form main
 
     // direct IOs
@@ -55,6 +57,7 @@ public:
     static bool ExtSens(uint16_t sensinput);
     static bool ExtSens(uint16_t sensinput, int boardnum);
     static void Error(uint8_t error, bool flag);
+    static void Error(int error, int DevNum);
     static int readySignalFromNext();
     static bool readySignalFromNext(int convnum, int boardnum);
     static bool TookProd();
@@ -83,8 +86,10 @@ public:
     static int SetProdNumberCollect();
     static void ActiveScheme(int Scheme);
     static bool ARTTimer(int timer, int timeSpan, int timeOut);
+    static void PallState(int PallState);
 
-        protected : ArtIOClass();
+protected:
+    ArtIOClass();
     ~ArtIOClass();
 };
 
